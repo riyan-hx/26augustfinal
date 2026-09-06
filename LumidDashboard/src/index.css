@@ -1,0 +1,145 @@
+@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  /* Lumid brand */
+  --color-lumid-primary: #88D95F;
+  --color-lumid-deep: #242E21;
+  --color-brand-50: #F4FAF1;
+  --color-brand-100: #EFF8EB;
+  --color-brand-200: #DDEED8;
+  --color-brand-300: #C5E5BA;
+  --color-brand-400: #A8D79D;
+  --color-brand-500: #88D95F;
+  --color-brand-600: #7AC553;
+  --color-brand-700: #4E8F39;
+  --color-brand-800: #3A6B2B;
+  --color-brand-900: #2A4D1F;
+
+  /* Surfaces — warm green-neutral */
+  --color-canvas: #FCFDFC;
+  --color-surface: #FFFFFF;
+  --color-surface-warm: #F8FAF7;
+  --color-surface-muted: #F3F7F1;
+  --color-surface-soft: #EEF4EC;
+  --color-hairline: #E5EAE2;
+  --color-hairline-strong: #DDE5D9;
+  --color-ink: #242E21;
+  --color-slate: #687366;
+  --color-stone: #8A9487;
+  --color-muted: #A8B5A3;
+
+  /* Legacy aliases — now pointing to Lumid system */
+  --color-green-900: #242E21;
+  --color-green-800: #2B3629;
+  --color-green-700: #2E4A28;
+  --color-green-600: #4E8F39;
+  --color-green-500: #88D95F;
+  --color-green-100: #EFF8EB;
+  --color-green-50: #F4FAF1;
+  --color-sage-50: #F8FAF7;
+  --color-sage-100: #EEF4EC;
+  --color-sage-200: #DDE5D9;
+  --color-mint-50: #F4FAF1;
+  --color-amber-50: #FFFBEB;
+  --color-amber-200: #FDE68A;
+  --color-amber-700: #92400E;
+  --color-blue-700: #242E21;
+  --color-blue-600: #4E8F39;
+  --color-blue-50: #F4FAF1;
+  --color-blue-100: #E5EAE2;
+  --color-navy: #242E21;
+
+  --font-sans: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-serif: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --radius-card: 12px;
+  --radius-pill: 9999px;
+}
+
+:root {
+  /* Lumid semantic tokens */
+  --lumid-primary: #88D95F;
+  --lumid-deep: #242E21;
+  --brand-50: #F4FAF1;
+  --brand-100: #EFF8EB;
+  --brand-200: #DDEED8;
+  --brand-300: #C5E5BA;
+  --brand-400: #A8D79D;
+  --brand-500: #88D95F;
+  --brand-600: #7AC553;
+  --brand-700: #4E8F39;
+  --brand-800: #3A6B2B;
+  --brand-900: #2A4D1F;
+
+  --lumid-background: #FCFDFC;
+  --lumid-surface: #FFFFFF;
+  --lumid-surface-warm: #F8FAF7;
+  --lumid-surface-muted: #F3F7F1;
+  --lumid-surface-soft: #EEF4EC;
+  --lumid-border: #E5EAE2;
+  --lumid-border-strong: #DDE5D9;
+
+  --lumid-text-primary: #242E21;
+  --lumid-text-secondary: #687366;
+  --lumid-text-muted: #8A9487;
+  --lumid-text-faint: #A8B5A3;
+
+  --lumid-success: #4F9A39;
+  --lumid-success-soft: #EFF8EB;
+  --lumid-success-border: #C5E5BA;
+  --lumid-warning: #D99A24;
+  --lumid-danger: #C95C5C;
+
+  /* Compatibility mappings — previous variables now point to Lumid */
+  --canvas: #FCFDFC;
+  --surface: #FFFFFF;
+  --surface-warm: #F8FAF7;
+  --hairline: #E5EAE2;
+  --hairline-strong: #DDE5D9;
+  --ink: #242E21;
+  --slate: #687366;
+  --stone: #8A9487;
+  --muted: #A8B5A3;
+  --green-900: #242E21;
+  --green-800: #2B3629;
+  --green-700: #242E21;
+  --green-600: #4E8F39;
+  --green-500: #88D95F;
+  --green-300: #C5E5BA;
+  --green-200: #DDEED8;
+  --green-100: #EFF8EB;
+  --green-50: #F4FAF1;
+  --sage-50: #F8FAF7;
+  --sage-100: #EEF4EC;
+  --sage-200: #DDE5D9;
+  --blue-700: #242E21;
+  --blue-600: #4E8F39;
+  --blue-50: #F4FAF1;
+  --blue-100: #E5EAE2;
+  --font-sans: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  font-family: var(--font-sans);
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { font-family: inherit; }
+.font-serif { font-family: var(--font-sans); }
+
+body { background: var(--canvas); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: #DDE5D9; border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

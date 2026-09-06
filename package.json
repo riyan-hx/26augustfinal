@@ -1,0 +1,13 @@
+{
+  "name": "26augustfinal",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "npm --prefix LumidDashboard run dev",
+    "build": "npm --prefix LumidDashboard run build",
+    "preview": "npm --prefix LumidDashboard run preview -- --host 0.0.0.0 --port 4173",
+    "lint": "npm --prefix LumidDashboard run lint",
+    "start": "npm --prefix LumidDashboard run preview -- --host 0.0.0.0 --port 4173"
+  }
+}
