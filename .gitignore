@@ -27,3 +27,8 @@ dist-ssr
 .env
 .env.*
 !.env.example
+
+# Not part of the Lumid dashboard project — keep this repo scoped to it
+.claude/
+agentlab-clone/
+lead-queue.html
