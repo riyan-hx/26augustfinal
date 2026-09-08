@@ -337,10 +337,9 @@ export function SettingsPage() {
 
           <div className="bg-[var(--green-900)] text-white rounded-[16px] p-5">
             <p className="text-[12px] font-semibold">Trust & Security</p>
-            <p className="text-[11px] opacity-70 mt-1">Encrypted at rest & in transit • Audit logs • Role-based access • Razorpay PCI DSS • DPDP Act ready</p>
+            <p className="text-[11px] opacity-70 mt-1">Payments via Razorpay (PCI DSS compliant) • Consent is explicit, specific, and revocable by design</p>
             <div className="flex gap-2 mt-3">
-              <span className="px-3 py-1 rounded-full bg-white/10 text-[11px]">2FA enabled</span>
-              <span className="px-3 py-1 rounded-full bg-white/10 text-[11px]">Last audit: 2 days ago</span>
+              <span className="px-3 py-1 rounded-full bg-white/10 text-[11px]">DPDP Act compliance — in progress</span>
             </div>
           </div>
         </div>

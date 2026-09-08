@@ -1,5 +1,6 @@
 import { useState, useMemo } from 'react'
-import { ChevronLeft, ChevronRight, Clock, Video, Copy, Check, X, Plus, Calendar, Globe, GripVertical, Trash2, Edit3, ExternalLink } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Video, Copy, Check, X, Plus, Calendar, Globe, CheckCircle2, Trash2, Edit3, ExternalLink } from 'lucide-react'
+import { patients } from '../lib/data'
 
 type View = 'Week' | 'Day' | 'Month'
 type SessionStatus = 'paid' | 'awaiting' | 'cancelled' | 'blocked' | 'free'
@@ -27,6 +28,16 @@ const weekDays = [
   { label: 'SAT', date: 30 },
 ]
 const hours = ['9 AM', '10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM', '6 PM', '7 PM']
+const HOUR_PX = 64
+const GRID_PX = HOUR_PX * (hours.length - 1)
+
+function formatHour(h: number) {
+  const period = h >= 12 ? 'PM' : 'AM'
+  let hour12 = Math.floor(h) % 12
+  if (hour12 === 0) hour12 = 12
+  const mins = h % 1 === 0.5 ? ':30' : ''
+  return `${hour12}${mins} ${period}`
+}
 
 const initialEvents: CalEvent[] = [
   { id: '1', patient: 'Divya Prasad', initials: 'DP', type: 'Individual Session', day: 2, start: 17, duration: 1, status: 'paid', fee: '₹1,500', meeting: 'meet.google.com/abc-defg' },
@@ -74,6 +85,8 @@ function MiniCalendar({ selected, onSelect }: { selected: number; onSelect: (d: 
 export default function CalendarPage() {
   const [view, setView] = useState<View>('Week')
   const [selectedId, setSelectedId] = useState<string>('1')
+  const [panelOpen, setPanelOpen] = useState(true)
+  function selectEvent(id: string) { setSelectedId(id); setPanelOpen(true) }
   const [selectedDate, setSelectedDate] = useState(26)
   const [showCreate, setShowCreate] = useState(false)
   const [showAvailability, setShowAvailability] = useState(false)
@@ -83,6 +96,9 @@ export default function CalendarPage() {
   const [events, setEvents] = useState(initialEvents)
 
   const selected = useMemo(() => events.find(e => e.id === selectedId) || events[0], [selectedId, events])
+  const selectedDayInfo = selected ? weekDays[selected.day] : undefined
+  const selectedPatientRecord = selected ? patients.find(p => p.name === selected.patient) : undefined
+  const isRealSession = selected ? !['blocked', 'free'].includes(selected.status) : false
 
   const filteredEvents = events.filter(e => {
     if (e.status === 'blocked' && !filters.blocked) return false
@@ -120,8 +136,6 @@ export default function CalendarPage() {
     setSelectedDate(26)
     setSelectedId('1')
     setView('Week')
-    setToast('Back to today — Tue 26 Aug')
-    setTimeout(() => setToast(null), 1500)
   }
 
   return (
@@ -129,43 +143,37 @@ export default function CalendarPage() {
       {/* PAGE HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-[28px] font-semibold tracking-[-0.02em] leading-none">Calendar</h1>
+          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--ink)] leading-none">Calendar</h1>
           <p className="text-[13px] text-[var(--stone)] mt-1.5">Manage your sessions, availability, and appointments.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 bg-white border border-[var(--hairline)] rounded-full p-1">
             <button onClick={handleToday} className="px-3 py-1.5 rounded-full bg-[var(--ink)] text-white text-[12px] font-medium hover:bg-black">Today</button>
-            <button onClick={() => { setSelectedDate(d => Math.max(24, d - 1)); setToast('Previous week'); setTimeout(()=>setToast(null),1000)}} className="w-7 h-7 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronLeft size={14} /></button>
-            <button onClick={() => { setSelectedDate(d => Math.min(30, d + 1)); setToast('Next week'); setTimeout(()=>setToast(null),1000)}} className="w-7 h-7 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronRight size={14} /></button>
+            <button onClick={() => setSelectedDate(d => Math.max(24, d - 1))} className="w-7 h-7 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronLeft size={14} /></button>
+            <button onClick={() => setSelectedDate(d => Math.min(30, d + 1))} className="w-7 h-7 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronRight size={14} /></button>
             <span className="text-[13px] font-medium px-2 hidden sm:inline">August 2026</span>
           </div>
           <div className="flex items-center gap-1 bg-white border border-[var(--hairline)] rounded-full p-1">
             {(['Day', 'Week', 'Month'] as View[]).map(v => (
-              <button key={v} onClick={() => { setView(v); setToast(`${v} view`); setTimeout(()=>setToast(null),1000)}} className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium ${view === v ? 'bg-[var(--green-700)] text-white' : 'text-[var(--stone)] hover:text-[var(--ink)]'}`}>{v}</button>
+              <button key={v} onClick={() => setView(v)} className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium ${view === v ? 'bg-[var(--green-700)] text-white' : 'text-[var(--stone)] hover:text-[var(--ink)]'}`}>{v}</button>
             ))}
           </div>
           <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium hover:bg-[var(--green-800)] shadow-sm"><Plus size={14} /> New Session</button>
         </div>
       </div>
 
-      <div className="mt-6 grid grid-cols-1 lg:grid-cols-[232px_1fr] xl:grid-cols-[232px_1fr_320px] gap-4 items-start">
+      <div className="mt-6 grid grid-cols-1 lg:grid-cols-[232px_1fr] gap-4 items-start">
         {/* LEFT SIDEBAR */}
         <div className="hidden lg:block space-y-4 sticky top-[88px]">
           <MiniCalendar selected={selectedDate} onSelect={setSelectedDate} />
 
           <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-4">
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)]">CREATE</p>
-            <div className="grid grid-cols-2 gap-2 mt-3">
-              <button onClick={() => setShowCreate(true)} className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-[var(--green-700)] text-white text-[12px] font-medium hover:bg-[var(--green-800)]"><Plus size={12} /> Session</button>
-              <button onClick={() => setShowAvailability(v => !v)} className={`flex items-center gap-1.5 px-3 py-2 rounded-full border text-[12px] font-medium ${showAvailability ? 'bg-[var(--green-50)] border-[var(--green-700)]/30 text-[var(--green-700)]' : 'bg-white border-[var(--hairline)] hover:bg-[var(--surface-warm)]'}`}><Calendar size={12} /> Availability</button>
-              <button onClick={() => setToast('Block time — coming soon')} className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white border border-[var(--hairline)] text-[12px] font-medium hover:bg-[var(--surface-warm)]">Block time</button>
-              <button className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white border border-[var(--hairline)] text-[12px] font-medium hover:bg-[var(--surface-warm)]">Reminder</button>
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={() => setShowCreate(true)} className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-[var(--green-700)] text-white text-[12px] font-medium hover:bg-[var(--green-800)]"><Plus size={12} /> Session</button>
+              <button onClick={() => setShowAvailability(v => !v)} className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-full border text-[12px] font-medium ${showAvailability ? 'bg-[var(--green-50)] border-[var(--green-700)]/30 text-[var(--green-700)]' : 'bg-white border-[var(--hairline)] hover:bg-[var(--surface-warm)]'}`}><Calendar size={12} /> Availability</button>
             </div>
-          </div>
 
-          <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-4">
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)]">MY CALENDAR</p>
-            <div className="mt-3 space-y-2.5">
+            <div className="mt-4 pt-4 border-t border-[var(--hairline)] space-y-2.5">
               {[
                 { k: 'sessions', label: 'Sessions', color: 'bg-[var(--green-700)]' },
                 { k: 'availability', label: 'Availability', color: 'bg-amber-400' },
@@ -178,29 +186,28 @@ export default function CalendarPage() {
                 </label>
               ))}
             </div>
-          </div>
 
-          <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-4">
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)]">WEEK SUMMARY</p>
-            <div className="mt-3 space-y-2 text-[12px]">
+            <div className="mt-4 pt-4 border-t border-[var(--hairline)] space-y-2 text-[12px]">
               <div className="flex justify-between"><span className="text-[var(--stone)]">Sessions this week</span><span className="font-semibold">8</span></div>
               <div className="flex justify-between"><span className="text-[var(--stone)]">Available hours</span><span className="font-semibold">22h</span></div>
               <div className="flex justify-between"><span className="text-[var(--stone)]">Paid sessions</span><span className="font-semibold text-emerald-700">6</span></div>
             </div>
-            <div className="mt-3 pt-3 border-t border-[var(--hairline)]">
-              <p className="text-[11px] font-medium text-[var(--stone)]">Your booking page</p>
-              <p className="text-[12px] font-medium text-[var(--green-700)] mt-1 flex items-center gap-1"><Globe size={12} /> lumid.in/dr-anitha</p>
-              <p className="text-[11px] text-[var(--stone)] mt-1">Patients view your availability and book.</p>
-              <div className="flex gap-2 mt-2">
-                <a href="/book" className="flex-1 text-center py-1.5 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1">Open <ExternalLink size={11} /></a>
-                <button onClick={() => copyLink('lumid.in/dr-anitha')} className="flex-1 py-1.5 rounded-full bg-[var(--green-700)] text-white text-[11px] font-medium">Copy link</button>
-              </div>
+          </div>
+
+          <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-4">
+            <p className="text-[11px] font-medium text-[var(--stone)]">Your booking page</p>
+            <p className="text-[12px] font-medium text-[var(--green-700)] mt-1 flex items-center gap-1"><Globe size={12} /> lumid.in/dr-anitha</p>
+            <p className="text-[11px] text-[var(--stone)] mt-1">Patients view your availability and book.</p>
+            <div className="flex gap-2 mt-2.5">
+              <a href="/book" className="flex-1 text-center py-1.5 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1">Open <ExternalLink size={11} /></a>
+              <button onClick={() => copyLink('lumid.in/dr-anitha')} className="flex-1 py-1.5 rounded-full bg-[var(--green-700)] text-white text-[11px] font-medium">Copy link</button>
             </div>
           </div>
         </div>
 
-        {/* MAIN CALENDAR */}
-        <div className="bg-white border border-[var(--hairline)] rounded-[12px] overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        {/* MAIN CALENDAR + detail panel — a real grid column, not an overlay, so it reflows the calendar instead of ever covering it */}
+        <div className={`grid grid-cols-1 gap-4 items-start min-w-0 ${selected && panelOpen ? 'xl:grid-cols-[1fr_300px]' : ''}`}>
+        <div className="bg-white border border-[var(--hairline)] rounded-[12px] overflow-hidden shadow-sm min-w-0">
           {/* Mobile day picker */}
           <div className="lg:hidden flex items-center gap-2 p-3 border-b border-[var(--hairline)] overflow-x-auto">
             {weekDays.map(d => (
@@ -211,21 +218,23 @@ export default function CalendarPage() {
             ))}
           </div>
 
-          {/* Week header */}
-          <div className="hidden lg:grid grid-cols-[64px_1fr] border-b border-[var(--hairline)] bg-[var(--surface-warm)]/50">
-            <div className="border-r border-[var(--hairline)]" />
-            <div className="grid grid-cols-7">
-              {weekDays.map(d => {
-                const isToday = d.date === 26
-                return (
-                  <div key={d.date} className={`h-[48px] flex flex-col items-center justify-center border-r last:border-r-0 border-[var(--hairline)] ${isToday ? 'bg-[var(--green-50)]' : ''}`}>
-                    <span className="text-[10px] font-semibold tracking-[0.08em] text-[var(--stone)]">{d.label}</span>
-                    <span className={`text-[13px] font-semibold mt-0.5 w-7 h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-[var(--green-700)] text-white' : 'text-[var(--ink)]'}`}>{d.date}</span>
-                  </div>
-                )
-              })}
+          {/* Week header — only for Week view; Day and Month render their own header */}
+          {view === 'Week' && (
+            <div className="hidden lg:grid grid-cols-[64px_1fr] border-b border-[var(--hairline)] bg-[var(--surface-warm)]/50">
+              <div className="border-r border-[var(--hairline)]" />
+              <div className="grid grid-cols-7">
+                {weekDays.map(d => {
+                  const isToday = d.date === 26
+                  return (
+                    <div key={d.date} className={`h-[48px] flex flex-col items-center justify-center border-r last:border-r-0 border-[var(--hairline)] ${isToday ? 'bg-[var(--green-50)]' : ''}`}>
+                      <span className="text-[10px] font-semibold tracking-[0.08em] text-[var(--stone)]">{d.label}</span>
+                      <span className={`text-[13px] font-semibold mt-0.5 w-7 h-7 flex items-center justify-center rounded-full ${isToday ? 'bg-[var(--green-700)] text-white' : 'text-[var(--ink)]'}`}>{d.date}</span>
+                    </div>
+                  )
+                })}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Grid — switch by view */}
           {view === 'Month' ? (
@@ -246,7 +255,7 @@ export default function CalendarPage() {
                       <span className={`text-[11px] w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-[var(--green-700)] text-white font-semibold' : 'font-medium'}`}>{inMonth ? date : ''}</span>
                       <div className="mt-1 space-y-1">
                         {evs.slice(0,2).map(ev => (
-                          <div key={ev.id} onClick={() => setSelectedId(ev.id)} className={`text-[10px] leading-none px-1.5 py-1 rounded-full border truncate cursor-pointer ${ev.status === 'paid' ? 'bg-white border-[var(--hairline)] text-[var(--ink)]' : ev.status === 'awaiting' ? 'bg-[#FFFBEB] border-[#FDE68A] text-amber-800' : 'bg-[#F3F1EE] border-dashed'}`}>{ev.patient}</div>
+                          <div key={ev.id} onClick={() => selectEvent(ev.id)} className={`text-[10px] leading-none px-1.5 py-1 rounded-full border truncate cursor-pointer ${ev.status === 'paid' ? 'bg-white border-[var(--hairline)] text-[var(--ink)]' : ev.status === 'awaiting' ? 'bg-[#FFFBEB] border-[#FDE68A] text-amber-800' : 'bg-[#F3F1EE] border-dashed'}`}>{ev.patient}</div>
                         ))}
                         {evs.length > 2 && <p className="text-[10px] text-[var(--stone)]">+{evs.length-2} more</p>}
                       </div>
@@ -266,14 +275,14 @@ export default function CalendarPage() {
               </div>
               <div className="grid grid-cols-[56px_1fr] lg:grid-cols-[64px_1fr] max-h-[560px] overflow-auto">
                 <div className="border-r border-[var(--hairline)] bg-[#FDFCF9]">
-                  {hours.map(h => <div key={h} className="h-14 border-b border-[var(--hairline)] flex items-start justify-end pr-2 pt-1"><span className="text-[11px] text-[var(--stone)]">{h}</span></div>)}
+                  {hours.map(h => <div key={h} style={{ height: HOUR_PX }} className="border-b border-[var(--hairline)] flex items-start justify-end pr-2 pt-1"><span className="text-[11px] text-[var(--stone)]">{h}</span></div>)}
                 </div>
-                <div className="relative h-[616px] bg-[var(--green-50)]/20">
-                  <div className="absolute inset-0 grid grid-rows-[repeat(10,56px)] pointer-events-none">{Array.from({ length: 10 }).map((__, i) => <div key={i} className="border-b border-[var(--hairline)]/60" />)}</div>
+                <div className="relative bg-[var(--green-50)]/20" style={{ height: GRID_PX }}>
+                  <div className="absolute inset-0 grid pointer-events-none" style={{ gridTemplateRows: `repeat(${hours.length - 1}, ${HOUR_PX}px)` }}>{Array.from({ length: hours.length - 1 }).map((__, i) => <div key={i} className="border-b border-[var(--hairline)]/60" />)}</div>
                   {filteredEvents.filter(ev => ev.day === weekDays.findIndex(w=>w.date===selectedDate)).map(ev => (
-                    <button key={ev.id} onClick={() => setSelectedId(ev.id)} className={`absolute left-2 right-2 rounded-[10px] px-3 py-2.5 text-left border shadow-sm bg-white border-[var(--hairline)] hover:shadow-md ${selectedId===ev.id?'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]':''}`} style={{ top: `${(ev.start - 9) * 56 + 6}px`, height: `${ev.duration*56 -8}px`}}>
-                      <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-[var(--sage-50)] border flex items-center justify-center text-[10px] font-semibold text-[var(--green-700)]">{ev.initials}</span><p className="text-[13px] font-semibold">{ev.patient}</p><span className={`ml-auto text-[11px] px-2 py-0.5 rounded-full border ${ev.status==='paid'?'bg-[#EFF6F1] border-[#D6E8DC] text-[#14543A]':'bg-[#FFFBEB] border-[#FDE68A] text-amber-800'}`}>{ev.status==='paid'?'✓ Paid':'Awaiting'}</span></div>
-                      <p className="text-[11px] text-[var(--stone)] mt-1">{ev.start}:00 – {ev.start+ev.duration}:00 • {ev.type} {ev.fee?'• '+ev.fee:''}</p>
+                    <button key={ev.id} onClick={() => selectEvent(ev.id)} className={`absolute left-2 right-2 rounded-[10px] px-3 py-2.5 text-left border shadow-sm bg-white border-[var(--hairline)] hover:shadow-md ${selectedId===ev.id?'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]':''}`} style={{ top: `${(ev.start - 9) * HOUR_PX + 6}px`, height: `${ev.duration * HOUR_PX - 8}px`}}>
+                      <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-[var(--sage-50)] border flex items-center justify-center text-[10px] font-semibold text-[var(--green-700)]">{ev.initials}</span><p className="text-[13px] font-semibold truncate">{ev.patient}</p>{!['blocked','free'].includes(ev.status) && <span className={`ml-auto shrink-0 text-[11px] px-2 py-0.5 rounded-full border ${ev.status==='paid'?'bg-[#EFF6F1] border-[#D6E8DC] text-[#14543A]':'bg-[#FFFBEB] border-[#FDE68A] text-amber-800'}`}>{ev.status==='paid'?'✓ Paid':'Awaiting'}</span>}</div>
+                      <p className="text-[11px] text-[var(--stone)] mt-1 truncate">{formatHour(ev.start)} – {formatHour(ev.start + ev.duration)} · {ev.type}</p>
                     </button>
                   ))}
                   {filteredEvents.filter(ev => ev.day === weekDays.findIndex(w=>w.date===selectedDate)).length===0 && <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6"><Calendar size={18} className="text-[var(--stone)]"/><p className="text-[13px] font-medium mt-2">No sessions</p><p className="text-[11px] text-[var(--stone)]">Your schedule is clear for this day.</p></div>}
@@ -283,7 +292,7 @@ export default function CalendarPage() {
           ) : (
           <div className="relative">
             {/* Now indicator — 5:30 PM today */}
-            <div className="hidden lg:block absolute left-[64px] right-0 h-px bg-red-400 z-10" style={{ top: `${(17.5 - 9) * 56 + 48}px` }}>
+            <div className="hidden lg:block absolute left-[64px] right-0 h-px bg-red-400 z-10" style={{ top: `${(17.5 - 9) * HOUR_PX + 48}px` }}>
               <span className="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-red-500" />
               <span className="absolute -top-2 right-2 text-[10px] font-medium bg-red-500 text-white px-1.5 py-0.5 rounded-full">Now 5:30 PM</span>
             </div>
@@ -292,7 +301,7 @@ export default function CalendarPage() {
               {/* Time column */}
               <div className="border-r border-[var(--hairline)] bg-[#FDFCF9]">
                 {hours.map(h => (
-                  <div key={h} className="h-14 border-b border-[var(--hairline)] flex items-start justify-end pr-2 pt-1">
+                  <div key={h} style={{ height: HOUR_PX }} className="border-b border-[var(--hairline)] flex items-start justify-end pr-2 pt-1">
                     <span className="text-[11px] text-[var(--stone)]">{h}</span>
                   </div>
                 ))}
@@ -302,9 +311,9 @@ export default function CalendarPage() {
               <div className="hidden lg:block">
                 <div className="grid grid-cols-7 relative">
                   {weekDays.map((_, colIdx) => (
-                    <div key={colIdx} onDragOver={e => e.preventDefault()} onDrop={() => handleDragEnd(colIdx)} className={`relative h-[616px] border-r last:border-r-0 border-[var(--hairline)] ${colIdx === 2 ? 'bg-[var(--green-50)]/35' : ''}`}>
-                      <div className="absolute inset-0 grid grid-rows-[repeat(10,56px)] pointer-events-none">
-                        {Array.from({ length: 10 }).map((__, i) => <div key={i} className="border-b border-[var(--hairline)]/60" />)}
+                    <div key={colIdx} onDragOver={e => e.preventDefault()} onDrop={() => handleDragEnd(colIdx)} className={`relative border-r last:border-r-0 border-[var(--hairline)] ${colIdx === 2 ? 'bg-[var(--green-50)]/35' : ''}`} style={{ height: GRID_PX }}>
+                      <div className="absolute inset-0 grid pointer-events-none" style={{ gridTemplateRows: `repeat(${hours.length - 1}, ${HOUR_PX}px)` }}>
+                        {Array.from({ length: hours.length - 1 }).map((__, i) => <div key={i} className="border-b border-[var(--hairline)]/60" />)}
                       </div>
                       {/* unavailable diagonal */}
                       {colIdx === 5 && (
@@ -316,18 +325,18 @@ export default function CalendarPage() {
                           draggable
                           onDragStart={() => setDragId(ev.id)}
                           onDragEnd={() => setDragId(null)}
-                          onClick={() => setSelectedId(ev.id)}
-                          className={`absolute left-1 right-1 rounded-[10px] px-2.5 py-2 text-left border transition group ${ev.status === 'blocked' ? 'bg-[#F3F1EE] border-dashed border-[var(--hairline-strong)]' : ev.status === 'free' ? 'bg-amber-50/60 border-dashed border-amber-200' : ev.status === 'awaiting' ? 'bg-[#FFFBEB] border-[#FDE68A] hover:shadow-md hover:border-amber-300' : ev.status === 'cancelled' ? 'bg-white border-[var(--hairline)] opacity-60 line-through' : 'bg-white border-[var(--hairline)] shadow-sm hover:shadow-md hover:border-[var(--green-700)]/30 hover:-translate-y-px'} ${selectedId === ev.id ? 'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]' : ''} ${dragId === ev.id ? 'opacity-50' : ''}`}
-                          style={{ top: `${(ev.start - 9) * 56 + 6}px`, height: `${ev.duration * 56 - 8}px`, minHeight: '44px' }}
+                          onClick={() => selectEvent(ev.id)}
+                          title={`${ev.patient} · ${formatHour(ev.start)}–${formatHour(ev.start + ev.duration)} · ${ev.type}`}
+                          className={`absolute left-1 right-1 overflow-hidden rounded-[8px] pl-2.5 pr-1.5 py-1.5 text-left border transition group ${ev.status === 'blocked' ? 'bg-[#F3F1EE] border-dashed border-[var(--hairline-strong)]' : ev.status === 'free' ? 'bg-amber-50/60 border-dashed border-amber-200' : ev.status === 'awaiting' ? 'bg-[#FFFBEB] border-[#FDE68A] hover:shadow-md hover:border-amber-300' : ev.status === 'cancelled' ? 'bg-white border-[var(--hairline)] opacity-60 line-through' : 'bg-white border-[var(--hairline)] shadow-sm hover:shadow-md hover:border-[var(--green-700)]/30'} ${selectedId === ev.id ? 'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]' : ''} ${dragId === ev.id ? 'opacity-50' : ''}`}
+                          style={{ top: `${(ev.start - 9) * HOUR_PX + 6}px`, height: `${ev.duration * HOUR_PX - 8}px`, minHeight: '40px' }}
                         >
                           {!['blocked', 'free'].includes(ev.status) && <span className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full ${ev.status === 'awaiting' ? 'bg-amber-400' : 'bg-[var(--green-700)]'}`} />}
-                          <div className="flex items-center gap-1.5">
-                            {ev.initials && <span className="w-5 h-5 rounded-full bg-[var(--sage-50)] border border-[var(--hairline)] flex items-center justify-center text-[9px] font-semibold text-[var(--green-700)] shrink-0">{ev.initials}</span>}
-                            <p className={`text-[12px] font-semibold leading-none truncate ${ev.status === 'blocked' ? 'text-[var(--stone)]' : 'text-[var(--ink)]'}`}>{ev.patient}</p>
-                            <GripVertical size={10} className="ml-auto opacity-0 group-hover:opacity-40 shrink-0" />
+                          <p className={`text-[12px] font-semibold leading-tight truncate ${ev.status === 'blocked' ? 'text-[var(--stone)]' : 'text-[var(--ink)]'}`}>{ev.patient}</p>
+                          <div className="flex items-center gap-1 mt-0.5">
+                            <p className="text-[10px] text-[var(--stone)] truncate">{formatHour(ev.start)}</p>
+                            {ev.status === 'paid' && <CheckCircle2 size={10} className="text-emerald-600 shrink-0" />}
+                            {ev.status === 'awaiting' && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
                           </div>
-                          <p className="text-[11px] text-[var(--stone)] truncate mt-0.5">{ev.start % 1 === 0.5 ? `${Math.floor(ev.start)}:30` : `${ev.start}:00`} – {ev.start + ev.duration}:00 • {ev.type}</p>
-                          {ev.fee && <p className={`text-[11px] font-medium mt-0.5 ${ev.status === 'awaiting' ? 'text-amber-700' : 'text-emerald-700'}`}>{ev.fee} · {ev.status === 'paid' ? '✓ Paid' : 'Awaiting'}</p>}
                         </button>
                       ))}
                     </div>
@@ -346,7 +355,7 @@ export default function CalendarPage() {
                     </div>
                   ) : (
                     filteredEvents.filter(ev => ev.day === weekDays.findIndex(d => d.date === selectedDate)).map(ev => (
-                      <button key={ev.id} onClick={() => setSelectedId(ev.id)} className={`w-full text-left rounded-[12px] p-3 border flex gap-3 ${selectedId === ev.id ? 'bg-[var(--green-50)] border-[var(--green-700)]/30' : 'bg-white border-[var(--hairline)]'}`}>
+                      <button key={ev.id} onClick={() => selectEvent(ev.id)} className={`w-full text-left rounded-[12px] p-3 border flex gap-3 ${selectedId === ev.id ? 'bg-[var(--green-50)] border-[var(--green-700)]/30' : 'bg-white border-[var(--hairline)]'}`}>
                         <div className="w-8 h-8 rounded-full bg-[var(--green-50)] flex items-center justify-center text-[11px] font-semibold text-[var(--green-700)] shrink-0">{ev.initials}</div>
                         <div className="flex-1 min-w-0">
                           <p className="text-[13px] font-semibold">{ev.patient} <span className="text-[11px] font-normal text-[var(--stone)]">{ev.start}:00</span></p>
@@ -394,23 +403,24 @@ export default function CalendarPage() {
           )}
         </div>
 
-        {/* RIGHT DETAIL PANEL — desktop */}
-        <div className="hidden xl:block sticky top-[88px]">
-          {selected ? (
-            <div className="bg-white border border-[var(--hairline)] rounded-[12px] overflow-hidden shadow-sm">
-              <div className="p-4 border-b border-[var(--hairline)] flex items-start justify-between gap-3">
-                <div className="flex gap-3">
-                  <div className="w-9 h-9 rounded-full bg-[var(--green-50)] border border-[var(--hairline)] flex items-center justify-center text-[11px] font-semibold text-[var(--green-700)]">{selected.initials}</div>
-                  <div>
-                    <p className="text-[14px] font-semibold leading-none">{selected.patient}</p>
-                    <p className="text-[11px] text-[var(--stone)] mt-1">{selected.type}</p>
-                  </div>
-                </div>
-                <button onClick={() => setSelectedId('')} className="w-6 h-6 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center text-[var(--stone)]"><X size={13} /></button>
+        {/* Detail panel — a grid column that only exists when open, so it reflows the calendar next to it instead of ever covering it */}
+        {selected && panelOpen && (
+        <div className="hidden xl:block sticky top-[96px] max-h-[calc(100vh-116px)] overflow-y-auto bg-white border border-[var(--hairline)] rounded-[12px] shadow-sm">
+          <div className="p-4 border-b border-[var(--hairline)] flex items-start justify-between gap-3 sticky top-0 bg-white">
+            <div className="flex gap-3">
+              <div className="w-9 h-9 rounded-full bg-[var(--green-50)] border border-[var(--hairline)] flex items-center justify-center text-[11px] font-semibold text-[var(--green-700)]">{selected.initials}</div>
+              <div>
+                <p className="text-[14px] font-semibold leading-none">{selected.patient}</p>
+                <p className="text-[11px] text-[var(--stone)] mt-1">{selected.type}</p>
               </div>
-              <div className="p-4 space-y-3 text-[12px]">
-                <div className="flex justify-between"><span className="text-[var(--stone)]">Date</span><span className="font-medium">Tuesday, 26 Aug 2026</span></div>
-                <div className="flex justify-between"><span className="text-[var(--stone)]">Time</span><span className="font-medium">{selected.start}:00 – {selected.start + selected.duration}:00 • 60 min</span></div>
+            </div>
+            <button onClick={() => setPanelOpen(false)} className="w-6 h-6 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center text-[var(--stone)]"><X size={13} /></button>
+          </div>
+          <div className="p-4 space-y-3 text-[12px]">
+            <div className="flex justify-between"><span className="text-[var(--stone)]">Date</span><span className="font-medium">{selectedDayInfo ? `${selectedDayInfo.label[0]}${selectedDayInfo.label.slice(1).toLowerCase()}, ${selectedDayInfo.date} Aug 2026` : '—'}</span></div>
+            <div className="flex justify-between"><span className="text-[var(--stone)]">Time</span><span className="font-medium">{formatHour(selected.start)} – {formatHour(selected.start + selected.duration)} • {selected.duration * 60} min</span></div>
+            {isRealSession ? (
+              <>
                 <div className="flex justify-between items-center"><span className="text-[var(--stone)]">Payment</span><span className={`px-2 py-1 rounded-full border text-[11px] font-medium ${selected.status === 'paid' ? 'bg-[#EFF6F1] border-[#D6E8DC] text-[#14543A]' : 'bg-[#FFFBEB] border-[#FDE68A] text-[#92400E]'}`}>{selected.fee || '₹1,500'} {selected.status === 'paid' ? '✓ Paid' : 'Awaiting'}</span></div>
                 <div className="rounded-[10px] bg-[var(--surface-warm)] border border-[var(--hairline)] p-3">
                   <p className="text-[11px] font-semibold tracking-[0.06em] text-[var(--stone)]">MEETING</p>
@@ -421,29 +431,29 @@ export default function CalendarPage() {
                     <button onClick={() => copyLink(selected.meeting || 'meet.google.com/xxx-yyyy-zzz')} className="px-3 py-1.5 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center gap-1"><Copy size={11} /> Copy</button>
                   </div>
                 </div>
-                <div className="grid grid-cols-3 gap-2">
-                  <button onClick={() => setToast('Reschedule — coming soon')} className="py-2 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1"><Clock size={11} /> Reschedule</button>
+                <div className="grid grid-cols-2 gap-2">
                   <button className="py-2 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1"><Edit3 size={11} /> Edit</button>
                   <button className="py-2 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1 text-red-600"><Trash2 size={11} /> Cancel</button>
                 </div>
-                <div className="rounded-[10px] border border-[var(--hairline)] p-3 bg-[#FDFCF9]">
-                  <p className="text-[11px] font-semibold tracking-[0.06em] text-[var(--stone)]">PATIENT CONTEXT</p>
-                  <div className="mt-2 space-y-1 text-[11px]">
-                    <div className="flex justify-between"><span className="text-[var(--stone)]">Last session</span><span>18 Aug</span></div>
-                    <div className="flex justify-between"><span className="text-[var(--stone)]">Sessions</span><span>8 total</span></div>
-                  </div>
-                  <a href="/app/patients/1" className="mt-2 inline-flex text-[11px] font-medium text-[var(--green-700)]">View patient →</a>
-                  <p className="text-[10px] text-[var(--stone)] mt-2">Private notes never shown here.</p>
+                <p className="text-[10px] text-[var(--stone)]">Drag a session on the grid to reschedule it.</p>
+              </>
+            ) : (
+              <p className="text-[11px] text-[var(--stone)]">{selected.status === 'blocked' ? 'This time is blocked off — no bookings can be made.' : 'This time is open for patients to book.'}</p>
+            )}
+            {selectedPatientRecord && (
+              <div className="rounded-[10px] border border-[var(--hairline)] p-3 bg-[#FDFCF9]">
+                <p className="text-[11px] font-semibold tracking-[0.06em] text-[var(--stone)]">PATIENT CONTEXT</p>
+                <div className="mt-2 space-y-1 text-[11px]">
+                  <div className="flex justify-between"><span className="text-[var(--stone)]">Last session</span><span>{selectedPatientRecord.lastSession}</span></div>
+                  <div className="flex justify-between"><span className="text-[var(--stone)]">Sessions</span><span>{selectedPatientRecord.sessions} total</span></div>
                 </div>
+                <a href={`/app/patients/${selectedPatientRecord.id}`} className="mt-2 inline-flex text-[11px] font-medium text-[var(--green-700)]">View patient →</a>
+                <p className="text-[10px] text-[var(--stone)] mt-2">Private notes never shown here.</p>
               </div>
-            </div>
-          ) : (
-            <div className="bg-white border border-dashed border-[var(--hairline)] rounded-[12px] p-8 text-center">
-              <Calendar size={18} className="mx-auto text-[var(--stone)]" />
-              <p className="text-[13px] font-medium mt-2">Select a session</p>
-              <p className="text-[11px] text-[var(--stone)]">View details, meeting link, and patient context.</p>
-            </div>
-          )}
+            )}
+          </div>
+        </div>
+        )}
         </div>
       </div>
 

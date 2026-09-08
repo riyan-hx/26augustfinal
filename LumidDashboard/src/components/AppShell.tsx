@@ -102,9 +102,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="lg:hidden font-semibold text-[15px] flex-1 text-[#242E21]">Lumid</div>
 
           <div className="ml-auto flex items-center gap-1.5">
-            <button className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#E5EAE2] text-[12px] font-medium text-[#687366] hover:bg-[#F8FAF7]">
-              <HelpCircle size={14} /> Help
-            </button>
             <button className="relative w-8 h-8 rounded-full hover:bg-[#F8FAF7] flex items-center justify-center text-[#687366]">
               <Bell size={16} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-[#88D95F] rounded-full border-2 border-white" />
@@ -138,7 +135,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Frosted sub-nav — Lumid */}
         <div className="hidden lg:flex h-[36px] items-center gap-4 px-6 bg-[#F8FAF7]/80 backdrop-blur border-b border-[#E5EAE2] sticky top-[52px] z-20">
           <span className="text-[12px] font-semibold text-[#242E21]">Today</span>
-          <span className="text-[11px] text-[#8A9487]">Tuesday, 26 August • 4 sessions • ₹6,000</span>
+          <span className="text-[11px] text-[#8A9487]">Tuesday, 26 August • 3 sessions • ₹5,000</span>
           <a href="/book" className="ml-auto text-[11px] font-medium text-[#4E8F39] hover:underline">anitha.lumidai.in →</a>
         </div>
 
