@@ -1,4 +1,4 @@
-import { Check, CreditCard, TrendingUp, Shield, FileText, Sparkles, Repeat2, Globe, Settings, Bell, Calendar, MapPin, Award, Languages, Video, Copy, ExternalLink } from 'lucide-react'
+import { Check, CreditCard, TrendingUp, Shield, Sparkles, Repeat2, Globe, Settings, Calendar, MapPin, Award, Languages, Copy, ExternalLink } from 'lucide-react'
 
 export function SessionsPage() {
   return (
@@ -47,8 +47,6 @@ export function SessionsPage() {
               </div>
             ))}
           </div>
-          <button className="mt-3 w-full py-2.5 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium flex items-center justify-center gap-2"><Sparkles size={14} /> Help structure my note</button>
-          <p className="text-[11px] text-[var(--stone)] text-center mt-2">AI organizes your text — you must review before saving.</p>
           <button className="mt-3 w-full py-2.5 rounded-full bg-[var(--green-900)] text-white text-[13px] font-semibold">Save note</button>
         </div>
       </div>
@@ -283,14 +281,10 @@ export function SettingsPage() {
 
       <div className="mt-6 grid lg:grid-cols-[220px_1fr] gap-6">
         <div className="bg-white border border-[var(--hairline)] rounded-[16px] p-2 h-fit">
+          {/* Only sections with real content behind them — no nav item that leads nowhere. */}
           {[
-            { icon: FileText, label: 'Profile', active: true },
-            { icon: Calendar, label: 'Availability' },
-            { icon: CreditCard, label: 'Payments' },
-            { icon: Video, label: 'Meeting integrations' },
-            { icon: Bell, label: 'Notifications' },
+            { icon: Calendar, label: 'Availability', active: true },
             { icon: Shield, label: 'Privacy & Consent' },
-            { icon: Settings, label: 'Account & Security' },
           ].map(item => (
             <button key={item.label} className={`w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium ${item.active ? 'bg-[var(--green-700)] text-white' : 'hover:bg-[var(--canvas)] text-[var(--slate)]'}`}>
               <item.icon size={16} /> {item.label}

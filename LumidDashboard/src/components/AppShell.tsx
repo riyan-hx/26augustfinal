@@ -1,7 +1,11 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Lightbulb, Settings, HelpCircle, LogOut, Menu, X, Bell, Search } from 'lucide-react'
+import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, HelpCircle, LogOut, Menu, X, Bell, Search } from 'lucide-react'
 import { useState } from 'react'
 
+// v1 nav: only routes with real content behind them. Ranked by the validated
+// wedge — booking + payment enforcement and calendar first, care second.
+// No "Intelligence" group: that layer has no real data behind it yet, so it
+// doesn't get a permanent place in the nav (see the Overview teaser instead).
 const navGroups = [
   {
     label: 'PRACTICE',
@@ -19,12 +23,6 @@ const navGroups = [
       { to: '/app/patients', label: 'Patients', icon: Users },
       { to: '/app/sessions', label: 'Sessions', icon: Video },
       { to: '/app/follow-ups', label: 'Follow-ups', icon: Repeat2 },
-    ]
-  },
-  {
-    label: 'INTELLIGENCE',
-    items: [
-      { to: '/app/insights', label: 'Insights', icon: Lightbulb },
     ]
   },
 ]
