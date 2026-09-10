@@ -1,5 +1,7 @@
 import { useState, useMemo } from 'react'
+import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Video, Copy, Check, X, Plus, Calendar, Globe, CheckCircle2, Trash2, Edit3, ExternalLink } from 'lucide-react'
+import { Button, Card, Chip } from '@heroui/react'
 import { patients } from '../lib/data'
 
 type View = 'Week' | 'Day' | 'Month'
@@ -57,15 +59,15 @@ function MiniCalendar({ selected, onSelect }: { selected: number; onSelect: (d: 
   const totalCells = 42
   const cells: (number | null)[] = Array(startOffset).fill(null).concat(Array.from({ length: daysInMonth }, (_, i) => i + 1)).concat(Array(totalCells - startOffset - daysInMonth).fill(null))
   return (
-    <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-4">
+    <Card className="p-4 gap-0">
       <div className="flex items-center justify-between">
-        <p className="text-[13px] font-semibold">August, 2026</p>
+        <p className="text-sm font-semibold">August, 2026</p>
         <div className="flex gap-1">
-          <button className="w-6 h-6 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronLeft size={13} /></button>
-          <button className="w-6 h-6 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronRight size={13} /></button>
+          <Button isIconOnly aria-label="Previous month" variant="ghost" size="sm"><ChevronLeft /></Button>
+          <Button isIconOnly aria-label="Next month" variant="ghost" size="sm"><ChevronRight /></Button>
         </div>
       </div>
-      <div className="grid grid-cols-7 text-[10px] font-medium text-[var(--stone)] mt-3 text-center">
+      <div className="grid grid-cols-7 text-[10px] font-medium text-muted mt-3 text-center">
         {['S', 'M', 'T', 'W', 'T', 'F', 'S'].map((d, i) => <span key={i} className="py-1">{d}</span>)}
       </div>
       <div className="grid grid-cols-7 gap-y-1 mt-1">
@@ -74,11 +76,11 @@ function MiniCalendar({ selected, onSelect }: { selected: number; onSelect: (d: 
           const isToday = d === 26
           const isSelected = d === selected
           return (
-            <button key={i} onClick={() => onSelect(d)} className={`w-7 h-7 mx-auto rounded-full text-[12px] flex items-center justify-center transition ${isToday ? 'bg-[var(--green-700)] text-white font-semibold' : isSelected ? 'bg-[var(--green-50)] text-[var(--green-700)] border border-[var(--green-700)]/20' : 'hover:bg-[var(--surface-warm)] text-[var(--slate)]'}`}>{d}</button>
+            <button key={i} onClick={() => onSelect(d)} className={`w-7 h-7 mx-auto rounded-full text-xs flex items-center justify-center transition ${isToday ? 'bg-accent text-accent-foreground font-semibold' : isSelected ? 'bg-accent/15 text-accent border border-accent/30' : 'hover:bg-surface-secondary text-muted'}`}>{d}</button>
           )
         })}
       </div>
-    </div>
+    </Card>
   )
 }
 
@@ -147,18 +149,18 @@ export default function CalendarPage() {
           <p className="text-[13px] text-[var(--stone)] mt-1.5">Manage your sessions, availability, and appointments.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
-          <div className="flex items-center gap-1 bg-white border border-[var(--hairline)] rounded-full p-1">
-            <button onClick={handleToday} className="px-3 py-1.5 rounded-full bg-[var(--ink)] text-white text-[12px] font-medium hover:bg-black">Today</button>
-            <button onClick={() => setSelectedDate(d => Math.max(24, d - 1))} className="w-7 h-7 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronLeft size={14} /></button>
-            <button onClick={() => setSelectedDate(d => Math.min(30, d + 1))} className="w-7 h-7 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><ChevronRight size={14} /></button>
-            <span className="text-[13px] font-medium px-2 hidden sm:inline">August 2026</span>
+          <div className="flex items-center gap-1 bg-surface border border-border rounded-full p-1">
+            <Button size="sm" variant="secondary" className="rounded-full" onPress={handleToday}>Today</Button>
+            <Button isIconOnly aria-label="Previous week" variant="ghost" size="sm" onPress={() => setSelectedDate(d => Math.max(24, d - 1))}><ChevronLeft /></Button>
+            <Button isIconOnly aria-label="Next week" variant="ghost" size="sm" onPress={() => setSelectedDate(d => Math.min(30, d + 1))}><ChevronRight /></Button>
+            <span className="text-sm font-medium px-2 hidden sm:inline">August 2026</span>
           </div>
-          <div className="flex items-center gap-1 bg-white border border-[var(--hairline)] rounded-full p-1">
+          <div className="flex items-center gap-1 bg-surface border border-border rounded-full p-1">
             {(['Day', 'Week', 'Month'] as View[]).map(v => (
-              <button key={v} onClick={() => setView(v)} className={`px-3.5 py-1.5 rounded-full text-[12px] font-medium ${view === v ? 'bg-[var(--green-700)] text-white' : 'text-[var(--stone)] hover:text-[var(--ink)]'}`}>{v}</button>
+              <Button key={v} size="sm" variant={view === v ? 'primary' : 'ghost'} className="rounded-full" onPress={() => setView(v)}>{v}</Button>
             ))}
           </div>
-          <button onClick={() => setShowCreate(true)} className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium hover:bg-[var(--green-800)] shadow-sm"><Plus size={14} /> New Session</button>
+          <Button size="sm" onPress={() => setShowCreate(true)}><Plus /> New Session</Button>
         </div>
       </div>
 
@@ -167,42 +169,44 @@ export default function CalendarPage() {
         <div className="hidden lg:block space-y-4 sticky top-[88px]">
           <MiniCalendar selected={selectedDate} onSelect={setSelectedDate} />
 
-          <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-4">
+          <Card className="p-4 gap-0">
             <div className="grid grid-cols-2 gap-2">
-              <button onClick={() => setShowCreate(true)} className="flex items-center justify-center gap-1.5 px-3 py-2 rounded-full bg-[var(--green-700)] text-white text-[12px] font-medium hover:bg-[var(--green-800)]"><Plus size={12} /> Session</button>
-              <button onClick={() => setShowAvailability(v => !v)} className={`flex items-center justify-center gap-1.5 px-3 py-2 rounded-full border text-[12px] font-medium ${showAvailability ? 'bg-[var(--green-50)] border-[var(--green-700)]/30 text-[var(--green-700)]' : 'bg-white border-[var(--hairline)] hover:bg-[var(--surface-warm)]'}`}><Calendar size={12} /> Availability</button>
+              <Button size="sm" onPress={() => setShowCreate(true)}><Plus /> Session</Button>
+              <Button size="sm" variant={showAvailability ? 'secondary' : 'outline'} onPress={() => setShowAvailability(v => !v)}><Calendar /> Availability</Button>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-[var(--hairline)] space-y-2.5">
+            <div className="mt-4 pt-4 border-t border-border space-y-2.5">
               {[
-                { k: 'sessions', label: 'Sessions', color: 'bg-[var(--green-700)]' },
-                { k: 'availability', label: 'Availability', color: 'bg-amber-400' },
-                { k: 'blocked', label: 'Blocked time', color: 'bg-[var(--stone)]' },
+                { k: 'sessions', label: 'Sessions', color: 'bg-accent' },
+                { k: 'availability', label: 'Availability', color: 'bg-warning' },
+                { k: 'blocked', label: 'Blocked time', color: 'bg-muted' },
                 { k: 'personal', label: 'Personal', color: 'bg-sky-500' },
               ].map(f => (
-                <label key={f.k} className="flex items-center gap-2.5 text-[12px] cursor-pointer">
-                  <input type="checkbox" checked={(filters as any)[f.k]} onChange={e => setFilters(prev => ({ ...prev, [f.k]: e.target.checked }))} className="w-3.5 h-3.5 rounded border-[var(--hairline)] accent-[var(--green-700)]" />
+                <label key={f.k} className="flex items-center gap-2.5 text-xs cursor-pointer">
+                  <input type="checkbox" checked={(filters as any)[f.k]} onChange={e => setFilters(prev => ({ ...prev, [f.k]: e.target.checked }))} className="w-3.5 h-3.5 rounded border-border accent-accent" />
                   <span className={`w-2 h-2 rounded-full ${f.color}`} /> {f.label}
                 </label>
               ))}
             </div>
 
-            <div className="mt-4 pt-4 border-t border-[var(--hairline)] space-y-2 text-[12px]">
-              <div className="flex justify-between"><span className="text-[var(--stone)]">Sessions this week</span><span className="font-semibold">8</span></div>
-              <div className="flex justify-between"><span className="text-[var(--stone)]">Available hours</span><span className="font-semibold">22h</span></div>
-              <div className="flex justify-between"><span className="text-[var(--stone)]">Paid sessions</span><span className="font-semibold text-emerald-700">6</span></div>
+            <div className="mt-4 pt-4 border-t border-border space-y-2 text-xs">
+              <div className="flex justify-between"><span className="text-muted">Sessions this week</span><span className="font-semibold">8</span></div>
+              <div className="flex justify-between"><span className="text-muted">Available hours</span><span className="font-semibold">22h</span></div>
+              <div className="flex justify-between"><span className="text-muted">Paid sessions</span><span className="font-semibold text-success">6</span></div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-4">
-            <p className="text-[11px] font-medium text-[var(--stone)]">Your booking page</p>
-            <p className="text-[12px] font-medium text-[var(--green-700)] mt-1 flex items-center gap-1"><Globe size={12} /> lumid.in/dr-anitha</p>
-            <p className="text-[11px] text-[var(--stone)] mt-1">Patients view your availability and book.</p>
+          <Card className="p-4 gap-0">
+            <p className="text-xs font-medium text-muted">Your booking page</p>
+            <p className="text-sm font-medium text-accent mt-1 flex items-center gap-1"><Globe size={12} /> lumid.in/dr-anitha</p>
+            <p className="text-xs text-muted mt-1">Patients view your availability and book.</p>
             <div className="flex gap-2 mt-2.5">
-              <a href="/book" className="flex-1 text-center py-1.5 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1">Open <ExternalLink size={11} /></a>
-              <button onClick={() => copyLink('lumid.in/dr-anitha')} className="flex-1 py-1.5 rounded-full bg-[var(--green-700)] text-white text-[11px] font-medium">Copy link</button>
+              <Link to="/book" className="flex-1">
+                <Button size="sm" variant="secondary" fullWidth><ExternalLink /> Open</Button>
+              </Link>
+              <Button size="sm" className="flex-1" onPress={() => copyLink('lumid.in/dr-anitha')}>Copy link</Button>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* MAIN CALENDAR + detail panel — a real grid column, not an overlay, so it reflows the calendar instead of ever covering it */}
@@ -396,7 +400,7 @@ export default function CalendarPage() {
                 <span className="px-2.5 py-1 rounded-full bg-white border border-[var(--hairline)]">Buffer 15 min</span>
                 <span className="px-2.5 py-1 rounded-full bg-white border border-[var(--hairline)]">Notice 12 hours</span>
                 <span className="px-2.5 py-1 rounded-full bg-white border border-[var(--hairline)]">Advance 30 days</span>
-                <button className="ml-auto px-3 py-1 rounded-full bg-[var(--green-700)] text-white text-[11px] font-medium">+ Add availability</button>
+                <Button size="sm" className="ml-auto">+ Add availability</Button>
               </div>
               <p className="text-[11px] text-[var(--stone)] mt-2">Powers your public page <span className="font-medium text-[var(--green-700)]">lumid.in/dr-anitha</span></p>
             </div>
@@ -405,74 +409,74 @@ export default function CalendarPage() {
 
         {/* Detail panel — a grid column that only exists when open, so it reflows the calendar next to it instead of ever covering it */}
         {selected && panelOpen && (
-        <div className="hidden xl:block sticky top-[96px] max-h-[calc(100vh-116px)] overflow-y-auto bg-white border border-[var(--hairline)] rounded-[12px] shadow-sm">
-          <div className="p-4 border-b border-[var(--hairline)] flex items-start justify-between gap-3 sticky top-0 bg-white">
+        <Card className="hidden xl:block sticky top-[96px] max-h-[calc(100vh-116px)] overflow-y-auto p-0 gap-0">
+          <div className="p-4 border-b border-border flex items-start justify-between gap-3 sticky top-0 bg-surface">
             <div className="flex gap-3">
-              <div className="w-9 h-9 rounded-full bg-[var(--green-50)] border border-[var(--hairline)] flex items-center justify-center text-[11px] font-semibold text-[var(--green-700)]">{selected.initials}</div>
+              <div className="w-9 h-9 rounded-full bg-accent/10 border border-border flex items-center justify-center text-xs font-semibold text-accent">{selected.initials}</div>
               <div>
-                <p className="text-[14px] font-semibold leading-none">{selected.patient}</p>
-                <p className="text-[11px] text-[var(--stone)] mt-1">{selected.type}</p>
+                <p className="text-sm font-semibold leading-none">{selected.patient}</p>
+                <p className="text-xs text-muted mt-1">{selected.type}</p>
               </div>
             </div>
-            <button onClick={() => setPanelOpen(false)} className="w-6 h-6 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center text-[var(--stone)]"><X size={13} /></button>
+            <Button isIconOnly aria-label="Close" variant="ghost" size="sm" onPress={() => setPanelOpen(false)}><X /></Button>
           </div>
-          <div className="p-4 space-y-3 text-[12px]">
-            <div className="flex justify-between"><span className="text-[var(--stone)]">Date</span><span className="font-medium">{selectedDayInfo ? `${selectedDayInfo.label[0]}${selectedDayInfo.label.slice(1).toLowerCase()}, ${selectedDayInfo.date} Aug 2026` : '—'}</span></div>
-            <div className="flex justify-between"><span className="text-[var(--stone)]">Time</span><span className="font-medium">{formatHour(selected.start)} – {formatHour(selected.start + selected.duration)} • {selected.duration * 60} min</span></div>
+          <div className="p-4 space-y-3 text-xs">
+            <div className="flex justify-between"><span className="text-muted">Date</span><span className="font-medium">{selectedDayInfo ? `${selectedDayInfo.label[0]}${selectedDayInfo.label.slice(1).toLowerCase()}, ${selectedDayInfo.date} Aug 2026` : '—'}</span></div>
+            <div className="flex justify-between"><span className="text-muted">Time</span><span className="font-medium">{formatHour(selected.start)} – {formatHour(selected.start + selected.duration)} • {selected.duration * 60} min</span></div>
             {isRealSession ? (
               <>
-                <div className="flex justify-between items-center"><span className="text-[var(--stone)]">Payment</span><span className={`px-2 py-1 rounded-full border text-[11px] font-medium ${selected.status === 'paid' ? 'bg-[#EFF6F1] border-[#D6E8DC] text-[#14543A]' : 'bg-[#FFFBEB] border-[#FDE68A] text-[#92400E]'}`}>{selected.fee || '₹1,500'} {selected.status === 'paid' ? '✓ Paid' : 'Awaiting'}</span></div>
-                <div className="rounded-[10px] bg-[var(--surface-warm)] border border-[var(--hairline)] p-3">
-                  <p className="text-[11px] font-semibold tracking-[0.06em] text-[var(--stone)]">MEETING</p>
-                  <p className="text-[12px] font-medium mt-1 flex items-center gap-1.5"><Video size={12} className="text-[var(--green-700)]" /> Google Meet</p>
-                  <p className="text-[11px] text-[var(--stone)] truncate mt-1">{selected.meeting || 'meet.google.com/xxx-yyyy-zzz'}</p>
+                <div className="flex justify-between items-center"><span className="text-muted">Payment</span><Chip color={selected.status === 'paid' ? 'success' : 'warning'} variant="soft" size="sm">{selected.fee || '₹1,500'} {selected.status === 'paid' ? '· Paid' : '· Awaiting'}</Chip></div>
+                <div className="rounded-lg bg-surface-secondary border border-border p-3">
+                  <p className="text-[11px] font-semibold tracking-wide text-muted">MEETING</p>
+                  <p className="text-xs font-medium mt-1 flex items-center gap-1.5"><Video size={12} className="text-accent" /> Google Meet</p>
+                  <p className="text-xs text-muted truncate mt-1">{selected.meeting || 'meet.google.com/xxx-yyyy-zzz'}</p>
                   <div className="flex gap-2 mt-2">
-                    <button className="flex-1 py-1.5 rounded-full bg-[var(--green-700)] text-white text-[11px] font-medium">Open meeting</button>
-                    <button onClick={() => copyLink(selected.meeting || 'meet.google.com/xxx-yyyy-zzz')} className="px-3 py-1.5 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center gap-1"><Copy size={11} /> Copy</button>
+                    <Button size="sm" className="flex-1">Open meeting</Button>
+                    <Button size="sm" variant="secondary" onPress={() => copyLink(selected.meeting || 'meet.google.com/xxx-yyyy-zzz')}><Copy /> Copy</Button>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <button className="py-2 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1"><Edit3 size={11} /> Edit</button>
-                  <button className="py-2 rounded-full bg-white border border-[var(--hairline)] text-[11px] font-medium flex items-center justify-center gap-1 text-red-600"><Trash2 size={11} /> Cancel</button>
+                  <Button size="sm" variant="secondary"><Edit3 /> Edit</Button>
+                  <Button size="sm" variant="danger"><Trash2 /> Cancel</Button>
                 </div>
-                <p className="text-[10px] text-[var(--stone)]">Drag a session on the grid to reschedule it.</p>
+                <p className="text-[11px] text-muted">Drag a session on the grid to reschedule it.</p>
               </>
             ) : (
-              <p className="text-[11px] text-[var(--stone)]">{selected.status === 'blocked' ? 'This time is blocked off — no bookings can be made.' : 'This time is open for patients to book.'}</p>
+              <p className="text-xs text-muted">{selected.status === 'blocked' ? 'This time is blocked off — no bookings can be made.' : 'This time is open for patients to book.'}</p>
             )}
             {selectedPatientRecord && (
-              <div className="rounded-[10px] border border-[var(--hairline)] p-3 bg-[#FDFCF9]">
-                <p className="text-[11px] font-semibold tracking-[0.06em] text-[var(--stone)]">PATIENT CONTEXT</p>
-                <div className="mt-2 space-y-1 text-[11px]">
-                  <div className="flex justify-between"><span className="text-[var(--stone)]">Last session</span><span>{selectedPatientRecord.lastSession}</span></div>
-                  <div className="flex justify-between"><span className="text-[var(--stone)]">Sessions</span><span>{selectedPatientRecord.sessions} total</span></div>
+              <div className="rounded-lg border border-border p-3 bg-surface-secondary">
+                <p className="text-[11px] font-semibold tracking-wide text-muted">PATIENT CONTEXT</p>
+                <div className="mt-2 space-y-1 text-xs">
+                  <div className="flex justify-between"><span className="text-muted">Last session</span><span>{selectedPatientRecord.lastSession}</span></div>
+                  <div className="flex justify-between"><span className="text-muted">Sessions</span><span>{selectedPatientRecord.sessions} total</span></div>
                 </div>
-                <a href={`/app/patients/${selectedPatientRecord.id}`} className="mt-2 inline-flex text-[11px] font-medium text-[var(--green-700)]">View patient →</a>
-                <p className="text-[10px] text-[var(--stone)] mt-2">Private notes never shown here.</p>
+                <Link to={`/app/patients/${selectedPatientRecord.id}`} className="mt-2 inline-flex text-xs font-medium text-accent">View patient →</Link>
+                <p className="text-[11px] text-muted mt-2">Private notes never shown here.</p>
               </div>
             )}
           </div>
-        </div>
+        </Card>
         )}
         </div>
       </div>
 
       {/* Mobile detail bottom sheet */}
       {selected && (
-        <div className="xl:hidden mt-4 bg-white border border-[var(--hairline)] rounded-[12px] p-4">
+        <Card className="xl:hidden mt-4 p-4 gap-0">
           <div className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-[var(--green-50)] flex items-center justify-center text-[11px] font-semibold text-[var(--green-700)]">{selected.initials}</div>
+            <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-xs font-semibold text-accent">{selected.initials}</div>
             <div className="flex-1">
-              <p className="text-[13px] font-semibold">{selected.patient} • {selected.type}</p>
-              <p className="text-[11px] text-[var(--stone)]">Tue 26 Aug • {selected.start}:00 • {selected.fee} {selected.status === 'paid' ? '✓ Paid' : 'Awaiting'}</p>
+              <p className="text-sm font-semibold">{selected.patient} • {selected.type}</p>
+              <p className="text-xs text-muted">Tue 26 Aug • {selected.start}:00 • {selected.fee} {selected.status === 'paid' ? '✓ Paid' : 'Awaiting'}</p>
             </div>
-            <button className="px-3 py-1.5 rounded-full bg-[var(--green-700)] text-white text-[11px] font-medium">Open</button>
+            <Button size="sm">Open</Button>
           </div>
-        </div>
+        </Card>
       )}
 
       {/* FAB mobile */}
-      <button onClick={() => setShowCreate(true)} className="lg:hidden fixed bottom-20 right-4 w-12 h-12 rounded-full bg-[var(--green-700)] text-white shadow-lg flex items-center justify-center"><Plus size={20} /></button>
+      <Button isIconOnly aria-label="New session" className="lg:hidden fixed bottom-20 right-4 size-12 rounded-full shadow-lg" onPress={() => setShowCreate(true)}><Plus size={20} /></Button>
 
       {/* Create Session Modal */}
       {showCreate && (
@@ -530,8 +534,8 @@ export default function CalendarPage() {
               </label>
             </div>
             <div className="p-4 border-t border-[var(--hairline)] flex gap-2 bg-[var(--surface-warm)]/40">
-              <button onClick={() => setShowCreate(false)} className="flex-1 py-2.5 rounded-full bg-white border border-[var(--hairline)] text-[13px] font-medium">Cancel</button>
-              <button onClick={() => { setShowCreate(false); setToast('Session created — payment link sent'); setTimeout(() => setToast(null), 2000) }} className="flex-1 py-2.5 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium">Create Session</button>
+              <Button variant="secondary" fullWidth onPress={() => setShowCreate(false)}>Cancel</Button>
+              <Button fullWidth onPress={() => { setShowCreate(false); setToast('Session created — payment link sent'); setTimeout(() => setToast(null), 2000) }}>Create Session</Button>
             </div>
           </div>
         </div>
