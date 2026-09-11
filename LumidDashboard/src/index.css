@@ -1,9 +1,14 @@
-@import url('https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 /*
  * Lumid's brand layer on top of HeroUI (src/styles/globals.css, loaded first —
  * see main.tsx). HeroUI owns the real system now: --background/--foreground/
- * --surface/--border/--accent/--radius etc, themed to Lumid green there.
+ * --surface/--border/--accent/--radius etc, themed to Apple's action-blue
+ * design system there (see globals.css).
+ *
+ * Typeface: Inter, standing in for SF Pro Display/Text — the system's own
+ * documented substitute for non-Apple platforms — with the tracking nudged
+ * tighter at display sizes to reproduce the "Apple tight" headline cadence.
  *
  * This file bridges the app's existing semantic names (--ink, --hairline,
  * --green-700, …) onto the real HeroUI tokens, so pages that already use these
@@ -12,8 +17,8 @@
  */
 
 @theme {
-  --font-body: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-sans: "General Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 :root {
@@ -49,10 +54,15 @@ body,
 #root {
   font-family: var(--font-body);
   font-weight: 400;
+  font-feature-settings: "ss03" 1; /* rounder "a", closer to SF Pro's character */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/* Apple's ladder is 300 / 400 / 600 / 700 — 500 is deliberately absent.
+   Anything asking for medium (500) reads as the confident 600 instead. */
+h1, h2, h3, .font-semibold { font-weight: 600; letter-spacing: -0.02em; }
 
 * { font-family: inherit; }
 .font-serif { font-family: var(--font-body); }

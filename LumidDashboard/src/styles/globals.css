@@ -1,15 +1,33 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
-/* Lumid brand accent on top of HeroUI's default theme — everything else
-   (radius, spacing, surfaces, status colors) stays as HeroUI ships it. */
+/* Apple-system accent: a single quiet action blue carries every interactive
+   element — no second brand color, per the design system this is built on. */
 :root,
 [data-theme='light'] {
-  --accent: oklch(0.6274 0.1699 149.21); /* ~ Tailwind green-600 */
+  --accent: #0066cc; /* Action Blue — every link, every primary pill CTA */
   --accent-foreground: var(--snow);
 }
 
 [data-theme='dark'] {
-  --accent: oklch(0.7229 0.192 149.58); /* ~ Tailwind green-500, lifted for dark bg contrast */
+  --accent: #2997ff; /* Sky Link Blue — lifted for contrast against dark tiles */
   --accent-foreground: var(--eclipse);
+}
+
+/* Pill-first button grammar: primary/secondary actions are always a full
+   capsule, utility/icon actions stay at HeroUI's default sm radius. Applied
+   centrally so every existing Button/Chip instance picks it up at once. */
+.button--primary,
+.button--secondary,
+.button--danger,
+.chip {
+  border-radius: 9999px !important;
+}
+
+/* Whisper-soft elevation only — no card/button shadows. The one drop-shadow
+   this system allows is reserved for product imagery, which a dashboard
+   doesn't have, so cards stay flat with a hairline border instead. */
+.card,
+.button {
+  box-shadow: none !important;
 }
