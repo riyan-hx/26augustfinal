@@ -1,27 +1,26 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-
 /*
  * Lumid's brand layer on top of HeroUI (src/styles/globals.css, loaded first —
  * see main.tsx). HeroUI owns the real system now: --background/--foreground/
- * --surface/--border/--accent/--radius etc, themed to Apple's action-blue
- * design system there (see globals.css).
+ * --surface/--border/--accent/--radius etc, themed to the exact Apple-derived
+ * token system defined there (colors, spacing, radius, type scale, motion).
  *
- * Typeface: Inter, standing in for SF Pro Display/Text — the system's own
- * documented substitute for non-Apple platforms — with the tracking nudged
- * tighter at display sizes to reproduce the "Apple tight" headline cadence.
+ * Typeface: Helvetica Neue / Helvetica, with Arial as the cross-platform
+ * fallback (Windows/Linux have neither Helvetica variant installed).
  *
  * This file bridges the app's existing semantic names (--ink, --hairline,
  * --green-700, …) onto the real HeroUI tokens, so pages that already use these
- * names inherit HeroUI's values without a full class-name rewrite. Nothing
- * here is a new hardcoded hex — everything points at a HeroUI var(--...).
+ * names inherit the design system's values without a full class-name rewrite.
  */
 
-@theme {
-  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
-
 :root {
+  /* Typeface — plain :root, not @theme: this file is a separate top-level
+     CSS entry point (imported directly in main.tsx), not chained from
+     "@import tailwindcss", so Tailwind never processes an @theme block
+     placed here. A plain custom-property override is what actually reaches
+     the page — the same pattern globals.css uses for --accent. */
+  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+
   /* Surfaces */
   --canvas: var(--background);
   --surface-warm: var(--surface-secondary, var(--background));
@@ -45,8 +44,6 @@
   --green-200: color-mix(in oklch, var(--accent) 25%, white);
   --green-50: color-mix(in oklch, var(--accent) 8%, white);
   --sage-50: var(--surface-warm);
-
-  --font-sans: var(--font-body);
 }
 
 html,
@@ -54,7 +51,6 @@ body,
 #root {
   font-family: var(--font-body);
   font-weight: 400;
-  font-feature-settings: "ss03" 1; /* rounder "a", closer to SF Pro's character */
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;

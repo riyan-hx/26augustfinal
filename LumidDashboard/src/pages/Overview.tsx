@@ -12,9 +12,9 @@ const sessionRate: Record<string, number> = { 'Individual Session': 1500, 'Initi
 function StatTile({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
     <Card className="px-4 py-3.5 gap-0">
-      <p className="text-xs font-medium text-muted">{label}</p>
-      <p className="text-xl font-semibold text-foreground tracking-tight mt-1 leading-none">{value}</p>
-      <p className="text-xs text-muted mt-1.5">{sub}</p>
+      <p className="type-caption text-muted">{label}</p>
+      <p className="text-[22px] font-semibold text-foreground tracking-tight mt-1 leading-none">{value}</p>
+      <p className="type-caption text-muted mt-1.5">{sub}</p>
     </Card>
   )
 }
@@ -51,11 +51,11 @@ export default function Overview() {
 
   return (
     <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8 max-w-[1160px] mx-auto">
-      {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+      {/* Header — exact type roles: page title = display-md (34px/600/-0.374px), lede = body (17px/400) */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3" style={{ paddingBottom: 'var(--spacing-lg)' }}>
         <div>
-          <h1 className="text-xl font-semibold tracking-tight text-foreground leading-none">Good morning, Dr. Anitha</h1>
-          <p className="text-sm text-muted mt-1.5">Here's what needs your attention today.</p>
+          <h1 className="type-display-md text-foreground">Good morning, Dr. Anitha</h1>
+          <p className="type-body text-muted mt-1">Here's what needs your attention today.</p>
         </div>
         <div className="flex items-center gap-2">
           <Button variant="secondary" size="sm" onPress={copy}>
@@ -79,7 +79,7 @@ export default function Overview() {
       <div className="mt-4 grid lg:grid-cols-[1.6fr_1fr] gap-4">
         <Card className="overflow-hidden p-0 gap-0">
           <div className="px-5 py-3.5 flex items-center justify-between border-b border-border">
-            <Card.Title>Today's schedule</Card.Title>
+            <Card.Title className="type-body-strong">Today's schedule</Card.Title>
             <Link to="/app/calendar" className="text-xs font-medium text-accent flex items-center gap-1">Open calendar <ArrowUpRight size={11} /></Link>
           </div>
           <div className="divide-y divide-border">
@@ -102,7 +102,7 @@ export default function Overview() {
 
         <Card className="overflow-hidden p-0 gap-0">
           <div className="px-5 py-3.5 border-b border-border">
-            <Card.Title>Needs attention</Card.Title>
+            <Card.Title className="type-body-strong">Needs attention</Card.Title>
             <Card.Description className="mt-0.5">{actionItems.length} things today</Card.Description>
           </div>
           <div className="p-2.5 space-y-1.5 flex-1">
@@ -125,7 +125,7 @@ export default function Overview() {
       <div className="mt-4 grid lg:grid-cols-[1.6fr_1fr] gap-4">
         <Card>
           <Card.Header className="flex-row items-center justify-between">
-            <Card.Title>This month</Card.Title>
+            <Card.Title className="type-body-strong">This month</Card.Title>
             <Link to="/app/earnings" className="text-xs font-medium text-accent flex items-center gap-1">View earnings <ArrowUpRight size={11} /></Link>
           </Card.Header>
           <Card.Content>
@@ -147,7 +147,7 @@ export default function Overview() {
 
         <div className="space-y-4">
           <Card>
-            <Card.Title>Your booking page</Card.Title>
+            <Card.Title className="type-body-strong">Your booking page</Card.Title>
             <p className="text-xs font-medium text-accent mt-1.5">anitha.lumidai.in</p>
             <Card.Description className="mt-1">Share this in your Instagram bio, WhatsApp, or email signature.</Card.Description>
             <Card.Footer className="mt-3 gap-2 px-0">
@@ -162,7 +162,7 @@ export default function Overview() {
           </Card>
 
           <Card>
-            <Card.Title>Recent activity</Card.Title>
+            <Card.Title className="type-body-strong">Recent activity</Card.Title>
             <Card.Content className="mt-1 gap-3">
               {[
                 { icon: CalendarPlus, text: 'New booking from Rahul Sharma', time: '2 min ago' },

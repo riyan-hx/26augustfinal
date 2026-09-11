@@ -145,8 +145,8 @@ export default function CalendarPage() {
       {/* PAGE HEADER */}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--ink)] leading-none">Calendar</h1>
-          <p className="text-[13px] text-[var(--stone)] mt-1.5">Manage your sessions, availability, and appointments.</p>
+          <h1 className="type-display-md text-[var(--ink)]">Calendar</h1>
+          <p className="type-body text-[var(--stone)] mt-1">Manage your sessions, availability, and appointments.</p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center gap-1 bg-surface border border-border rounded-full p-1">
