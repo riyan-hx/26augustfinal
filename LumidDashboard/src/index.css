@@ -25,7 +25,7 @@
   /* Surfaces */
   --canvas: var(--background);
   --surface-warm: var(--surface-secondary, var(--background));
-  --surface-soft: color-mix(in oklch, var(--accent) 8%, var(--background));
+  --surface-soft: color-mix(in oklch, var(--color-neutral-strong) 8%, var(--background));
   --hairline: var(--border);
   --hairline-strong: var(--separator, var(--border));
   --lumid-border: var(--border);
@@ -35,15 +35,17 @@
   --slate: color-mix(in oklch, var(--foreground) 78%, var(--background));
   --stone: var(--muted);
 
-  /* Brand (green) scale — legacy names some pages still use directly.
-     Derived from --accent by mixing toward black/white, since HeroUI's
-     theme is one accent color, not a full 50-900 ramp like Tailwind. */
-  --green-900: color-mix(in oklch, var(--accent) 70%, black);
-  --green-800: color-mix(in oklch, var(--accent) 85%, black);
-  --green-700: var(--accent);
-  --green-300: color-mix(in oklch, var(--accent) 45%, white);
-  --green-200: color-mix(in oklch, var(--accent) 25%, white);
-  --green-50: color-mix(in oklch, var(--accent) 8%, white);
+  /* Legacy "green" scale — these names predate the "one green thread" rule
+     (see DESIGN.md): green stays reserved for the primary CTA, the logo, and
+     payment-status signals. Every page still reaching for --green-700 etc.
+     for a non-primary button, ring, or highlight gets the neutral #383838
+     instead now, derived the same way the green ramp used to be. */
+  --green-900: color-mix(in oklch, var(--color-neutral-strong) 70%, black);
+  --green-800: color-mix(in oklch, var(--color-neutral-strong) 85%, black);
+  --green-700: var(--color-neutral-strong);
+  --green-300: color-mix(in oklch, var(--color-neutral-strong) 45%, white);
+  --green-200: color-mix(in oklch, var(--color-neutral-strong) 25%, white);
+  --green-50: color-mix(in oklch, var(--color-neutral-strong) 8%, white);
   --sage-50: var(--surface-warm);
 }
 

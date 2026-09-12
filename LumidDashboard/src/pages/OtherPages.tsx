@@ -26,7 +26,7 @@ export function SessionsPage() {
             <p className="text-[11px] text-[var(--stone)] mt-2">2 reflections • 3 check-ins • 1 completed action • Confidence: Moderate</p>
           </div>
           <div className="mt-4 flex gap-2">
-            <button className="px-4 py-2 rounded-full bg-[var(--green-700)] text-white text-[12px] font-medium">Start session</button>
+            <button className="px-4 py-2 rounded-full bg-[var(--color-primary)] text-white text-[12px] font-medium">Start session</button>
             <button className="px-4 py-2 rounded-full border border-[var(--hairline)] text-[12px] font-medium">View full brief</button>
           </div>
         </div>
@@ -47,7 +47,7 @@ export function SessionsPage() {
               </div>
             ))}
           </div>
-          <button className="mt-3 w-full py-2.5 rounded-full bg-[var(--green-900)] text-white text-[13px] font-semibold">Save note</button>
+          <button className="mt-3 w-full py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-semibold">Save note</button>
         </div>
       </div>
     </div>
@@ -254,7 +254,7 @@ export function YourPage() {
               <p className="font-serif text-[18px] font-semibold mt-3">Dr. Anitha Raghavan</p>
               <p className="text-[12px] text-[var(--stone)]">Psychologist in Bengaluru</p>
               <p className="text-[12px] leading-relaxed mt-3 max-w-[320px] mx-auto">Warm, evidence-based support for young adults navigating overwhelm and avoidance.</p>
-              <button className="mt-4 px-6 py-2.5 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium">Book a session</button>
+              <button className="mt-4 px-6 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-medium">Book a session</button>
               <div className="mt-4 flex justify-center gap-2 text-[11px] text-[var(--stone)]"><span className="px-2.5 py-1 rounded-full bg-[var(--canvas)] border border-[var(--hairline)]">₹1,500 • 50 min</span><span className="px-2.5 py-1 rounded-full bg-[var(--canvas)] border border-[var(--hairline)]">Next: Tue 27 Aug</span></div>
             </div>
           </div>

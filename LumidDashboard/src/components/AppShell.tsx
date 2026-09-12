@@ -48,8 +48,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <div className="space-y-0.5">
                 {g.items.map(item => (
                   <NavLink key={item.to} to={item.to} end={item.end as boolean | undefined}
-                    className={({ isActive }) => `flex items-center gap-2.5 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition ${isActive ? '[&_svg]:text-[var(--color-primary)]' : 'text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)] hover:text-[var(--color-ink)]'}`}
-                    style={({ isActive }) => isActive ? { background: 'var(--color-primary-soft)', color: 'var(--color-primary)' } : undefined}>
+                    className={({ isActive }) => `flex items-center gap-2.5 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition ${isActive ? '[&_svg]:text-[var(--color-neutral-strong)]' : 'text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)] hover:text-[var(--color-ink)]'}`}
+                    style={({ isActive }) => isActive ? { background: 'var(--color-neutral-strong-soft)', color: 'var(--color-neutral-strong)' } : undefined}>
                     <item.icon size={16} strokeWidth={1.75} />
                     {item.label}
                   </NavLink>
@@ -87,7 +87,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </button>
 
           <div className="hidden lg:flex items-center flex-1 max-w-[520px]">
-            <div className="flex items-center gap-2.5 w-full bg-[var(--color-canvas-parchment)] border border-[var(--color-hairline)] rounded-full px-3.5 py-2 focus-within:border-[var(--color-primary)] focus-within:ring-2 focus-within:ring-[var(--color-primary-soft)] transition">
+            <div className="flex items-center gap-2.5 w-full bg-[var(--color-canvas-parchment)] border border-[var(--color-hairline)] rounded-full px-3.5 py-2 focus-within:border-[var(--color-neutral-strong)] focus-within:ring-2 focus-within:ring-[var(--color-neutral-strong-soft)] transition">
               <Search size={14} className="text-[var(--color-ink-muted-48)] shrink-0" />
               <input placeholder="Search patients, sessions, bookings..." className="bg-transparent outline-none text-[13px] w-full placeholder:text-[var(--color-ink-muted-48)] text-[var(--color-ink)]" />
               <span className="hidden xl:inline-flex text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-[var(--color-hairline)] text-[var(--color-ink-muted-48)]">⌘K</span>
@@ -98,7 +98,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <div className="ml-auto flex items-center gap-1.5">
             <button className="relative w-8 h-8 rounded-full hover:bg-[var(--color-canvas-parchment)] flex items-center justify-center text-[var(--color-ink-muted-48)]">
               <Bell size={16} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-primary)] rounded-full border-2 border-white" />
+              <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-neutral-strong)] rounded-full border-2 border-white" />
             </button>
             <img src="https://i.pravatar.cc/100?img=5" alt="" className="w-8 h-8 rounded-full object-cover border border-[var(--color-hairline)] hidden sm:block" />
           </div>
@@ -112,7 +112,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <div className="grid grid-cols-2 gap-2">
                   {g.items.map(item => (
                     <NavLink key={item.to} to={item.to} onClick={() => setMobileOpen(false)}
-                      className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-[10px] border text-[13px] font-medium ${isActive ? 'bg-[var(--color-primary)] text-white border-transparent' : 'bg-[var(--color-canvas-parchment)] border-[var(--color-hairline)] text-[var(--color-ink-muted-48)]'}`}>
+                      className={({ isActive }) => `flex items-center gap-2 px-3 py-2.5 rounded-[10px] border text-[13px] font-medium ${isActive ? 'bg-[var(--color-neutral-strong)] text-white border-transparent' : 'bg-[var(--color-canvas-parchment)] border-[var(--color-hairline)] text-[var(--color-ink-muted-48)]'}`}>
                       <item.icon size={14} /> {item.label}
                     </NavLink>
                   ))}
@@ -130,7 +130,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="hidden lg:flex h-[36px] items-center gap-4 px-6 bg-[var(--color-canvas-parchment)]/80 backdrop-blur border-b border-[var(--color-hairline)] sticky top-[52px] z-20">
           <span className="text-[12px] font-semibold text-[var(--color-ink)]">Today</span>
           <span className="text-[11px] text-[var(--color-ink-muted-48)]">Tuesday, 26 August • 3 sessions • ₹5,000</span>
-          <a href="/book" className="ml-auto text-[11px] font-medium text-[var(--color-primary)] hover:underline">anitha.lumidai.in →</a>
+          <a href="/book" className="ml-auto text-[11px] font-medium text-[var(--color-neutral-strong)] hover:underline">anitha.lumidai.in →</a>
         </div>
 
         <main className="flex-1 min-w-0">
@@ -147,7 +147,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             { to: '/app/bookings', label: 'Bookings', icon: ClipboardList },
             { to: '/app/settings', label: 'More', icon: Settings },
           ].map(item => (
-            <NavLink key={item.to} to={item.to} end={item.to === '/app'} className={({ isActive }) => `flex flex-col items-center gap-1 px-3 py-1 rounded-lg ${isActive ? 'text-[var(--color-primary)]' : 'text-[var(--color-ink-muted-48)]'}`}>
+            <NavLink key={item.to} to={item.to} end={item.to === '/app'} className={({ isActive }) => `flex flex-col items-center gap-1 px-3 py-1 rounded-lg ${isActive ? 'text-[var(--color-neutral-strong)]' : 'text-[var(--color-ink-muted-48)]'}`}>
               <item.icon size={18} />
               <span className="text-[10px] font-medium">{item.label}</span>
             </NavLink>

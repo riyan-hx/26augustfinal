@@ -11,11 +11,17 @@
 :root {
   /* ---- Colors: Brand & Accent — Lumid green, exact values pulled from the
      Figma file's node inspector ---- */
-  --color-primary: #2dc500;            /* Green — logo, active nav, Paid pill (gradient start) */
+  --color-primary: #2dc500;            /* Green — reserved for the primary CTA, the logo, and payment-status signals only */
   --color-primary-focus: #229a00;
   --color-primary-on-dark: #4ade80;
-  --color-primary-soft: #e8f7ec;       /* pale green — active-state fills, Paid pill bg */
+  --color-primary-soft: #e8f7ec;       /* pale green — Paid pill bg only */
   --gradient-primary: linear-gradient(135deg, #2dc500 0%, #56a835 100%); /* exact stops from the primary button fill */
+
+  /* Everything else that used to be green — nav states, secondary icons,
+     links, toggles, avatars, focus rings — uses this neutral instead, so
+     green stays a rare, meaningful signal rather than a decoration. */
+  --color-neutral-strong: #383838;
+  --color-neutral-strong-soft: #38383814; /* pale tint for active/selected backgrounds */
 
   /* ---- Colors: Surface ---- */
   --color-canvas: #ffffff;

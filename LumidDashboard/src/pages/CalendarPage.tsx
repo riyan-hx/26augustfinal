@@ -76,7 +76,7 @@ function MiniCalendar({ selected, onSelect }: { selected: number; onSelect: (d: 
           const isToday = d === 26
           const isSelected = d === selected
           return (
-            <button key={i} onClick={() => onSelect(d)} className={`w-7 h-7 mx-auto rounded-full text-xs flex items-center justify-center transition ${isToday ? 'bg-accent text-accent-foreground font-semibold' : isSelected ? 'bg-accent/15 text-accent border border-accent/30' : 'hover:bg-surface-secondary text-muted'}`}>{d}</button>
+            <button key={i} onClick={() => onSelect(d)} className={`w-7 h-7 mx-auto rounded-full text-xs flex items-center justify-center transition ${isToday ? 'bg-[var(--color-neutral-strong)] text-white font-semibold' : isSelected ? 'bg-[var(--color-neutral-strong)]/15 text-[var(--color-neutral-strong)] border border-[var(--color-neutral-strong)]/30' : 'hover:bg-surface-secondary text-muted'}`}>{d}</button>
           )
         })}
       </div>
@@ -157,7 +157,9 @@ export default function CalendarPage() {
           </div>
           <div className="flex items-center gap-1 bg-surface border border-border rounded-full p-1">
             {(['Day', 'Week', 'Month'] as View[]).map(v => (
-              <Button key={v} size="sm" variant={view === v ? 'primary' : 'ghost'} className="rounded-full" onPress={() => setView(v)}>{v}</Button>
+              <Button key={v} size="sm" variant="ghost" className="rounded-full"
+                style={view === v ? { background: 'var(--color-neutral-strong)', color: '#fff' } : undefined}
+                onPress={() => setView(v)}>{v}</Button>
             ))}
           </div>
           <Button size="sm" onPress={() => setShowCreate(true)}><Plus /> New Session</Button>
@@ -177,13 +179,13 @@ export default function CalendarPage() {
 
             <div className="mt-4 pt-4 border-t border-border space-y-2.5">
               {[
-                { k: 'sessions', label: 'Sessions', color: 'bg-accent' },
+                { k: 'sessions', label: 'Sessions', color: 'bg-[var(--color-neutral-strong)]' },
                 { k: 'availability', label: 'Availability', color: 'bg-warning' },
                 { k: 'blocked', label: 'Blocked time', color: 'bg-muted' },
                 { k: 'personal', label: 'Personal', color: 'bg-[var(--badge-violet-fg)]' },
               ].map(f => (
                 <label key={f.k} className="flex items-center gap-2.5 text-xs cursor-pointer">
-                  <input type="checkbox" checked={(filters as any)[f.k]} onChange={e => setFilters(prev => ({ ...prev, [f.k]: e.target.checked }))} className="w-3.5 h-3.5 rounded border-border accent-accent" />
+                  <input type="checkbox" checked={(filters as any)[f.k]} onChange={e => setFilters(prev => ({ ...prev, [f.k]: e.target.checked }))} className="w-3.5 h-3.5 rounded border-border accent-[var(--color-neutral-strong)]" />
                   <span className={`w-2 h-2 rounded-full ${f.color}`} /> {f.label}
                 </label>
               ))}
@@ -198,13 +200,13 @@ export default function CalendarPage() {
 
           <Card className="p-4 gap-0">
             <p className="text-xs font-medium text-muted">Your booking page</p>
-            <p className="text-sm font-medium text-accent mt-1 flex items-center gap-1"><Globe size={12} /> lumid.in/dr-anitha</p>
+            <p className="text-sm font-medium text-[var(--color-neutral-strong)] mt-1 flex items-center gap-1"><Globe size={12} /> lumid.in/dr-anitha</p>
             <p className="text-xs text-muted mt-1">Patients view your availability and book.</p>
             <div className="flex gap-2 mt-2.5">
               <Link to="/book" className="flex-1">
                 <Button size="sm" variant="secondary" fullWidth><ExternalLink /> Open</Button>
               </Link>
-              <Button size="sm" className="flex-1" onPress={() => copyLink('lumid.in/dr-anitha')}>Copy link</Button>
+              <Button size="sm" variant="secondary" className="flex-1" onPress={() => copyLink('lumid.in/dr-anitha')}>Copy link</Button>
             </div>
           </Card>
         </div>
@@ -400,7 +402,7 @@ export default function CalendarPage() {
                 <span className="px-2.5 py-1 rounded-full bg-white border border-[var(--hairline)]">Buffer 15 min</span>
                 <span className="px-2.5 py-1 rounded-full bg-white border border-[var(--hairline)]">Notice 12 hours</span>
                 <span className="px-2.5 py-1 rounded-full bg-white border border-[var(--hairline)]">Advance 30 days</span>
-                <Button size="sm" className="ml-auto">+ Add availability</Button>
+                <Button size="sm" variant="secondary" className="ml-auto">+ Add availability</Button>
               </div>
               <p className="text-[11px] text-[var(--stone)] mt-2">Powers your public page <span className="font-medium text-[var(--green-700)]">lumid.in/dr-anitha</span></p>
             </div>
@@ -412,7 +414,7 @@ export default function CalendarPage() {
         <Card className="hidden xl:block sticky top-[96px] max-h-[calc(100vh-116px)] overflow-y-auto p-0 gap-0">
           <div className="p-4 border-b border-border flex items-start justify-between gap-3 sticky top-0 bg-surface">
             <div className="flex gap-3">
-              <div className="w-9 h-9 rounded-full bg-accent/10 border border-border flex items-center justify-center text-xs font-semibold text-accent">{selected.initials}</div>
+              <div className="w-9 h-9 rounded-full bg-[var(--color-neutral-strong)]/10 border border-border flex items-center justify-center text-xs font-semibold text-[var(--color-neutral-strong)]">{selected.initials}</div>
               <div>
                 <p className="text-sm font-semibold leading-none">{selected.patient}</p>
                 <p className="text-xs text-muted mt-1">{selected.type}</p>
@@ -428,16 +430,16 @@ export default function CalendarPage() {
                 <div className="flex justify-between items-center"><span className="text-muted">Payment</span><Chip color={selected.status === 'paid' ? 'success' : 'warning'} variant="soft" size="sm">{selected.fee || '₹1,500'} {selected.status === 'paid' ? '· Paid' : '· Awaiting'}</Chip></div>
                 <div className="rounded-lg bg-surface-secondary border border-border p-3">
                   <p className="text-[11px] font-semibold tracking-wide text-muted">MEETING</p>
-                  <p className="text-xs font-medium mt-1 flex items-center gap-1.5"><Video size={12} className="text-accent" /> Google Meet</p>
+                  <p className="text-xs font-medium mt-1 flex items-center gap-1.5"><Video size={12} className="text-[var(--color-neutral-strong)]" /> Google Meet</p>
                   <p className="text-xs text-muted truncate mt-1">{selected.meeting || 'meet.google.com/xxx-yyyy-zzz'}</p>
                   <div className="flex gap-2 mt-2">
-                    <Button size="sm" className="flex-1">Open meeting</Button>
+                    <Button size="sm" variant="secondary" className="flex-1">Open meeting</Button>
                     <Button size="sm" variant="secondary" onPress={() => copyLink(selected.meeting || 'meet.google.com/xxx-yyyy-zzz')}><Copy /> Copy</Button>
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <Button size="sm" variant="secondary"><Edit3 /> Edit</Button>
-                  <Button size="sm" variant="danger"><Trash2 /> Cancel</Button>
+                  <Button size="sm" variant="secondary" fullWidth><Edit3 /> Edit</Button>
+                  <Button size="sm" variant="danger" fullWidth><Trash2 /> Cancel</Button>
                 </div>
                 <p className="text-[11px] text-muted">Drag a session on the grid to reschedule it.</p>
               </>
@@ -451,7 +453,7 @@ export default function CalendarPage() {
                   <div className="flex justify-between"><span className="text-muted">Last session</span><span>{selectedPatientRecord.lastSession}</span></div>
                   <div className="flex justify-between"><span className="text-muted">Sessions</span><span>{selectedPatientRecord.sessions} total</span></div>
                 </div>
-                <Link to={`/app/patients/${selectedPatientRecord.id}`} className="mt-2 inline-flex text-xs font-medium text-accent">View patient →</Link>
+                <Link to={`/app/patients/${selectedPatientRecord.id}`} className="mt-2 inline-flex text-xs font-medium text-[var(--color-neutral-strong)]">View patient →</Link>
                 <p className="text-[11px] text-muted mt-2">Private notes never shown here.</p>
               </div>
             )}
@@ -465,12 +467,12 @@ export default function CalendarPage() {
       {selected && (
         <Card className="xl:hidden mt-4 p-4 gap-0">
           <div className="flex gap-3">
-            <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-xs font-semibold text-accent">{selected.initials}</div>
+            <div className="w-8 h-8 rounded-full bg-[var(--color-neutral-strong)]/10 flex items-center justify-center text-xs font-semibold text-[var(--color-neutral-strong)]">{selected.initials}</div>
             <div className="flex-1">
               <p className="text-sm font-semibold">{selected.patient} • {selected.type}</p>
               <p className="text-xs text-muted inline-flex items-center gap-1">Tue 26 Aug • {selected.start}:00 • {selected.fee} • {selected.status === 'paid' && <Check size={11} className="text-[var(--badge-green-fg)]" />}{selected.status === 'paid' ? 'Paid' : 'Awaiting'}</p>
             </div>
-            <Button size="sm">Open</Button>
+            <Button size="sm" variant="secondary">Open</Button>
           </div>
         </Card>
       )}
@@ -543,7 +545,7 @@ export default function CalendarPage() {
 
       {toast && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[var(--ink)] text-white text-[13px] font-medium px-4 py-2 rounded-full flex items-center gap-2 z-50">
-          <Check size={14} className="text-[var(--color-primary-on-dark)]" /> {toast}
+          <Check size={14} className="text-white/70" /> {toast}
         </div>
       )}
     </div>

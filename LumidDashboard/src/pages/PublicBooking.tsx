@@ -13,7 +13,7 @@ export default function PublicBooking() {
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-[20px] border-b border-[var(--hairline)]">
         <div className="max-w-[980px] mx-auto px-4 lg:px-6 h-[52px] flex items-center justify-between">
           <Link to="/app" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[var(--green-700)] flex items-center justify-center text-white text-[11px] font-bold">L</div>
+            <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center text-white text-[11px] font-bold">L</div>
             <span className="font-semibold text-[14px]">Lumid</span>
             <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline">ANITHA.LUMIDAI.IN</span>
           </Link>
@@ -113,7 +113,7 @@ export default function PublicBooking() {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={() => setStep(1)} className="flex-1 py-2.5 rounded-full border border-[var(--hairline)] text-[13px] font-medium">Back</button>
-                  <button onClick={() => setStep(3)} className="flex-1 py-2.5 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium">Continue →</button>
+                  <button onClick={() => setStep(3)} className="flex-1 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-medium">Continue →</button>
                 </div>
               </div>
             )}
@@ -131,7 +131,7 @@ export default function PublicBooking() {
                 <label className="flex gap-2 text-[11px] leading-relaxed"><input type="checkbox" defaultChecked className="mt-0.5" /> I consent to Lumid processing my booking details to confirm this appointment. I understand I control what I share with my psychologist.</label>
                 <div className="flex gap-2">
                   <button onClick={() => setStep(2)} className="flex-1 py-2.5 rounded-full border border-[var(--hairline)] text-[13px] font-medium">Back</button>
-                  <button onClick={() => setStep(4)} className="flex-1 py-2.5 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium inline-flex items-center justify-center gap-1.5"><CreditCard size={14} /> Pay ₹1,500</button>
+                  <button onClick={() => setStep(4)} className="flex-1 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-medium inline-flex items-center justify-center gap-1.5"><CreditCard size={14} /> Pay ₹1,500</button>
                 </div>
                 <p className="text-[11px] text-[var(--stone)] text-center flex items-center justify-center gap-1"><Shield size={12} /> Secured by Razorpay • Payment confirms booking</p>
               </div>
@@ -150,7 +150,7 @@ export default function PublicBooking() {
                 <p className="text-[11px] text-[var(--stone)] mt-3 leading-relaxed">You’ll receive confirmation & reminder emails. No native video — join via Google Meet at the scheduled time.</p>
                 <div className="mt-4 flex gap-2">
                   <button onClick={() => setStep(1)} className="flex-1 py-2.5 rounded-full border border-[var(--hairline)] text-[13px] font-medium">Book another</button>
-                  <Link to="/app" className="flex-1 py-2.5 rounded-full bg-[var(--green-700)] text-white text-[13px] font-medium inline-flex items-center justify-center gap-1">Go to dashboard <ArrowRight size={14} /></Link>
+                  <Link to="/app" className="flex-1 py-2.5 rounded-full bg-[var(--color-primary)] text-white text-[13px] font-medium inline-flex items-center justify-center gap-1">Go to dashboard <ArrowRight size={14} /></Link>
                 </div>
               </div>
             )}

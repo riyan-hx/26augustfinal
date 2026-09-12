@@ -12,12 +12,14 @@ import { todaySchedule, followUps, patients, bookings } from '../lib/data'
 const sessionRate: Record<string, number> = { 'Individual Session': 1500, 'Initial Consultation': 2000, 'Follow-up': 1200 }
 
 /** A checkbox that actually feels pressed — scales down on click, pops the
- *  check in with the system's one press easing, fills with the brand green. */
+ *  check in with the system's one press easing. Neutral, not green: green
+ *  stays reserved for payment status, so a bulk-select toggle doesn't
+ *  compete with it. */
 function RowCheckbox({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
   return (
     <button type="button" role="checkbox" aria-checked={checked} aria-label={label} onClick={onChange}
       className="w-[18px] h-[18px] rounded-[6px] border flex items-center justify-center shrink-0 transition-all duration-150 active:scale-90"
-      style={{ background: checked ? 'var(--color-primary)' : 'var(--color-canvas)', borderColor: checked ? 'var(--color-primary)' : 'var(--color-hairline)' }}>
+      style={{ background: checked ? 'var(--color-neutral-strong)' : 'var(--color-canvas)', borderColor: checked ? 'var(--color-neutral-strong)' : 'var(--color-hairline)' }}>
       <Check size={12} strokeWidth={3} className="text-white transition-all duration-150" style={{ opacity: checked ? 1 : 0, transform: checked ? 'scale(1)' : 'scale(0.5)' }} />
     </button>
   )
@@ -95,7 +97,7 @@ export default function Overview() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={copy} className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition">
-            {copied ? <Check size={13} style={{ color: 'var(--color-primary)' }} /> : <Copy size={13} />} anitha.lumidai.in
+            {copied ? <Check size={13} style={{ color: 'var(--color-neutral-strong)' }} /> : <Copy size={13} />} anitha.lumidai.in
           </button>
           <Link to="/app/calendar">
             <Button size="sm"><Plus /> Add New Booking</Button>
@@ -170,7 +172,7 @@ export default function Overview() {
               <button key={t.key} onClick={() => setScheduleTab(t.key)}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all duration-150 shrink-0"
                 style={scheduleTab === t.key
-                  ? { background: 'var(--color-primary)', color: '#fff' }
+                  ? { background: 'var(--color-neutral-strong)', color: '#fff' }
                   : { background: 'var(--color-canvas-parchment)', color: 'var(--color-ink-muted-48)' }}>
                 {t.label}
                 <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] px-1 rounded-full text-[10px]"
@@ -184,11 +186,11 @@ export default function Overview() {
           {/* Selection bar — slides in only while rows are checked, so the table stays quiet at rest */}
           <div className="grid transition-[grid-template-rows] duration-200 ease-out" style={{ gridTemplateRows: selected.size > 0 ? '1fr' : '0fr' }}>
             <div className="overflow-hidden">
-              <div className="mx-5 mt-3 px-3.5 py-2 rounded-[10px] flex items-center justify-between" style={{ background: 'var(--color-primary-soft)' }}>
-                <span className="text-[12px] font-medium" style={{ color: 'var(--color-primary-focus)' }}>{selected.size} selected</span>
+              <div className="mx-5 mt-3 px-3.5 py-2 rounded-[10px] flex items-center justify-between" style={{ background: 'var(--color-neutral-strong-soft)' }}>
+                <span className="text-[12px] font-medium" style={{ color: 'var(--color-neutral-strong)' }}>{selected.size} selected</span>
                 <div className="flex items-center gap-2">
-                  <button onClick={() => setSelected(new Set())} className="text-[11px] font-medium px-2.5 py-1 rounded-full hover:bg-white/60 transition" style={{ color: 'var(--color-primary-focus)' }}>Clear</button>
-                  <button className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white transition hover:opacity-80" style={{ color: 'var(--color-primary-focus)' }}>Export</button>
+                  <button onClick={() => setSelected(new Set())} className="text-[11px] font-medium px-2.5 py-1 rounded-full hover:bg-white/60 transition" style={{ color: 'var(--color-neutral-strong)' }}>Clear</button>
+                  <button className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white transition hover:opacity-80" style={{ color: 'var(--color-neutral-strong)' }}>Export</button>
                 </div>
               </div>
             </div>
@@ -201,11 +203,11 @@ export default function Overview() {
               const patientRecord = patients.find(p => p.name === s.patient)
               const isChecked = selected.has(s.time)
               return (
-                <div key={s.time} className="group relative px-5 py-4 flex items-center gap-3.5 transition-colors duration-150" style={{ background: isChecked ? 'var(--color-primary-soft)' : undefined }}
+                <div key={s.time} className="group relative px-5 py-4 flex items-center gap-3.5 transition-colors duration-150" style={{ background: isChecked ? 'var(--color-neutral-strong-soft)' : undefined }}
                   onMouseLeave={() => setMenuFor(cur => cur === s.time ? null : cur)}>
                   <RowCheckbox checked={isChecked} onChange={() => toggleRow(s.time)} label={`Select ${s.patient}`} />
                   <span className="hidden sm:flex items-center gap-1.5 text-[13px] text-[var(--color-ink-muted-48)] w-[72px] shrink-0"><Clock3 size={13} /> {s.time}</span>
-                  <span className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0" style={{ background: 'var(--color-primary-soft)', color: 'var(--color-primary)' }}>{patientRecord?.avatar ?? s.patient.slice(0, 2).toUpperCase()}</span>
+                  <span className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0" style={{ background: 'var(--color-canvas-parchment)', color: 'var(--color-neutral-strong)' }}>{patientRecord?.avatar ?? s.patient.slice(0, 2).toUpperCase()}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold text-[var(--color-ink)] truncate">{s.patient}</p>
                     <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">
@@ -213,7 +215,7 @@ export default function Overview() {
                     </p>
                     {patientRecord?.prepNote && (
                       <p className="text-[11px] text-[var(--color-ink-muted-48)] mt-1 flex items-start gap-1.5 leading-snug">
-                        <NotebookText size={11} className="mt-[2px] shrink-0" style={{ color: 'var(--color-primary)' }} />
+                        <NotebookText size={11} className="mt-[2px] shrink-0" style={{ color: 'var(--color-neutral-strong)' }} />
                         <span className="line-clamp-1">{patientRecord.prepNote}</span>
                       </p>
                     )}
@@ -238,7 +240,7 @@ export default function Overview() {
                           <Link to={`/app/patients/${patientRecord.id}`} className="flex items-center gap-2 px-3.5 py-2 text-[12px] text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)]">View profile</Link>
                         )}
                         <Link to="/app/calendar" className="flex items-center gap-2 px-3.5 py-2 text-[12px] text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)]">Reschedule</Link>
-                        {!s.paid && <Link to="/app/bookings" className="flex items-center gap-2 px-3.5 py-2 text-[12px] hover:bg-[var(--color-canvas-parchment)]" style={{ color: 'var(--color-primary-focus)' }}>Send payment reminder</Link>}
+                        {!s.paid && <Link to="/app/bookings" className="flex items-center gap-2 px-3.5 py-2 text-[12px] hover:bg-[var(--color-canvas-parchment)]" style={{ color: 'var(--color-neutral-strong)' }}>Send payment reminder</Link>}
                       </div>
                     )}
                   </div>
@@ -250,7 +252,7 @@ export default function Overview() {
           {/* Footer — quick scheduling context, mirrors CalendarPage's own availability mock */}
           <div className="px-5 py-3 border-t border-[var(--color-hairline)] bg-[var(--color-canvas-parchment)]/60 flex items-center justify-between text-[11px]">
             <span className="text-[var(--color-ink-muted-48)]">Next availability · <span className="font-medium text-[var(--color-ink)]">Thu, 10:00 AM</span> · No conflicts</span>
-            <Link to="/app/calendar" className="font-medium" style={{ color: 'var(--color-primary)' }}>Open calendar →</Link>
+            <Link to="/app/calendar" className="font-medium" style={{ color: 'var(--color-neutral-strong)' }}>Open calendar →</Link>
           </div>
         </Card>
 
@@ -261,7 +263,7 @@ export default function Overview() {
               <p className="text-[17px] font-bold text-[var(--color-ink)]">Needs attention</p>
               <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-semibold" style={{ background: 'var(--color-canvas-parchment)', color: 'var(--color-ink-muted-48)' }}>{actionItems.length}</span>
             </div>
-            <Link to="/app/follow-ups" className="text-[12px] font-medium" style={{ color: 'var(--color-primary)' }}>View all</Link>
+            <Link to="/app/follow-ups" className="text-[12px] font-medium" style={{ color: 'var(--color-neutral-strong)' }}>View all</Link>
           </div>
           <div className="divide-y divide-[var(--color-hairline)]">
             {actionItems.map(item => (
@@ -273,7 +275,7 @@ export default function Overview() {
                   <p className="text-[12px] font-semibold text-[var(--color-ink)] truncate">{item.title}</p>
                   <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate mt-0.5">{item.sub}</p>
                 </div>
-                <span className="hidden sm:inline text-[11px] font-medium shrink-0 opacity-0 group-hover:opacity-100 transition" style={{ color: 'var(--color-primary)' }}>{item.cta}</span>
+                <span className="hidden sm:inline text-[11px] font-medium shrink-0 opacity-0 group-hover:opacity-100 transition" style={{ color: 'var(--color-neutral-strong)' }}>{item.cta}</span>
                 <ChevronRight size={14} className="text-[var(--color-ink-muted-48)] shrink-0" />
               </Link>
             ))}
@@ -301,7 +303,7 @@ export default function Overview() {
                 </span>
                 <div className="min-w-0">
                   <p className="text-[12px] text-[var(--color-ink)] leading-snug">{insight.text}</p>
-                  <Link to={insight.href} className="text-[11px] font-semibold mt-1.5 inline-block" style={{ color: 'var(--color-primary)' }}>Review →</Link>
+                  <Link to={insight.href} className="text-[11px] font-semibold mt-1.5 inline-block" style={{ color: 'var(--color-neutral-strong)' }}>Review →</Link>
                 </div>
               </div>
             ))}
@@ -312,9 +314,9 @@ export default function Overview() {
         <Card className="p-0 overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
             <p className="text-[13px] font-bold text-[var(--color-ink)] flex items-center gap-1.5">
-              <HeartHandshake size={15} style={{ color: 'var(--color-primary)' }} /> Patient Continuity
+              <HeartHandshake size={15} style={{ color: 'var(--color-neutral-strong)' }} /> Patient Continuity
             </p>
-            <Link to="/app/patients" className="text-[12px] font-medium inline-flex items-center gap-1" style={{ color: 'var(--color-primary)' }}>View all <ArrowUpRight size={12} /></Link>
+            <Link to="/app/patients" className="text-[12px] font-medium inline-flex items-center gap-1" style={{ color: 'var(--color-neutral-strong)' }}>View all <ArrowUpRight size={12} /></Link>
           </div>
           <div className="grid grid-cols-4 gap-2 px-5 py-3.5 border-b border-[var(--color-hairline)]">
             {[
@@ -334,7 +336,7 @@ export default function Overview() {
               <p className="px-5 py-6 text-[12px] text-center text-[var(--color-ink-muted-48)]">Everyone has a next session booked. Nothing at risk of lapsing.</p>
             ) : noFuturePatients.map(p => (
               <div key={p.id} className="px-5 py-3 flex items-center gap-3">
-                <span className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0" style={{ background: 'var(--color-primary-soft)', color: 'var(--color-primary)' }}>{p.avatar}</span>
+                <span className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0" style={{ background: 'var(--color-canvas-parchment)', color: 'var(--color-neutral-strong)' }}>{p.avatar}</span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-semibold text-[var(--color-ink)] truncate">{p.name}</p>
                   <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">Last seen {p.lastSession} · No upcoming session</p>
