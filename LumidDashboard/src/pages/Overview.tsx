@@ -71,11 +71,16 @@ export default function Overview() {
   const bookingTotal = bookings.length
 
   const actionItems = [
-    { icon: Clock3, tone: 'amber' as const, title: `${followUps[0].patient} — follow-up due`, sub: followUps[0].note, href: '/app/follow-ups' },
-    { icon: CreditCard, tone: 'amber' as const, title: 'Arjun Nair — payment pending', sub: '₹1,500 · Individual Session, 8:00 PM', href: '/app/bookings' },
-    { icon: AlertTriangle, tone: 'neutral' as const, title: 'Sneha Kulkarni — booking unconfirmed', sub: 'Fri · 3:00 PM, awaiting payment', href: '/app/bookings' },
-    { icon: FileText, tone: 'neutral' as const, title: 'Vikram Shetty — note incomplete', sub: 'Session ended yesterday', href: '/app/sessions' },
+    { icon: Clock3, tone: 'amber' as const, title: `${followUps[0].patient} — follow-up due`, sub: followUps[0].note, href: '/app/follow-ups', cta: 'Send nudge' },
+    { icon: CreditCard, tone: 'rose' as const, title: 'Arjun Nair — payment pending', sub: '₹1,500 · Individual Session, 8:00 PM', href: '/app/bookings', cta: 'Remind' },
+    { icon: AlertTriangle, tone: 'rose' as const, title: 'Sneha Kulkarni — booking unconfirmed', sub: 'Fri · 3:00 PM, awaiting payment', href: '/app/bookings', cta: 'Review' },
+    { icon: FileText, tone: 'neutral' as const, title: 'Vikram Shetty — note incomplete', sub: 'Session ended yesterday', href: '/app/sessions', cta: 'Add note' },
   ]
+  const toneStyles = {
+    amber: { bg: 'var(--badge-amber-bg)', fg: 'var(--badge-amber-fg)' },
+    rose: { bg: 'var(--badge-rose-bg)', fg: 'var(--badge-rose-fg)' },
+    neutral: { bg: 'var(--color-canvas-parchment)', fg: 'var(--color-ink-muted-48)' },
+  }
 
   const calendarDays = Array.from({ length: 31 }, (_, i) => i + 1)
   const startOffset = 6 // Aug 1, 2026 is a Saturday
@@ -138,47 +143,75 @@ export default function Overview() {
         </div>
       </div>
 
-      {/* Today's Schedules — matches the Figma file's list card exactly */}
-      <Card className="mt-5 p-0 overflow-hidden">
-        <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
-          <p className="text-[17px] font-bold text-[var(--color-ink)]">Today's Schedules</p>
-          <Link to="/app/calendar" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition">
-            Open Calendar <ArrowUpRight size={13} />
-          </Link>
-        </div>
-        <div className="divide-y divide-[var(--color-hairline)]">
-          {todaySchedule.map(s => {
-            const amount = sessionRate[s.type] ?? 1500
-            const patientRecord = patients.find(p => p.name === s.patient)
-            return (
-              <div key={s.time} className="px-5 py-3.5 flex items-center gap-4">
-                <span className="flex items-center gap-1.5 text-[13px] text-[var(--color-ink-muted-48)] w-[76px] shrink-0"><Clock3 size={13} /> {s.time}</span>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[13px] font-semibold text-[var(--color-ink)] truncate">{s.patient}</p>
-                  <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">{s.type}</p>
-                  {patientRecord?.prepNote && (
-                    <p className="text-[11px] text-[var(--color-ink-muted-48)] mt-1 flex items-start gap-1.5 leading-snug">
-                      <NotebookText size={11} className="mt-[2px] shrink-0" style={{ color: 'var(--color-primary)' }} />
-                      <span className="line-clamp-1">{patientRecord.prepNote}</span>
-                    </p>
-                  )}
+      {/* Today's Schedules + Needs attention — the two "what's happening / what needs me" lists, side by side */}
+      <div className="mt-6 grid lg:grid-cols-[1.7fr_1fr] gap-5 items-start">
+        <Card className="p-0 overflow-hidden">
+          <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
+            <p className="text-[17px] font-bold text-[var(--color-ink)]">Today's Schedules</p>
+            <Link to="/app/calendar" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition">
+              Open Calendar <ArrowUpRight size={13} />
+            </Link>
+          </div>
+          <div className="divide-y divide-[var(--color-hairline)]">
+            {todaySchedule.map(s => {
+              const amount = sessionRate[s.type] ?? 1500
+              const patientRecord = patients.find(p => p.name === s.patient)
+              return (
+                <div key={s.time} className="px-5 py-4 flex items-center gap-4">
+                  <span className="flex items-center gap-1.5 text-[13px] text-[var(--color-ink-muted-48)] w-[76px] shrink-0"><Clock3 size={13} /> {s.time}</span>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-[13px] font-semibold text-[var(--color-ink)] truncate">{s.patient}</p>
+                    <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">{s.type}</p>
+                    {patientRecord?.prepNote && (
+                      <p className="text-[11px] text-[var(--color-ink-muted-48)] mt-1 flex items-start gap-1.5 leading-snug">
+                        <NotebookText size={11} className="mt-[2px] shrink-0" style={{ color: 'var(--color-primary)' }} />
+                        <span className="line-clamp-1">{patientRecord.prepNote}</span>
+                      </p>
+                    )}
+                  </div>
+                  <span className="text-[13px] font-medium text-[var(--color-ink)] w-[72px] text-right shrink-0">₹{amount.toLocaleString('en-IN')}</span>
+                  <span className="w-[92px] shrink-0 hidden sm:flex justify-center">
+                    <Chip size="sm" color={s.paid ? 'success' : 'warning'} variant="soft">{s.paid ? 'Paid' : 'Pending'}</Chip>
+                  </span>
+                  <Link to={patientRecord ? `/app/patients/${patientRecord.id}` : '/app/patients'}
+                    className="hidden md:inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition shrink-0">
+                    View Profile <ArrowUpRight size={12} />
+                  </Link>
                 </div>
-                <span className="text-[13px] font-medium text-[var(--color-ink)] w-[72px] text-right shrink-0">₹{amount.toLocaleString('en-IN')}</span>
-                <span className="w-[92px] shrink-0 hidden sm:flex justify-center">
-                  <Chip size="sm" color={s.paid ? 'success' : 'warning'} variant="soft">{s.paid ? 'Paid' : 'Pending'}</Chip>
+              )
+            })}
+          </div>
+        </Card>
+
+        {/* Needs attention — tiered by urgency (rose = time-sensitive money/booking risk, amber = due today, neutral = housekeeping) */}
+        <Card className="p-0 overflow-hidden">
+          <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <p className="text-[17px] font-bold text-[var(--color-ink)]">Needs attention</p>
+              <span className="inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[11px] font-semibold" style={{ background: 'var(--color-canvas-parchment)', color: 'var(--color-ink-muted-48)' }}>{actionItems.length}</span>
+            </div>
+            <Link to="/app/follow-ups" className="text-[12px] font-medium" style={{ color: 'var(--color-primary)' }}>View all</Link>
+          </div>
+          <div className="divide-y divide-[var(--color-hairline)]">
+            {actionItems.map(item => (
+              <Link key={item.title} to={item.href} className="px-5 py-3.5 flex items-center gap-3 group hover:bg-[var(--color-canvas-parchment)] transition">
+                <span className="w-9 h-9 rounded-full flex items-center justify-center shrink-0" style={{ background: toneStyles[item.tone].bg, color: toneStyles[item.tone].fg }}>
+                  <item.icon size={14} />
                 </span>
-                <Link to={patientRecord ? `/app/patients/${patientRecord.id}` : '/app/patients'}
-                  className="hidden md:inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition shrink-0">
-                  View Profile <ArrowUpRight size={12} />
-                </Link>
-              </div>
-            )
-          })}
-        </div>
-      </Card>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-semibold text-[var(--color-ink)] truncate">{item.title}</p>
+                  <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate mt-0.5">{item.sub}</p>
+                </div>
+                <span className="hidden sm:inline text-[11px] font-medium shrink-0 opacity-0 group-hover:opacity-100 transition" style={{ color: 'var(--color-primary)' }}>{item.cta}</span>
+                <ChevronRight size={14} className="text-[var(--color-ink-muted-48)] shrink-0" />
+              </Link>
+            ))}
+          </div>
+        </Card>
+      </div>
 
       {/* Practice overview chart + calendar/activity */}
-      <div className="mt-4 grid lg:grid-cols-[1.7fr_1fr] gap-4 items-start">
+      <div className="mt-6 grid lg:grid-cols-[1.7fr_1fr] gap-5 items-start">
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -253,8 +286,8 @@ export default function Overview() {
         </Card>
       </div>
 
-      {/* Booking mix donut + patient status list + appointments */}
-      <div className="mt-4 grid lg:grid-cols-3 gap-4 items-start">
+      {/* Booking mix donut + patient status */}
+      <div className="mt-6 grid lg:grid-cols-2 gap-5 items-start">
         <Card className="p-5">
           <div className="flex items-center justify-between">
             <p className="text-[13px] font-semibold text-[var(--color-ink)]">Booking mix</p>
@@ -285,17 +318,17 @@ export default function Overview() {
         </Card>
 
         <Card className="p-0 overflow-hidden">
-          <div className="px-4 py-3.5 border-b border-[var(--color-hairline)] flex items-center justify-between">
+          <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
             <p className="text-[13px] font-semibold text-[var(--color-ink)]">Patient status</p>
-            <Link to="/app/patients" className="text-[11px] font-medium" style={{ color: 'var(--color-primary)' }}>View all</Link>
+            <Link to="/app/patients" className="text-[12px] font-medium" style={{ color: 'var(--color-primary)' }}>View all</Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 px-4 py-3 border-b border-[var(--color-hairline)] text-center">
+          <div className="grid grid-cols-2 gap-3 px-5 py-3 border-b border-[var(--color-hairline)] text-center">
             <div><p className="text-[16px] font-bold text-[var(--color-ink)]">{activePatients}</p><p className="text-[10px] text-[var(--color-ink-muted-48)]">Active</p></div>
             <div><p className="text-[16px] font-bold text-[var(--color-ink)]">{lapsedPatients}</p><p className="text-[10px] text-[var(--color-ink-muted-48)]">Lapsed</p></div>
           </div>
           <div className="divide-y divide-[var(--color-hairline)]">
             {patients.slice(0, 3).map(p => (
-              <div key={p.id} className="px-4 py-2.5 flex items-center gap-2.5">
+              <div key={p.id} className="px-5 py-3 flex items-center gap-3">
                 <span className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0" style={{ background: 'var(--color-primary-soft)', color: 'var(--color-primary)' }}>{p.avatar}</span>
                 <div className="min-w-0 flex-1">
                   <p className="text-[12px] font-medium text-[var(--color-ink)] truncate">{p.name}</p>
@@ -306,32 +339,12 @@ export default function Overview() {
             ))}
           </div>
         </Card>
-
-        <Card className="p-0 overflow-hidden">
-          <div className="px-4 py-3.5 border-b border-[var(--color-hairline)] flex items-center justify-between">
-            <p className="text-[13px] font-semibold text-[var(--color-ink)]">Needs attention</p>
-            <Link to="/app/follow-ups" className="text-[11px] font-medium" style={{ color: 'var(--color-primary)' }}>View all</Link>
-          </div>
-          <div className="divide-y divide-[var(--color-hairline)]">
-            {actionItems.map(item => (
-              <Link key={item.title} to={item.href} className="px-4 py-2.5 flex items-center gap-2.5 hover:bg-[var(--color-canvas-parchment)]">
-                <span className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${item.tone === 'amber' ? '' : ''}`} style={{ background: item.tone === 'amber' ? 'var(--badge-amber-bg)' : 'var(--color-canvas-parchment)', color: item.tone === 'amber' ? 'var(--badge-amber-fg)' : 'var(--color-ink-muted-48)' }}>
-                  <item.icon size={13} />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[12px] font-medium text-[var(--color-ink)] truncate">{item.title}</p>
-                  <p className="text-[10px] text-[var(--color-ink-muted-48)] truncate">{item.sub}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </Card>
       </div>
 
       {/* Recent activity — full width footer strip */}
-      <Card className="mt-4 p-4">
-        <p className="text-[13px] font-semibold text-[var(--color-ink)] mb-3">Recent activity</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+      <Card className="mt-6 p-5">
+        <p className="text-[13px] font-semibold text-[var(--color-ink)] mb-4">Recent activity</p>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
             { icon: CalendarPlus, text: 'New booking from Rahul Sharma', time: '2 min ago' },
             { icon: CreditCard, text: 'Payment received · ₹1,500', time: '18 min ago' },
