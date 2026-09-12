@@ -4,6 +4,7 @@ import {
   Copy, Check, MoreHorizontal, MoreVertical, Download, Plus, ChevronLeft, ChevronRight, ArrowUpRight,
   Stethoscope, Clock3, NotebookText, Search, SlidersHorizontal, HelpCircle,
   CreditCard, AlertTriangle, FileText, CalendarPlus, UserPlus, CheckCircle2,
+  Sparkles, TrendingUp, CalendarOff, BarChart3, HeartHandshake,
 } from 'lucide-react'
 import { Button, Card, Chip } from '@heroui/react'
 import { todaySchedule, followUps, patients, bookings } from '../lib/data'
@@ -85,6 +86,23 @@ export default function Overview() {
     { label: 'Thu', sessions: 7 }, { label: 'Fri', sessions: 6 }, { label: 'Sat', sessions: 4 }, { label: 'Sun', sessions: 3 },
   ]
   const maxBar = Math.max(...weekBars.map(b => b.sessions))
+  const busiestDay = weekBars.reduce((max, b) => b.sessions > max.sessions ? b : max, weekBars[0])
+  const weekTotal = weekBars.reduce((sum, b) => sum + b.sessions, 0)
+
+  // Continuity — patients with no future session booked. This is the one
+  // metric a generic booking tool has no reason to track: it's the whole
+  // point of a practice built around not letting care lapse silently.
+  const noFuturePatients = patients.filter(p => !p.nextSession)
+  const upcomingPatients = patients.filter(p => p.nextSession).length
+  const pendingBookings = bookings.filter(b => b.status === 'pending')
+  const pendingAmount = pendingBookings.reduce((sum, b) => sum + Number(b.amount.replace(/[^0-9]/g, '')), 0)
+
+  const insights = [
+    { icon: TrendingUp, text: <>Sessions are up <span className="font-semibold text-[var(--color-ink)]">14%</span> vs last week — {weekTotal} booked so far.</>, href: '/app/earnings' },
+    { icon: CalendarOff, text: <><span className="font-semibold text-[var(--color-ink)]">{noFuturePatients.length} patients</span> have no upcoming session booked.</>, href: '/app/patients' },
+    { icon: CreditCard, text: <><span className="font-semibold text-[var(--color-ink)]">₹{pendingAmount.toLocaleString('en-IN')}</span> in payments are still pending.</>, href: '/app/bookings' },
+    { icon: BarChart3, text: <><span className="font-semibold text-[var(--color-ink)]">{busiestDay.label}</span> is your busiest day this week.</>, href: '/app/calendar' },
+  ]
 
   const bookingMix = [
     { key: 'confirmed', label: 'Confirmed', color: 'var(--color-primary)', hatch: 'url(#hatch-indigo)' },
@@ -306,6 +324,86 @@ export default function Overview() {
         </Card>
       </div>
 
+      {/* Lumid AI Insights — real, computed observations about the practice, not decoration */}
+      <Card className="mt-6 p-5">
+        <div className="flex items-center gap-2">
+          <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--color-ink)' }}>
+            <Sparkles size={13} className="text-white" />
+          </span>
+          <p className="text-[13px] font-bold tracking-wide uppercase text-[var(--color-ink)]">Lumid AI Insights</p>
+          <span className="text-[12px] text-[var(--color-ink-muted-48)]">Your practice at a glance</span>
+        </div>
+        <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          {insights.map((insight, i) => (
+            <div key={i} className="rounded-[12px] p-3.5 flex flex-col justify-between gap-3" style={{ background: 'var(--color-canvas-parchment)' }}>
+              <div className="flex items-start gap-2.5">
+                <insight.icon size={15} className="mt-0.5 shrink-0" style={{ color: 'var(--color-ink-muted-48)' }} />
+                <p className="text-[12px] text-[var(--color-ink)] leading-snug">{insight.text}</p>
+              </div>
+              <Link to={insight.href} className="text-[11px] font-semibold" style={{ color: 'var(--color-primary)' }}>Review →</Link>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      {/* Patient continuity + recent activity — continuity is the metric unique to a care practice: who's fallen off the calendar */}
+      <div className="mt-6 grid lg:grid-cols-[1.6fr_1fr] gap-5 items-start">
+        <Card className="p-0 overflow-hidden">
+          <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
+            <p className="text-[13px] font-bold text-[var(--color-ink)] flex items-center gap-1.5">
+              <HeartHandshake size={15} style={{ color: 'var(--color-primary)' }} /> Patient Continuity
+            </p>
+            <Link to="/app/patients" className="text-[12px] font-medium inline-flex items-center gap-1" style={{ color: 'var(--color-primary)' }}>View all <ArrowUpRight size={12} /></Link>
+          </div>
+          <div className="grid grid-cols-4 gap-2 px-5 py-3.5 border-b border-[var(--color-hairline)]">
+            {[
+              { label: 'Active', value: activePatients, warn: false },
+              { label: 'Upcoming', value: upcomingPatients, warn: false },
+              { label: 'Follow-ups', value: followUps.length, warn: false },
+              { label: 'No future', value: noFuturePatients.length, warn: true },
+            ].map(stat => (
+              <div key={stat.label} className="rounded-[10px] p-2.5 text-center" style={{ background: stat.warn ? 'var(--badge-amber-bg)' : 'var(--color-canvas-parchment)' }}>
+                <p className="text-[17px] font-bold leading-none" style={{ color: stat.warn ? 'var(--badge-amber-fg)' : 'var(--color-ink)' }}>{stat.value}</p>
+                <p className="text-[9px] font-semibold uppercase tracking-wide mt-1" style={{ color: stat.warn ? 'var(--badge-amber-fg)' : 'var(--color-ink-muted-48)' }}>{stat.label}</p>
+              </div>
+            ))}
+          </div>
+          <div className="divide-y divide-[var(--color-hairline)]">
+            {noFuturePatients.length === 0 ? (
+              <p className="px-5 py-6 text-[12px] text-center text-[var(--color-ink-muted-48)]">Everyone has a next session booked. Nothing at risk of lapsing.</p>
+            ) : noFuturePatients.map(p => (
+              <div key={p.id} className="px-5 py-3 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0" style={{ background: 'var(--color-primary-soft)', color: 'var(--color-primary)' }}>{p.avatar}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-[12px] font-semibold text-[var(--color-ink)] truncate">{p.name}</p>
+                  <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">Last seen {p.lastSession} · No upcoming session</p>
+                </div>
+                <Link to={`/app/patients/${p.id}`} className="text-[11px] font-semibold px-3 py-1.5 rounded-full border border-[var(--color-hairline)] hover:bg-[var(--color-canvas-parchment)] transition shrink-0" style={{ color: 'var(--color-ink)' }}>Review</Link>
+              </div>
+            ))}
+          </div>
+        </Card>
+
+        <Card className="p-0 overflow-hidden">
+          <div className="px-5 py-4 border-b border-[var(--color-hairline)]">
+            <p className="text-[13px] font-bold text-[var(--color-ink)]">Recent Activity</p>
+          </div>
+          <div className="divide-y divide-[var(--color-hairline)]">
+            {[
+              { icon: CalendarPlus, text: 'New booking from Rahul Sharma', time: '2 min ago' },
+              { icon: CreditCard, text: 'Payment received · ₹1,500', time: '18 min ago' },
+              { icon: CheckCircle2, text: 'Vikram completed his session', time: '1 hr ago' },
+              { icon: UserPlus, text: 'New patient · Sneha Kulkarni', time: 'Yesterday' },
+            ].map((a, i) => (
+              <div key={i} className="px-5 py-3 flex items-center gap-3">
+                <span className="w-8 h-8 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--color-canvas-parchment)', color: 'var(--color-ink-muted-48)' }}><a.icon size={13} /></span>
+                <div className="min-w-0 flex-1"><p className="text-[12px] text-[var(--color-ink)] leading-snug">{a.text}</p><p className="text-[10px] text-[var(--color-ink-muted-48)] mt-0.5">{a.time}</p></div>
+              </div>
+            ))}
+          </div>
+        </Card>
+      </div>
+
       {/* Practice overview chart + calendar/activity */}
       <div className="mt-6 grid lg:grid-cols-[1.7fr_1fr] gap-5 items-start">
         <Card className="p-5">
@@ -436,24 +534,6 @@ export default function Overview() {
           </div>
         </Card>
       </div>
-
-      {/* Recent activity — full width footer strip */}
-      <Card className="mt-6 p-5">
-        <p className="text-[13px] font-semibold text-[var(--color-ink)] mb-4">Recent activity</p>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[
-            { icon: CalendarPlus, text: 'New booking from Rahul Sharma', time: '2 min ago' },
-            { icon: CreditCard, text: 'Payment received · ₹1,500', time: '18 min ago' },
-            { icon: CheckCircle2, text: 'Vikram completed his session', time: '1 hr ago' },
-            { icon: UserPlus, text: 'New patient · Sneha Kulkarni', time: 'Yesterday' },
-          ].map((a, i) => (
-            <div key={i} className="flex items-start gap-2.5">
-              <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--color-canvas-parchment)', color: 'var(--color-ink-muted-48)' }}><a.icon size={13} /></span>
-              <div className="min-w-0"><p className="text-[11px] text-[var(--color-ink)] leading-snug">{a.text}</p><p className="text-[10px] text-[var(--color-ink-muted-48)] mt-0.5">{a.time}</p></div>
-            </div>
-          ))}
-        </div>
-      </Card>
     </div>
   )
 }
