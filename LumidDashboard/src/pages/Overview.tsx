@@ -91,11 +91,6 @@ export default function Overview() {
           <p className="text-[13px] text-[var(--color-ink-muted-48)] mt-1.5">Here's what needs your attention today.</p>
         </div>
         <div className="flex items-center gap-2">
-          {awaitingCount > 0 && (
-            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-semibold border" style={{ background: 'var(--badge-amber-bg)', color: 'var(--badge-amber-fg)', borderColor: 'var(--badge-amber-fg)' }}>
-              <CreditCard size={13} /> Payment Awaiting
-            </span>
-          )}
           <button onClick={copy} className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition">
             {copied ? <Check size={13} style={{ color: 'var(--color-primary)' }} /> : <Copy size={13} />} anitha.lumidai.in
           </button>
