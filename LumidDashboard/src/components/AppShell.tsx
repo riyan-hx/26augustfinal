@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, Download, Menu, X, Bell, Search } from 'lucide-react'
+import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, Download, Menu, X, Bell, Search } from '../lib/icons'
 import { useState } from 'react'
 
 // v1 nav: only routes with real content behind them. Ranked by the validated

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Clock, Video, Shield, ArrowRight, CalendarDays, CreditCard, Sparkles, Copy } from 'lucide-react'
+import { Check, Clock, Video, Shield, ArrowRight, CalendarDays, CreditCard, Sparkles, Copy } from '../lib/icons'
 
 export default function PublicBooking() {
   const [step, setStep] = useState(1)

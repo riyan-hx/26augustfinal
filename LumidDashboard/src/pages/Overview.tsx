@@ -5,7 +5,7 @@ import {
   Stethoscope, Clock3, NotebookText, Search, SlidersHorizontal, HelpCircle,
   CreditCard, AlertTriangle, FileText, CalendarPlus, UserPlus, CheckCircle2,
   Sparkles, TrendingUp, CalendarOff, BarChart3, HeartHandshake,
-} from 'lucide-react'
+} from '../lib/icons'
 import { Button, Card, Chip } from '@heroui/react'
 import { todaySchedule, followUps, patients, bookings } from '../lib/data'
 
@@ -97,11 +97,16 @@ export default function Overview() {
   const pendingBookings = bookings.filter(b => b.status === 'pending')
   const pendingAmount = pendingBookings.reduce((sum, b) => sum + Number(b.amount.replace(/[^0-9]/g, '')), 0)
 
+  const insightTone = {
+    good: { bg: 'var(--badge-green-bg)', fg: 'var(--badge-green-fg)' },
+    warn: { bg: 'var(--badge-amber-bg)', fg: 'var(--badge-amber-fg)' },
+    neutral: { bg: 'var(--color-canvas)', fg: 'var(--color-ink-muted-48)' },
+  }
   const insights = [
-    { icon: TrendingUp, text: <>Sessions are up <span className="font-semibold text-[var(--color-ink)]">14%</span> vs last week — {weekTotal} booked so far.</>, href: '/app/earnings' },
-    { icon: CalendarOff, text: <><span className="font-semibold text-[var(--color-ink)]">{noFuturePatients.length} patients</span> have no upcoming session booked.</>, href: '/app/patients' },
-    { icon: CreditCard, text: <><span className="font-semibold text-[var(--color-ink)]">₹{pendingAmount.toLocaleString('en-IN')}</span> in payments are still pending.</>, href: '/app/bookings' },
-    { icon: BarChart3, text: <><span className="font-semibold text-[var(--color-ink)]">{busiestDay.label}</span> is your busiest day this week.</>, href: '/app/calendar' },
+    { icon: TrendingUp, tone: insightTone.good, text: <>Sessions are up <span className="font-semibold text-[var(--color-ink)]">14%</span> vs last week — {weekTotal} booked so far.</>, href: '/app/earnings' },
+    { icon: CalendarOff, tone: insightTone.warn, text: <><span className="font-semibold text-[var(--color-ink)]">{noFuturePatients.length} patients</span> have no upcoming session booked.</>, href: '/app/patients' },
+    { icon: CreditCard, tone: insightTone.warn, text: <><span className="font-semibold text-[var(--color-ink)]">₹{pendingAmount.toLocaleString('en-IN')}</span> in payments are still pending.</>, href: '/app/bookings' },
+    { icon: BarChart3, tone: insightTone.neutral, text: <><span className="font-semibold text-[var(--color-ink)]">{busiestDay.label}</span> is your busiest day this week.</>, href: '/app/calendar' },
   ]
 
   const bookingMix = [
@@ -324,30 +329,34 @@ export default function Overview() {
         </Card>
       </div>
 
-      {/* Lumid AI Insights — real, computed observations about the practice, not decoration */}
-      <Card className="mt-6 p-5">
-        <div className="flex items-center gap-2">
-          <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--color-ink)' }}>
-            <Sparkles size={13} className="text-white" />
-          </span>
-          <p className="text-[13px] font-bold tracking-wide uppercase text-[var(--color-ink)]">Lumid AI Insights</p>
-          <span className="text-[12px] text-[var(--color-ink-muted-48)]">Your practice at a glance</span>
-        </div>
-        <div className="mt-4 grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-          {insights.map((insight, i) => (
-            <div key={i} className="rounded-[12px] p-3.5 flex flex-col justify-between gap-3" style={{ background: 'var(--color-canvas-parchment)' }}>
-              <div className="flex items-start gap-2.5">
-                <insight.icon size={15} className="mt-0.5 shrink-0" style={{ color: 'var(--color-ink-muted-48)' }} />
-                <p className="text-[12px] text-[var(--color-ink)] leading-snug">{insight.text}</p>
+      {/* Insights + Patient Continuity + Recent Activity — one row, in the order a psychologist should
+          actually work through them: what the AI noticed → who needs a next step → what just happened. */}
+      <div className="mt-6 grid lg:grid-cols-[1fr_1.9fr_1fr] gap-5 items-start">
+        {/* Lumid AI Insights — real, computed observations, stacked so each one reads as its own quick decision */}
+        <Card className="p-5">
+          <div className="flex items-center gap-2">
+            <span className="w-7 h-7 rounded-full flex items-center justify-center shrink-0" style={{ background: 'var(--color-ink)' }}>
+              <Sparkles size={13} className="text-white" />
+            </span>
+            <p className="text-[12px] font-bold tracking-wide uppercase text-[var(--color-ink)]">Lumid AI Insights</p>
+          </div>
+          <p className="text-[11px] text-[var(--color-ink-muted-48)] mt-1 ml-9 -mt-0.5">Your practice at a glance</p>
+          <div className="mt-4 flex flex-col gap-2.5">
+            {insights.map((insight, i) => (
+              <div key={i} className="rounded-[12px] p-3 flex items-start gap-2.5" style={{ background: 'var(--color-canvas-parchment)' }}>
+                <span className="w-6 h-6 rounded-full flex items-center justify-center shrink-0 mt-0.5" style={{ background: insight.tone.bg, color: insight.tone.fg }}>
+                  <insight.icon size={12} />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-[12px] text-[var(--color-ink)] leading-snug">{insight.text}</p>
+                  <Link to={insight.href} className="text-[11px] font-semibold mt-1.5 inline-block" style={{ color: 'var(--color-primary)' }}>Review →</Link>
+                </div>
               </div>
-              <Link to={insight.href} className="text-[11px] font-semibold" style={{ color: 'var(--color-primary)' }}>Review →</Link>
-            </div>
-          ))}
-        </div>
-      </Card>
+            ))}
+          </div>
+        </Card>
 
-      {/* Patient continuity + recent activity — continuity is the metric unique to a care practice: who's fallen off the calendar */}
-      <div className="mt-6 grid lg:grid-cols-[1.6fr_1fr] gap-5 items-start">
+        {/* Patient Continuity — the metric unique to a care practice: who's fallen off the calendar */}
         <Card className="p-0 overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
             <p className="text-[13px] font-bold text-[var(--color-ink)] flex items-center gap-1.5">
@@ -384,6 +393,7 @@ export default function Overview() {
           </div>
         </Card>
 
+        {/* Recent Activity */}
         <Card className="p-0 overflow-hidden">
           <div className="px-5 py-4 border-b border-[var(--color-hairline)]">
             <p className="text-[13px] font-bold text-[var(--color-ink)]">Recent Activity</p>

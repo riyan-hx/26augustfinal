@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, SlidersHorizontal, ChevronRight, Clock, Users } from 'lucide-react'
+import { Search, SlidersHorizontal, ChevronRight, Clock, Users } from '../lib/icons'
 import { patients } from '../lib/data'
 
 export default function PatientsPage() {

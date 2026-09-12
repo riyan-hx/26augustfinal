@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { bookings } from '../lib/data'
-import { Search, Filter, MoreHorizontal, CheckCircle2, Clock3, XCircle, AlertTriangle } from 'lucide-react'
+import { Search, Filter, MoreHorizontal, CheckCircle2, Clock3, XCircle, AlertTriangle } from '../lib/icons'
 
 const statusStyles: Record<string, string> = {
   confirmed: 'bg-emerald-50 border-emerald-200 text-emerald-700',

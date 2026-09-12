@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
-import { ChevronLeft, ChevronRight, Video, Copy, Check, X, Plus, Calendar, Globe, CheckCircle2, Trash2, Edit3, ExternalLink } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Video, Copy, Check, X, Plus, Calendar, Globe, CheckCircle2, Trash2, Edit3, ExternalLink } from '../lib/icons'
 import { Button, Card, Chip } from '@heroui/react'
 import { patients } from '../lib/data'
 

@@ -1,6 +1,6 @@
 import { useParams, Link } from 'react-router-dom'
 import { patients, timelineEvents } from '../lib/data'
-import { ArrowLeft, Video, FileText, Repeat2, ShieldCheck, Sparkles, Clock, CheckCircle2, Eye, ArrowUpRight } from 'lucide-react'
+import { ArrowLeft, Video, FileText, Repeat2, ShieldCheck, Sparkles, Clock, CheckCircle2, Eye, ArrowUpRight } from '../lib/icons'
 
 export default function PatientProfile() {
   const { id } = useParams()

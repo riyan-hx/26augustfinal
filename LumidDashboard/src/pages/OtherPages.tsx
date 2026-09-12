@@ -1,4 +1,4 @@
-import { Check, CreditCard, TrendingUp, Shield, Sparkles, Repeat2, Globe, Settings, Calendar, MapPin, Award, Languages, Copy, ExternalLink } from 'lucide-react'
+import { Check, CreditCard, TrendingUp, Shield, Sparkles, Repeat2, Globe, Settings, Calendar, MapPin, Award, Languages, Copy, ExternalLink } from '../lib/icons'
 
 export function SessionsPage() {
   return (
