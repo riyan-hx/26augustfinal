@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, HelpCircle, LogOut, Menu, X, Bell, Search } from 'lucide-react'
+import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, Download, Menu, X, Bell, Search } from 'lucide-react'
 import { useState } from 'react'
 
 // v1 nav: only routes with real content behind them. Ranked by the validated
@@ -37,10 +37,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="min-h-screen bg-[var(--canvas)] text-[var(--ink)] flex">
       {/* Fixed left sidebar — 220-240px, Lumid */}
       <aside className="hidden lg:flex w-[232px] shrink-0 bg-white border-r border-[var(--lumid-border)] flex-col sticky top-0 h-screen">
-        <div className="h-[56px] flex items-center gap-2.5 px-5 border-b border-[var(--lumid-border)]">
-          <div className="w-7 h-7 rounded-[8px] bg-[var(--color-primary)] flex items-center justify-center text-white text-[12px] font-bold tracking-widest">L</div>
-          <span className="font-semibold text-[15px] tracking-tight text-[var(--color-ink)]">Lumid</span>
-          <span className="text-[10px] tracking-[0.1em] text-[var(--color-ink-muted-48)] font-medium ml-0.5">PSYCHOLOGISTS</span>
+        <div className="h-[64px] flex items-center px-5 border-b border-[var(--lumid-border)]">
+          <span className="font-extrabold text-[20px] tracking-tight" style={{ color: 'var(--color-primary)' }}>LUMID AI</span>
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
@@ -50,9 +48,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <div className="space-y-0.5">
                 {g.items.map(item => (
                   <NavLink key={item.to} to={item.to} end={item.end as boolean | undefined}
-                    className={({ isActive }) => `flex items-center gap-2.5 px-3 py-2 rounded-[8px] text-[13px] font-medium transition ${isActive ? '[&_svg]:text-[var(--color-primary)]' : 'text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)] hover:text-[var(--color-ink)]'}`}
+                    className={({ isActive }) => `flex items-center gap-2.5 px-3 py-2.5 rounded-[10px] text-[13px] font-medium transition ${isActive ? '[&_svg]:text-[var(--color-primary)]' : 'text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)] hover:text-[var(--color-ink)]'}`}
                     style={({ isActive }) => isActive ? { background: 'var(--color-primary-soft)', color: 'var(--color-primary)' } : undefined}>
-                    <item.icon size={15} strokeWidth={1.75} />
+                    <item.icon size={16} strokeWidth={1.75} />
                     {item.label}
                   </NavLink>
                 ))}
@@ -74,13 +72,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <NavLink to="/app/settings" className="flex items-center justify-center gap-1.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)]">
               <Settings size={13} /> Settings
             </NavLink>
-            <button className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-[var(--color-primary)] text-white text-[12px] font-medium hover:bg-[var(--color-primary-focus)]">
-              <HelpCircle size={13} /> Help
+            <button className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-[var(--color-ink)] text-white text-[12px] font-medium hover:opacity-90">
+              <Download size={13} /> Export
             </button>
           </div>
-          <button className="w-full flex items-center justify-center gap-1.5 text-[11px] text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)] py-1">
-            <LogOut size={13} /> Log out
-          </button>
         </div>
       </aside>
 

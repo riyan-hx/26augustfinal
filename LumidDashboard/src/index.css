@@ -1,11 +1,12 @@
 /*
  * Lumid's brand layer on top of HeroUI (src/styles/globals.css, loaded first —
  * see main.tsx). HeroUI owns the real system now: --background/--foreground/
- * --surface/--border/--accent/--radius etc, themed to the exact Apple-derived
- * token system defined there (colors, spacing, radius, type scale, motion).
+ * --surface/--border/--accent/--radius etc, themed to the exact token system
+ * pulled from the Lumid AI Dashboard Figma file (colors, spacing, radius,
+ * type scale, motion).
  *
- * Typeface: Helvetica Neue / Helvetica, with Arial as the cross-platform
- * fallback (Windows/Linux have neither Helvetica variant installed).
+ * Typeface: Manrope — the exact family used throughout the Figma file
+ * (loaded from Google Fonts in index.html), system-ui as the fallback stack.
  *
  * This file bridges the app's existing semantic names (--ink, --hairline,
  * --green-700, …) onto the real HeroUI tokens, so pages that already use these
@@ -18,8 +19,8 @@
      "@import tailwindcss", so Tailwind never processes an @theme block
      placed here. A plain custom-property override is what actually reaches
      the page — the same pattern globals.css uses for --accent. */
-  --font-body: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   /* Surfaces */
   --canvas: var(--background);

@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Copy, Check, MoreHorizontal, Download, Plus, ChevronLeft, ChevronRight,
-  Wallet, Repeat2, TrendingDown, TrendingUp, Stethoscope, Users, Clock3,
+  Copy, Check, MoreHorizontal, Download, Plus, ChevronLeft, ChevronRight, ArrowUpRight,
+  Stethoscope, Clock3,
   CreditCard, AlertTriangle, FileText, CalendarPlus, UserPlus, CheckCircle2,
 } from 'lucide-react'
 import { Button, Card, Chip } from '@heroui/react'
@@ -36,14 +36,6 @@ function CardMenu() {
   return <button aria-label="Card options" className="text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)]"><MoreHorizontal size={16} /></button>
 }
 
-function TrendPill({ value, up = true }: { value: string; up?: boolean }) {
-  return (
-    <span className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold ${up ? 'bg-[var(--badge-green-bg)] text-[var(--badge-green-fg)]' : 'bg-[var(--badge-rose-bg)] text-[var(--badge-rose-fg)]'}`}>
-      {up ? <TrendingUp size={10} /> : <TrendingDown size={10} />} {value}
-    </span>
-  )
-}
-
 function IconBadge({ icon: Icon, bg, fg }: { icon: any; bg: string; fg: string }) {
   return (
     <span className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0" style={{ background: bg, color: fg }}>
@@ -54,10 +46,13 @@ function IconBadge({ icon: Icon, bg, fg }: { icon: any; bg: string; fg: string }
 
 export default function Overview() {
   const [copied, setCopied] = useState(false)
+  const [activeFilter, setActiveFilter] = useState('Today')
   const copy = () => { navigator.clipboard?.writeText('anitha.lumidai.in'); setCopied(true); setTimeout(() => setCopied(false), 1500) }
 
   const earningsToday = todaySchedule.reduce((sum, s) => sum + (sessionRate[s.type] ?? 1500), 0)
   const collectedToday = todaySchedule.filter(s => s.paid).reduce((sum, s) => sum + (sessionRate[s.type] ?? 1500), 0)
+  const paidCount = todaySchedule.filter(s => s.paid).length
+  const awaitingCount = todaySchedule.filter(s => !s.paid).length
   const followUpsDue = followUps.filter(f => f.due.toLowerCase().includes('today') || f.due.toLowerCase().includes('overdue')).length
   const activePatients = patients.filter(p => p.status === 'active').length
   const lapsedPatients = patients.filter(p => p.status === 'lapsed').length
@@ -89,92 +84,97 @@ export default function Overview() {
     <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8 max-w-[1220px] mx-auto">
       <HatchDefs />
 
-      {/* Header */}
+      {/* Header — greeting + payment alert + primary actions, matches the Figma file's top bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
         <div>
-          <h1 className="text-[22px] font-semibold tracking-tight text-[var(--color-ink)] leading-none">Hey Anitha, glad to have you back! 🙌</h1>
+          <h1 className="text-[26px] font-bold tracking-tight text-[var(--color-ink)] leading-none">Good Morning, Dr. Anitha</h1>
           <p className="text-[13px] text-[var(--color-ink-muted-48)] mt-1.5">Here's what needs your attention today.</p>
         </div>
         <div className="flex items-center gap-2">
-          <Button variant="secondary" size="sm" onPress={copy}>
-            {copied ? <Check className="text-success" /> : <Download />} Export CSV
-          </Button>
+          {awaitingCount > 0 && (
+            <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-[12px] font-semibold border" style={{ background: 'var(--badge-amber-bg)', color: 'var(--badge-amber-fg)', borderColor: 'var(--badge-amber-fg)' }}>
+              <CreditCard size={13} /> Payment Awaiting
+            </span>
+          )}
+          <button onClick={copy} className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition">
+            {copied ? <Check size={13} style={{ color: 'var(--color-primary)' }} /> : <Copy size={13} />} anitha.lumidai.in
+          </button>
           <Link to="/app/calendar">
-            <Button size="sm"><Plus /> Add new</Button>
+            <Button size="sm"><Plus /> Add New Booking</Button>
           </Link>
         </div>
       </div>
 
-      {/* Hero KPI + 3 stat cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* Hero — solid indigo, matches the reference's "Total doctors" tile */}
-        <div className="col-span-2 lg:col-span-1 rounded-[20px] p-5 text-white flex flex-col justify-between" style={{ background: 'linear-gradient(155deg, var(--color-primary), var(--color-primary-focus))' }}>
-          <div className="flex items-start justify-between">
-            <span className="w-8 h-8 rounded-lg bg-white/15 flex items-center justify-center"><Stethoscope size={15} /></span>
-            <button aria-label="Card options" className="text-white/60 hover:text-white"><MoreHorizontal size={16} /></button>
-          </div>
-          <div className="mt-4">
-            <p className="text-[12px] text-white/70">Sessions today</p>
-            <div className="flex items-center gap-2 mt-1">
-              <p className="text-[28px] font-bold leading-none">{todaySchedule.length}</p>
-              <TrendPill value="+12%" />
-            </div>
-            <p className="text-[11px] text-white/60 mt-2">{todaySchedule.filter(s => s.paid).length} paid · {todaySchedule.filter(s => !s.paid).length} awaiting</p>
-          </div>
-          <div className="mt-4 h-1.5 rounded-full bg-white/20 overflow-hidden">
-            <div className="h-full rounded-full bg-white" style={{ width: '65%' }} />
-          </div>
-          <p className="text-[10px] text-white/50 mt-1.5 text-right">{collectedToday > 0 ? `₹${collectedToday.toLocaleString('en-IN')} today` : 'No payments yet'}</p>
-        </div>
-
-        <Card className="p-4 gap-0">
-          <div className="flex items-start justify-between">
-            <IconBadge icon={Wallet} bg="var(--badge-blue-bg)" fg="var(--badge-blue-fg)" />
-            <CardMenu />
-          </div>
-          <p className="text-[12px] text-[var(--color-ink-muted-48)] mt-3">Today's earnings</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-[20px] font-bold text-[var(--color-ink)] leading-none">₹{earningsToday.toLocaleString('en-IN')}</p>
-            <TrendPill value="+18%" />
-          </div>
-          <div className="mt-3 h-1.5 rounded-full bg-[var(--color-hairline)] overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: '72%', background: 'var(--badge-blue-fg)' }} />
-          </div>
-          <p className="text-[10px] text-[var(--color-ink-muted-48)] mt-1.5 text-right">₹{collectedToday.toLocaleString('en-IN')} collected</p>
-        </Card>
-
-        <Card className="p-4 gap-0">
-          <div className="flex items-start justify-between">
-            <IconBadge icon={Repeat2} bg="var(--badge-rose-bg)" fg="var(--badge-rose-fg)" />
-            <CardMenu />
-          </div>
-          <p className="text-[12px] text-[var(--color-ink-muted-48)] mt-3">Follow-ups due</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-[20px] font-bold text-[var(--color-ink)] leading-none">{followUpsDue}</p>
-            <TrendPill value="Today" up={false} />
-          </div>
-          <div className="mt-3 h-1.5 rounded-full bg-[var(--color-hairline)] overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: '40%', background: 'var(--badge-rose-fg)' }} />
-          </div>
-          <p className="text-[10px] text-[var(--color-ink-muted-48)] mt-1.5 text-right">{followUps.length} in queue</p>
-        </Card>
-
-        <Card className="p-4 gap-0">
-          <div className="flex items-start justify-between">
-            <IconBadge icon={Users} bg="var(--badge-violet-bg)" fg="var(--badge-violet-fg)" />
-            <CardMenu />
-          </div>
-          <p className="text-[12px] text-[var(--color-ink-muted-48)] mt-3">No-show rate</p>
-          <div className="flex items-center gap-2 mt-0.5">
-            <p className="text-[20px] font-bold text-[var(--color-ink)] leading-none">3.2%</p>
-            <TrendPill value="-1.9%" />
-          </div>
-          <div className="mt-3 h-1.5 rounded-full bg-[var(--color-hairline)] overflow-hidden">
-            <div className="h-full rounded-full" style={{ width: '8%', background: 'var(--badge-violet-fg)' }} />
-          </div>
-          <p className="text-[10px] text-[var(--color-ink-muted-48)] mt-1.5 text-right">{activePatients} active patients</p>
-        </Card>
+      {/* Filter pills — matches the Figma file's Today / This Week / This Month segmented control */}
+      <div className="flex items-center gap-1.5 mb-4 bg-[var(--color-canvas-parchment)] w-fit p-1 rounded-full border border-[var(--color-hairline)]">
+        {['Today', 'This Week', 'This Month'].map(f => (
+          <button key={f} onClick={() => setActiveFilter(f)}
+            className={`px-4 py-1.5 rounded-full text-[12px] font-medium transition ${activeFilter === f ? 'bg-[var(--color-canvas)] text-[var(--color-ink)] shadow-sm' : 'text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)]'}`}>
+            {f}
+          </button>
+        ))}
       </div>
+
+      {/* KPI row — one flat card divided by hairlines, matches the Figma file exactly */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 border border-[var(--color-hairline)] rounded-[16px] overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-[var(--color-hairline)] bg-[var(--color-canvas)]">
+        <div className="p-5">
+          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">Sessions Today</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">{todaySchedule.length}</p>
+          <p className="text-[12px] mt-2 truncate">
+            <span className="font-medium" style={{ color: 'var(--color-primary)' }}>{paidCount} Paid</span>
+            <span className="text-[var(--color-ink-muted-48)]"> · </span>
+            <span className="font-medium" style={{ color: 'var(--badge-amber-fg)' }}>{awaitingCount} Payment Awaiting</span>
+          </p>
+        </div>
+        <div className="p-5">
+          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">Today's Earnings</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">₹{earningsToday.toLocaleString('en-IN')}</p>
+          <p className="text-[12px] mt-2 font-medium" style={{ color: 'var(--color-primary)' }}>₹{collectedToday.toLocaleString('en-IN')} collected so far</p>
+        </div>
+        <div className="p-5">
+          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">Follow-ups Due</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">{followUpsDue}</p>
+          <p className="text-[12px] mt-2 text-[var(--color-ink-muted-48)]">Needs a nudge today</p>
+        </div>
+        <div className="p-5">
+          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">No-show Rate</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">3.2%</p>
+          <p className="text-[12px] mt-2 font-medium" style={{ color: 'var(--color-primary)' }}>-1.9% last month</p>
+        </div>
+      </div>
+
+      {/* Today's Schedules — matches the Figma file's list card exactly */}
+      <Card className="mt-5 p-0 overflow-hidden">
+        <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
+          <p className="text-[17px] font-bold text-[var(--color-ink)]">Today's Schedules</p>
+          <Link to="/app/calendar" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition">
+            Open Calendar <ArrowUpRight size={13} />
+          </Link>
+        </div>
+        <div className="divide-y divide-[var(--color-hairline)]">
+          {todaySchedule.map(s => {
+            const amount = sessionRate[s.type] ?? 1500
+            const patientRecord = patients.find(p => p.name === s.patient)
+            return (
+              <div key={s.time} className="px-5 py-3.5 flex items-center gap-4">
+                <span className="flex items-center gap-1.5 text-[13px] text-[var(--color-ink-muted-48)] w-[76px] shrink-0"><Clock3 size={13} /> {s.time}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[13px] font-semibold text-[var(--color-ink)] truncate">{s.patient}</p>
+                  <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">{s.type}</p>
+                </div>
+                <span className="text-[13px] font-medium text-[var(--color-ink)] w-[72px] text-right shrink-0">₹{amount.toLocaleString('en-IN')}</span>
+                <span className="w-[92px] shrink-0 hidden sm:flex justify-center">
+                  <Chip size="sm" color={s.paid ? 'success' : 'warning'} variant="soft">{s.paid ? 'Paid' : 'Pending'}</Chip>
+                </span>
+                <Link to={patientRecord ? `/app/patients/${patientRecord.id}` : '/app/patients'}
+                  className="hidden md:inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition shrink-0">
+                  View Profile <ArrowUpRight size={12} />
+                </Link>
+              </div>
+            )
+          })}
+        </div>
+      </Card>
 
       {/* Practice overview chart + calendar/activity */}
       <div className="mt-4 grid lg:grid-cols-[1.7fr_1fr] gap-4 items-start">
