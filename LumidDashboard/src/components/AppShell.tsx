@@ -1,6 +1,7 @@
 import { NavLink, useLocation } from 'react-router-dom'
 import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, Download, Menu, X, Bell, Search } from '../lib/icons'
 import { useState } from 'react'
+import { LumidLogo } from './LumidLogo'
 
 // v1 nav: only routes with real content behind them. Ranked by the validated
 // wedge — booking + payment enforcement and calendar first, care second.
@@ -38,7 +39,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Fixed left sidebar — 220-240px, Lumid */}
       <aside className="hidden lg:flex w-[232px] shrink-0 bg-white border-r border-[var(--lumid-border)] flex-col sticky top-0 h-screen">
         <div className="h-[64px] flex items-center px-5 border-b border-[var(--lumid-border)]">
-          <span className="font-extrabold text-[20px] tracking-tight" style={{ color: 'var(--color-primary)' }}>LUMID AI</span>
+          <LumidLogo className="h-[20px]" />
         </div>
 
         <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
@@ -93,7 +94,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <span className="hidden xl:inline-flex text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-[var(--color-hairline)] text-[var(--color-ink-muted-48)]">⌘K</span>
             </div>
           </div>
-          <div className="lg:hidden font-semibold text-[15px] flex-1 text-[var(--color-ink)]">Lumid</div>
+          <div className="lg:hidden flex-1"><LumidLogo className="h-[17px]" /></div>
 
           <div className="ml-auto flex items-center gap-1.5">
             <button className="relative w-8 h-8 rounded-full hover:bg-[var(--color-canvas-parchment)] flex items-center justify-center text-[var(--color-ink-muted-48)]">

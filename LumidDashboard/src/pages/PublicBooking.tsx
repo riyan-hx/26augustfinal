@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Check, Clock, Video, Shield, ArrowRight, CalendarDays, CreditCard, Sparkles, Copy } from '../lib/icons'
+import { LumidLogo } from '../components/LumidLogo'
 
 export default function PublicBooking() {
   const [step, setStep] = useState(1)
@@ -12,10 +13,9 @@ export default function PublicBooking() {
       {/* Public header */}
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-[20px] border-b border-[var(--hairline)]">
         <div className="max-w-[980px] mx-auto px-4 lg:px-6 h-[52px] flex items-center justify-between">
-          <Link to="/app" className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[var(--color-primary)] flex items-center justify-center text-white text-[11px] font-bold">L</div>
-            <span className="font-semibold text-[14px]">Lumid</span>
-            <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline">ANITHA.LUMIDAI.IN</span>
+          <Link to="/app" className="flex items-center gap-2.5">
+            <LumidLogo className="h-[15px] sm:h-[17px]" />
+            <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline border-l border-[var(--hairline)] pl-2.5">ANITHA.LUMIDAI.IN</span>
           </Link>
           <div className="flex items-center gap-2 text-[12px]">
             <span className="hidden sm:inline text-[var(--stone)]">Powered by Lumid • Secure • Private</span>
