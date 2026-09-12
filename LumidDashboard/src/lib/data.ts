@@ -10,6 +10,11 @@ export type Patient = {
   focus: string
   status: 'active' | 'lapsed' | 'new'
   avatar: string
+  /** What to remember walking into the next session — the last note's key
+   *  takeaway, not the full clinical record. Powers the Session Prep line
+   *  on today's schedule so there's no need to open the full profile just
+   *  to remember where a patient left off. */
+  prepNote?: string
 }
 export type SessionItem = {
   time: string
@@ -20,9 +25,9 @@ export type SessionItem = {
 }
 
 export const patients: Patient[] = [
-  { id: '1', name: 'Divya Prasad', email: 'divya@email.com', phone: '+91 98765 43210', sessions: 8, lastSession: '2 days ago', nextSession: 'Today, 5:00 PM', focus: 'Work-related overwhelm', status: 'active', avatar: 'DP' },
-  { id: '2', name: 'Vikram Shetty', email: 'vikram@email.com', phone: '+91 98765 43211', sessions: 1, lastSession: '—', nextSession: 'Today, 6:30 PM', focus: 'Initial consultation', status: 'new', avatar: 'VS' },
-  { id: '3', name: 'Arjun Nair', email: 'arjun@email.com', phone: '+91 98765 43212', sessions: 5, lastSession: '6 days ago', nextSession: 'Today, 8:00 PM', focus: 'Performance anxiety', status: 'active', avatar: 'AN' },
+  { id: '1', name: 'Divya Prasad', email: 'divya@email.com', phone: '+91 98765 43210', sessions: 8, lastSession: '2 days ago', nextSession: 'Today, 5:00 PM', focus: 'Work-related overwhelm', status: 'active', avatar: 'DP', prepNote: 'Reported better sleep this week; still anxious about Friday’s performance review.' },
+  { id: '2', name: 'Vikram Shetty', email: 'vikram@email.com', phone: '+91 98765 43211', sessions: 1, lastSession: '—', nextSession: 'Today, 6:30 PM', focus: 'Initial consultation', status: 'new', avatar: 'VS', prepNote: 'First session — intake form flagged work stress and sleep disruption as the presenting concern.' },
+  { id: '3', name: 'Arjun Nair', email: 'arjun@email.com', phone: '+91 98765 43212', sessions: 5, lastSession: '6 days ago', nextSession: 'Today, 8:00 PM', focus: 'Performance anxiety', status: 'active', avatar: 'AN', prepNote: 'Practiced the grounding exercise twice since last session; wants to review how it went before a big presentation.' },
   { id: '4', name: 'Sneha Kulkarni', email: 'sneha@email.com', phone: '+91 98765 43213', sessions: 8, lastSession: '5 days ago', nextSession: null, focus: 'Relationship patterns', status: 'lapsed', avatar: 'SK' },
   { id: '5', name: 'Lakshmi Iyer', email: 'lakshmi@email.com', phone: '+91 98765 43214', sessions: 12, lastSession: 'Yesterday', nextSession: 'Tomorrow, 11:00 AM', focus: 'Self-compassion', status: 'active', avatar: 'LI' },
   { id: '6', name: 'Ritu Bansal', email: 'ritu@email.com', phone: '+91 98765 43215', sessions: 4, lastSession: '7 days ago', nextSession: null, focus: 'Academic avoidance', status: 'lapsed', avatar: 'RB' },

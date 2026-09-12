@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Copy, Check, MoreHorizontal, Download, Plus, ChevronLeft, ChevronRight, ArrowUpRight,
-  Stethoscope, Clock3,
+  Stethoscope, Clock3, NotebookText,
   CreditCard, AlertTriangle, FileText, CalendarPlus, UserPlus, CheckCircle2,
 } from 'lucide-react'
 import { Button, Card, Chip } from '@heroui/react'
@@ -156,6 +156,12 @@ export default function Overview() {
                 <div className="flex-1 min-w-0">
                   <p className="text-[13px] font-semibold text-[var(--color-ink)] truncate">{s.patient}</p>
                   <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">{s.type}</p>
+                  {patientRecord?.prepNote && (
+                    <p className="text-[11px] text-[var(--color-ink-muted-48)] mt-1 flex items-start gap-1.5 leading-snug">
+                      <NotebookText size={11} className="mt-[2px] shrink-0" style={{ color: 'var(--color-primary)' }} />
+                      <span className="line-clamp-1">{patientRecord.prepNote}</span>
+                    </p>
+                  )}
                 </div>
                 <span className="text-[13px] font-medium text-[var(--color-ink)] w-[72px] text-right shrink-0">₹{amount.toLocaleString('en-IN')}</span>
                 <span className="w-[92px] shrink-0 hidden sm:flex justify-center">
