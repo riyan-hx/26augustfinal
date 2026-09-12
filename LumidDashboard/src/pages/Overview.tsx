@@ -1,8 +1,8 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
-  Copy, Check, MoreHorizontal, Download, Plus, ChevronLeft, ChevronRight, ArrowUpRight,
-  Stethoscope, Clock3, NotebookText,
+  Copy, Check, MoreHorizontal, MoreVertical, Download, Plus, ChevronLeft, ChevronRight, ArrowUpRight,
+  Stethoscope, Clock3, NotebookText, Search, SlidersHorizontal, HelpCircle,
   CreditCard, AlertTriangle, FileText, CalendarPlus, UserPlus, CheckCircle2,
 } from 'lucide-react'
 import { Button, Card, Chip } from '@heroui/react'
@@ -44,10 +44,33 @@ function IconBadge({ icon: Icon, bg, fg }: { icon: any; bg: string; fg: string }
   )
 }
 
+/** A checkbox that actually feels pressed — scales down on click, pops the
+ *  check in with the system's one press easing, fills with the brand green. */
+function RowCheckbox({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
+  return (
+    <button type="button" role="checkbox" aria-checked={checked} aria-label={label} onClick={onChange}
+      className="w-[18px] h-[18px] rounded-[6px] border flex items-center justify-center shrink-0 transition-all duration-150 active:scale-90"
+      style={{ background: checked ? 'var(--color-primary)' : 'var(--color-canvas)', borderColor: checked ? 'var(--color-primary)' : 'var(--color-hairline)' }}>
+      <Check size={12} strokeWidth={3} className="text-white transition-all duration-150" style={{ opacity: checked ? 1 : 0, transform: checked ? 'scale(1)' : 'scale(0.5)' }} />
+    </button>
+  )
+}
+
 export default function Overview() {
   const [copied, setCopied] = useState(false)
   const [activeFilter, setActiveFilter] = useState('Today')
   const copy = () => { navigator.clipboard?.writeText('anitha.lumidai.in'); setCopied(true); setTimeout(() => setCopied(false), 1500) }
+
+  // Today's Schedule table — selection, status tabs, and the per-row menu
+  const [scheduleTab, setScheduleTab] = useState<'all' | 'paid' | 'awaiting'>('all')
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [menuFor, setMenuFor] = useState<string | null>(null)
+  const toggleRow = (time: string) => setSelected(prev => {
+    const next = new Set(prev)
+    if (next.has(time)) next.delete(time)
+    else next.add(time)
+    return next
+  })
 
   const earningsToday = todaySchedule.reduce((sum, s) => sum + (sessionRate[s.type] ?? 1500), 0)
   const collectedToday = todaySchedule.filter(s => s.paid).reduce((sum, s) => sum + (sessionRate[s.type] ?? 1500), 0)
@@ -145,23 +168,74 @@ export default function Overview() {
 
       {/* Today's Schedules + Needs attention — the two "what's happening / what needs me" lists, side by side */}
       <div className="mt-6 grid lg:grid-cols-[1.7fr_1fr] gap-5 items-start">
-        <Card className="p-0 overflow-hidden">
-          <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between">
-            <p className="text-[17px] font-bold text-[var(--color-ink)]">Today's Schedules</p>
-            <Link to="/app/calendar" className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition">
-              Open Calendar <ArrowUpRight size={13} />
-            </Link>
+        <Card className="p-0 overflow-hidden" onClick={() => menuFor && setMenuFor(null)}>
+          {/* Header */}
+          <div className="px-5 py-4 border-b border-[var(--color-hairline)] flex items-center justify-between gap-2">
+            <p className="text-[17px] font-bold text-[var(--color-ink)] flex items-center gap-1.5 shrink-0">
+              Today's Schedule
+              <HelpCircle size={13} className="text-[var(--color-ink-muted-48)] hidden sm:block" aria-hidden="true" />
+              <span className="sr-only">Everyone booked in for today, across every session type.</span>
+            </p>
+            <div className="flex items-center gap-1.5 shrink-0">
+              <button aria-label="Search schedule" className="hidden sm:flex w-8 h-8 rounded-full border border-[var(--color-hairline)] items-center justify-center text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)] hover:text-[var(--color-ink)] transition"><Search size={13} /></button>
+              <button aria-label="Filter schedule" className="hidden sm:flex w-8 h-8 rounded-full border border-[var(--color-hairline)] items-center justify-center text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)] hover:text-[var(--color-ink)] transition"><SlidersHorizontal size={13} /></button>
+              <Link to="/app/calendar" className="inline-flex items-center gap-1.5 px-3 sm:px-3.5 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition whitespace-nowrap">
+                <span className="hidden sm:inline">Open Calendar</span><span className="sm:hidden">Calendar</span> <ArrowUpRight size={13} />
+              </Link>
+            </div>
           </div>
-          <div className="divide-y divide-[var(--color-hairline)]">
-            {todaySchedule.map(s => {
+
+          {/* Status tabs — real categories from today's own data, not invented ones */}
+          <div className="px-5 pt-3.5 flex items-center gap-1.5 overflow-x-auto">
+            {[
+              { key: 'all' as const, label: 'All', count: todaySchedule.length },
+              { key: 'paid' as const, label: 'Paid', count: paidCount },
+              { key: 'awaiting' as const, label: 'Awaiting', count: awaitingCount },
+            ].map(t => (
+              <button key={t.key} onClick={() => setScheduleTab(t.key)}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[12px] font-semibold transition-all duration-150 shrink-0"
+                style={scheduleTab === t.key
+                  ? { background: 'var(--color-primary)', color: '#fff' }
+                  : { background: 'var(--color-canvas-parchment)', color: 'var(--color-ink-muted-48)' }}>
+                {t.label}
+                <span className="inline-flex items-center justify-center min-w-[17px] h-[17px] px-1 rounded-full text-[10px]"
+                  style={scheduleTab === t.key ? { background: 'rgba(255,255,255,0.25)', color: '#fff' } : { background: 'var(--color-hairline)', color: 'var(--color-ink-muted-48)' }}>
+                  {t.count}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Selection bar — slides in only while rows are checked, so the table stays quiet at rest */}
+          <div className="grid transition-[grid-template-rows] duration-200 ease-out" style={{ gridTemplateRows: selected.size > 0 ? '1fr' : '0fr' }}>
+            <div className="overflow-hidden">
+              <div className="mx-5 mt-3 px-3.5 py-2 rounded-[10px] flex items-center justify-between" style={{ background: 'var(--color-primary-soft)' }}>
+                <span className="text-[12px] font-medium" style={{ color: 'var(--color-primary-focus)' }}>{selected.size} selected</span>
+                <div className="flex items-center gap-2">
+                  <button onClick={() => setSelected(new Set())} className="text-[11px] font-medium px-2.5 py-1 rounded-full hover:bg-white/60 transition" style={{ color: 'var(--color-primary-focus)' }}>Clear</button>
+                  <button className="text-[11px] font-semibold px-2.5 py-1 rounded-full bg-white transition hover:opacity-80" style={{ color: 'var(--color-primary-focus)' }}>Export</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div className="mt-1 divide-y divide-[var(--color-hairline)]">
+            {todaySchedule.filter(s => scheduleTab === 'all' || (scheduleTab === 'paid') === s.paid).map(s => {
               const amount = sessionRate[s.type] ?? 1500
               const patientRecord = patients.find(p => p.name === s.patient)
+              const isChecked = selected.has(s.time)
               return (
-                <div key={s.time} className="px-5 py-4 flex items-center gap-4">
-                  <span className="flex items-center gap-1.5 text-[13px] text-[var(--color-ink-muted-48)] w-[76px] shrink-0"><Clock3 size={13} /> {s.time}</span>
+                <div key={s.time} className="group relative px-5 py-4 flex items-center gap-3.5 transition-colors duration-150" style={{ background: isChecked ? 'var(--color-primary-soft)' : undefined }}
+                  onMouseLeave={() => setMenuFor(cur => cur === s.time ? null : cur)}>
+                  <RowCheckbox checked={isChecked} onChange={() => toggleRow(s.time)} label={`Select ${s.patient}`} />
+                  <span className="hidden sm:flex items-center gap-1.5 text-[13px] text-[var(--color-ink-muted-48)] w-[72px] shrink-0"><Clock3 size={13} /> {s.time}</span>
+                  <span className="w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0" style={{ background: 'var(--color-primary-soft)', color: 'var(--color-primary)' }}>{patientRecord?.avatar ?? s.patient.slice(0, 2).toUpperCase()}</span>
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold text-[var(--color-ink)] truncate">{s.patient}</p>
-                    <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">{s.type}</p>
+                    <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">
+                      <span className="sm:hidden">{s.time} · </span>{s.type}<span className="hidden sm:inline"> · Today</span><span className="sm:hidden"> · ₹{amount.toLocaleString('en-IN')} · {s.paid ? 'Paid' : 'Awaiting'}</span>
+                    </p>
                     {patientRecord?.prepNote && (
                       <p className="text-[11px] text-[var(--color-ink-muted-48)] mt-1 flex items-start gap-1.5 leading-snug">
                         <NotebookText size={11} className="mt-[2px] shrink-0" style={{ color: 'var(--color-primary)' }} />
@@ -169,17 +243,39 @@ export default function Overview() {
                       </p>
                     )}
                   </div>
-                  <span className="text-[13px] font-medium text-[var(--color-ink)] w-[72px] text-right shrink-0">₹{amount.toLocaleString('en-IN')}</span>
+                  <span className="hidden sm:block text-[13px] font-medium text-[var(--color-ink)] w-[72px] text-right shrink-0">₹{amount.toLocaleString('en-IN')}</span>
                   <span className="w-[92px] shrink-0 hidden sm:flex justify-center">
-                    <Chip size="sm" color={s.paid ? 'success' : 'warning'} variant="soft">{s.paid ? 'Paid' : 'Pending'}</Chip>
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold" style={{ background: s.paid ? 'var(--badge-green-bg)' : 'var(--badge-amber-bg)', color: s.paid ? 'var(--badge-green-fg)' : 'var(--badge-amber-fg)' }}>
+                      <span className="w-1.5 h-1.5 rounded-full" style={{ background: s.paid ? 'var(--badge-green-fg)' : 'var(--badge-amber-fg)' }} />
+                      {s.paid ? 'Paid' : 'Awaiting'}
+                    </span>
                   </span>
                   <Link to={patientRecord ? `/app/patients/${patientRecord.id}` : '/app/patients'}
                     className="hidden md:inline-flex items-center gap-1 px-3 py-1.5 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)] transition shrink-0">
                     View Profile <ArrowUpRight size={12} />
                   </Link>
+                  <div className="relative shrink-0">
+                    <button aria-label="Row options" onClick={e => { e.stopPropagation(); setMenuFor(cur => cur === s.time ? null : s.time) }}
+                      className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)] hover:text-[var(--color-ink)] transition"><MoreVertical size={14} /></button>
+                    {menuFor === s.time && (
+                      <div onClick={e => e.stopPropagation()} className="absolute right-0 top-9 z-10 w-[168px] rounded-[12px] border border-[var(--color-hairline)] bg-[var(--color-canvas)] py-1.5 animate-[fadeIn_120ms_ease-out]">
+                        {patientRecord && (
+                          <Link to={`/app/patients/${patientRecord.id}`} className="flex items-center gap-2 px-3.5 py-2 text-[12px] text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)]">View profile</Link>
+                        )}
+                        <Link to="/app/calendar" className="flex items-center gap-2 px-3.5 py-2 text-[12px] text-[var(--color-ink)] hover:bg-[var(--color-canvas-parchment)]">Reschedule</Link>
+                        {!s.paid && <Link to="/app/bookings" className="flex items-center gap-2 px-3.5 py-2 text-[12px] hover:bg-[var(--color-canvas-parchment)]" style={{ color: 'var(--color-primary-focus)' }}>Send payment reminder</Link>}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )
             })}
+          </div>
+
+          {/* Footer — quick scheduling context, mirrors CalendarPage's own availability mock */}
+          <div className="px-5 py-3 border-t border-[var(--color-hairline)] bg-[var(--color-canvas-parchment)]/60 flex items-center justify-between text-[11px]">
+            <span className="text-[var(--color-ink-muted-48)]">Next availability · <span className="font-medium text-[var(--color-ink)]">Thu, 10:00 AM</span> · No conflicts</span>
+            <Link to="/app/calendar" className="font-medium" style={{ color: 'var(--color-primary)' }}>Open calendar →</Link>
           </div>
         </Card>
 
