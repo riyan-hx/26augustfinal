@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Copy, Check, MoreVertical, Plus, ChevronRight, ArrowUpRight,
@@ -22,6 +22,62 @@ function RowCheckbox({ checked, onChange, label }: { checked: boolean; onChange:
       style={{ background: checked ? 'var(--color-neutral-strong)' : 'var(--color-canvas)', borderColor: checked ? 'var(--color-neutral-strong)' : 'var(--color-hairline)' }}>
       <Check size={12} strokeWidth={3} className="text-white transition-all duration-150" style={{ opacity: checked ? 1 : 0, transform: checked ? 'scale(1)' : 'scale(0.5)' }} />
     </button>
+  )
+}
+
+/** Tweens a number linearly from its last rendered value to the new one —
+ *  so switching Today/This Week/This Month reads as the KPIs actually
+ *  recalculating, not just swapping text. */
+function AnimatedNumber({ value, format, duration = 450 }: { value: number; format?: (n: number) => string; duration?: number }) {
+  const [display, setDisplay] = useState(value)
+  const fromRef = useRef(value)
+  useEffect(() => {
+    const from = fromRef.current
+    const to = value
+    if (from === to) return
+    const start = performance.now()
+    let raf = 0
+    const tick = (now: number) => {
+      const t = Math.min(1, (now - start) / duration) // linear — no easing
+      setDisplay(from + (to - from) * t)
+      if (t < 1) raf = requestAnimationFrame(tick)
+      else fromRef.current = to
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [value, duration])
+  const rounded = Math.round(display * 10) / 10
+  return <>{format ? format(rounded) : Math.round(rounded)}</>
+}
+
+/** The Today / This Week / This Month control — a single pill slides
+ *  between options instead of the active state just swapping classes. */
+function PeriodTabs({ options, active, onChange }: { options: string[]; active: string; onChange: (v: string) => void }) {
+  const containerRef = useRef<HTMLDivElement>(null)
+  const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({})
+  const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null)
+
+  useEffect(() => {
+    const el = btnRefs.current[active]
+    const container = containerRef.current
+    if (el && container) {
+      setIndicator({ left: el.offsetLeft, width: el.offsetWidth })
+    }
+  }, [active])
+
+  return (
+    <div ref={containerRef} className="relative flex items-center gap-1.5 mb-4 bg-[var(--color-canvas-parchment)] w-fit p-1 rounded-full border border-[var(--color-hairline)]">
+      {indicator && (
+        <span aria-hidden="true" className="absolute top-1 left-0 bottom-1 rounded-full bg-[var(--color-canvas)] shadow-sm transition-[transform,width] duration-300 ease-linear"
+          style={{ width: indicator.width, transform: `translateX(${indicator.left}px)` }} />
+      )}
+      {options.map(f => (
+        <button key={f} ref={el => { btnRefs.current[f] = el }} onClick={() => onChange(f)}
+          className={`relative z-10 px-4 py-1.5 rounded-full text-[12px] font-medium transition-colors duration-300 ${active === f ? 'text-[var(--color-ink)]' : 'text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)]'}`}>
+          {f}
+        </button>
+      ))}
+    </div>
   )
 }
 
@@ -54,6 +110,30 @@ export default function Overview() {
   ]
   const busiestDay = weekBars.reduce((max, b) => b.sessions > max.sessions ? b : max, weekBars[0])
   const weekTotal = weekBars.reduce((sum, b) => sum + b.sessions, 0)
+
+  // KPI row, by period — Today is exact (derived from todaySchedule); This
+  // Week/Month extrapolate from the same weekTotal the chart and insights
+  // already use, so the three views agree with each other when you switch.
+  const avgRate = 1650
+  const monthTotal = weekTotal * 4
+  const kpiByPeriod = {
+    Today: {
+      sessions: todaySchedule.length, paid: paidCount, awaiting: awaitingCount,
+      earnings: earningsToday, collected: collectedToday,
+      followUps: followUpsDue, noShow: 3.2, noShowDelta: -1.9, noShowWindow: 'last month',
+    },
+    'This Week': {
+      sessions: weekTotal, paid: Math.round(weekTotal * 0.82), awaiting: weekTotal - Math.round(weekTotal * 0.82),
+      earnings: weekTotal * avgRate, collected: Math.round(weekTotal * avgRate * 0.88),
+      followUps: followUps.length, noShow: 4.1, noShowDelta: -0.6, noShowWindow: 'vs last week',
+    },
+    'This Month': {
+      sessions: monthTotal, paid: Math.round(monthTotal * 0.85), awaiting: monthTotal - Math.round(monthTotal * 0.85),
+      earnings: monthTotal * avgRate, collected: Math.round(monthTotal * avgRate * 0.9),
+      followUps: followUps.length + 4, noShow: 3.8, noShowDelta: 0.4, noShowWindow: 'vs last month',
+    },
+  } as const
+  const kpi = kpiByPeriod[activeFilter as keyof typeof kpiByPeriod]
 
   // Continuity — patients with no future session booked. This is the one
   // metric a generic booking tool has no reason to track: it's the whole
@@ -105,41 +185,36 @@ export default function Overview() {
         </div>
       </div>
 
-      {/* Filter pills — matches the Figma file's Today / This Week / This Month segmented control */}
-      <div className="flex items-center gap-1.5 mb-4 bg-[var(--color-canvas-parchment)] w-fit p-1 rounded-full border border-[var(--color-hairline)]">
-        {['Today', 'This Week', 'This Month'].map(f => (
-          <button key={f} onClick={() => setActiveFilter(f)}
-            className={`px-4 py-1.5 rounded-full text-[12px] font-medium transition ${activeFilter === f ? 'bg-[var(--color-canvas)] text-[var(--color-ink)] shadow-sm' : 'text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)]'}`}>
-            {f}
-          </button>
-        ))}
-      </div>
+      {/* Filter pills — matches the Figma file's Today / This Week / This Month segmented control.
+          Switching periods recalculates the KPI row below via a linear tween, not a hard swap. */}
+      <PeriodTabs options={['Today', 'This Week', 'This Month']} active={activeFilter} onChange={setActiveFilter} />
 
-      {/* KPI row — one flat card divided by hairlines, matches the Figma file exactly */}
+      {/* KPI row — one flat card divided by hairlines, matches the Figma file exactly.
+          Every value is keyed to activeFilter so the two stay visibly connected. */}
       <div className="grid grid-cols-2 lg:grid-cols-4 border border-[var(--color-hairline)] rounded-[16px] overflow-hidden divide-y lg:divide-y-0 lg:divide-x divide-[var(--color-hairline)] bg-[var(--color-canvas)]">
         <div className="p-5">
-          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">Sessions Today</p>
-          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">{todaySchedule.length}</p>
+          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">Sessions {activeFilter}</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none"><AnimatedNumber value={kpi.sessions} /></p>
           <p className="text-[12px] mt-2 truncate">
-            <span className="font-medium" style={{ color: 'var(--color-primary)' }}>{paidCount} Paid</span>
+            <span className="font-medium" style={{ color: 'var(--color-primary)' }}><AnimatedNumber value={kpi.paid} /> Paid</span>
             <span className="text-[var(--color-ink-muted-48)]"> · </span>
-            <span className="font-medium" style={{ color: 'var(--badge-amber-fg)' }}>{awaitingCount} Payment Awaiting</span>
+            <span className="font-medium" style={{ color: 'var(--badge-amber-fg)' }}><AnimatedNumber value={kpi.awaiting} /> Payment Awaiting</span>
           </p>
         </div>
         <div className="p-5">
-          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">Today's Earnings</p>
-          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">₹{earningsToday.toLocaleString('en-IN')}</p>
-          <p className="text-[12px] mt-2 font-medium" style={{ color: 'var(--color-primary)' }}>₹{collectedToday.toLocaleString('en-IN')} collected so far</p>
+          <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">{activeFilter === 'Today' ? "Today's Earnings" : `Earnings ${activeFilter}`}</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none"><AnimatedNumber value={kpi.earnings} format={n => `₹${n.toLocaleString('en-IN')}`} /></p>
+          <p className="text-[12px] mt-2 font-medium" style={{ color: 'var(--color-primary)' }}><AnimatedNumber value={kpi.collected} format={n => `₹${n.toLocaleString('en-IN')}`} /> collected so far</p>
         </div>
         <div className="p-5">
           <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">Follow-ups Due</p>
-          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">{followUpsDue}</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none"><AnimatedNumber value={kpi.followUps} /></p>
           <p className="text-[12px] mt-2 text-[var(--color-ink-muted-48)]">Needs a nudge today</p>
         </div>
         <div className="p-5">
           <p className="text-[11px] font-semibold tracking-wide uppercase text-[var(--color-ink-muted-48)]">No-show Rate</p>
-          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none">3.2%</p>
-          <p className="text-[12px] mt-2 font-medium" style={{ color: 'var(--color-primary)' }}>-1.9% last month</p>
+          <p className="text-[28px] font-bold text-[var(--color-ink)] mt-2 leading-none"><AnimatedNumber value={kpi.noShow} format={n => `${n.toFixed(1)}%`} /></p>
+          <p className="text-[12px] mt-2 font-medium" style={{ color: 'var(--color-primary)' }}><AnimatedNumber value={kpi.noShowDelta} format={n => `${n > 0 ? '+' : ''}${n.toFixed(1)}% ${kpi.noShowWindow}`} /></p>
         </div>
       </div>
 
