@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { bookings } from '../lib/data'
 import { Search, Filter, MoreHorizontal, CheckCircle2, Clock3, XCircle, AlertTriangle } from '../lib/icons'
+import { AnimatedNumber, SlidingTabs } from '../lib/animated'
 
 const statusStyles: Record<string, string> = {
   confirmed: 'bg-emerald-50 border-emerald-200 text-emerald-700',
@@ -10,17 +11,24 @@ const statusStyles: Record<string, string> = {
   'no-show': 'bg-zinc-100 border-zinc-300 text-zinc-600',
 }
 
+const filters = ['All', 'New', 'Confirmed', 'Completed', 'Cancelled', 'No-show'] as const
+type BookingFilter = typeof filters[number]
+/** "New" maps to a pending booking — awaiting payment, not yet on the
+ *  calendar — since that's what "new" means in this flow's own language. */
+const matchesFilter = (f: BookingFilter, status: string) =>
+  f === 'All' || (f === 'New' ? status === 'pending' : status.toLowerCase() === f.toLowerCase())
+
 export default function BookingsPage() {
-  const [filter, setFilter] = useState('All')
-  const filters = ['All', 'New', 'Confirmed', 'Completed', 'Cancelled', 'No-show']
-  const filtered = filter === 'All' ? bookings : bookings.filter(b => b.status.toLowerCase() === filter.toLowerCase().replace('-', '-'))
+  const [filter, setFilter] = useState<BookingFilter>('All')
+  const filtered = bookings.filter(b => matchesFilter(filter, b.status))
+  const counts = Object.fromEntries(filters.map(f => [f, bookings.filter(b => matchesFilter(f, b.status)).length])) as Record<BookingFilter, number>
 
   return (
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-[26px] font-semibold tracking-tight">Bookings</h1>
-          <p className="text-[12px] text-[var(--stone)] mt-1">Booking is confirmed only after payment is verified • Razorpay secured</p>
+          <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> {filter === 'All' ? 'total' : filter.toLowerCase()} • Confirmed only after payment is verified • Razorpay secured</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-2 bg-white border border-[var(--hairline)] rounded-full px-3 py-2">
@@ -31,10 +39,8 @@ export default function BookingsPage() {
         </div>
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
-        {filters.map(f => (
-          <button key={f} onClick={() => setFilter(f)} className={`px-4 py-1.5 rounded-full text-[12px] font-medium border ${filter === f ? 'bg-[var(--green-700)] text-white border-transparent' : 'bg-white border-[var(--hairline)] text-[var(--slate)] hover:bg-[var(--canvas)]'}`}>{f}</button>
-        ))}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <SlidingTabs options={filters} active={filter} onChange={setFilter} counts={counts} size="sm" />
         <span className="ml-auto text-[11px] text-[var(--stone)] self-center hidden sm:inline">Flow: Select slot → Details → Pay → Verified → Calendar → Link → Reminder</span>
       </div>
 

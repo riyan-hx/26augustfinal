@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Copy, Check, MoreVertical, Plus, ChevronRight, ArrowUpRight,
@@ -8,6 +8,7 @@ import {
 } from '../lib/icons'
 import { Button, Card } from '@heroui/react'
 import { todaySchedule, followUps, patients, bookings } from '../lib/data'
+import { AnimatedNumber, SlidingTabs } from '../lib/animated'
 
 const sessionRate: Record<string, number> = { 'Individual Session': 1500, 'Initial Consultation': 2000, 'Follow-up': 1200 }
 
@@ -22,62 +23,6 @@ function RowCheckbox({ checked, onChange, label }: { checked: boolean; onChange:
       style={{ background: checked ? 'var(--color-neutral-strong)' : 'var(--color-canvas)', borderColor: checked ? 'var(--color-neutral-strong)' : 'var(--color-hairline)' }}>
       <Check size={12} strokeWidth={3} className="text-white transition-all duration-150" style={{ opacity: checked ? 1 : 0, transform: checked ? 'scale(1)' : 'scale(0.5)' }} />
     </button>
-  )
-}
-
-/** Tweens a number linearly from its last rendered value to the new one —
- *  so switching Today/This Week/This Month reads as the KPIs actually
- *  recalculating, not just swapping text. */
-function AnimatedNumber({ value, format, duration = 450 }: { value: number; format?: (n: number) => string; duration?: number }) {
-  const [display, setDisplay] = useState(value)
-  const fromRef = useRef(value)
-  useEffect(() => {
-    const from = fromRef.current
-    const to = value
-    if (from === to) return
-    const start = performance.now()
-    let raf = 0
-    const tick = (now: number) => {
-      const t = Math.min(1, (now - start) / duration) // linear — no easing
-      setDisplay(from + (to - from) * t)
-      if (t < 1) raf = requestAnimationFrame(tick)
-      else fromRef.current = to
-    }
-    raf = requestAnimationFrame(tick)
-    return () => cancelAnimationFrame(raf)
-  }, [value, duration])
-  const rounded = Math.round(display * 10) / 10
-  return <>{format ? format(rounded) : Math.round(rounded)}</>
-}
-
-/** The Today / This Week / This Month control — a single pill slides
- *  between options instead of the active state just swapping classes. */
-function PeriodTabs({ options, active, onChange }: { options: string[]; active: string; onChange: (v: string) => void }) {
-  const containerRef = useRef<HTMLDivElement>(null)
-  const btnRefs = useRef<Record<string, HTMLButtonElement | null>>({})
-  const [indicator, setIndicator] = useState<{ left: number; width: number } | null>(null)
-
-  useEffect(() => {
-    const el = btnRefs.current[active]
-    const container = containerRef.current
-    if (el && container) {
-      setIndicator({ left: el.offsetLeft, width: el.offsetWidth })
-    }
-  }, [active])
-
-  return (
-    <div ref={containerRef} className="relative flex items-center gap-1.5 mb-4 bg-[var(--color-canvas-parchment)] w-fit p-1 rounded-full border border-[var(--color-hairline)]">
-      {indicator && (
-        <span aria-hidden="true" className="absolute top-1 left-0 bottom-1 rounded-full bg-[var(--color-canvas)] shadow-sm transition-[transform,width] duration-300 ease-linear"
-          style={{ width: indicator.width, transform: `translateX(${indicator.left}px)` }} />
-      )}
-      {options.map(f => (
-        <button key={f} ref={el => { btnRefs.current[f] = el }} onClick={() => onChange(f)}
-          className={`relative z-10 px-4 py-1.5 rounded-full text-[12px] font-medium transition-colors duration-300 ${active === f ? 'text-[var(--color-ink)]' : 'text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)]'}`}>
-          {f}
-        </button>
-      ))}
-    </div>
   )
 }
 
@@ -187,7 +132,9 @@ export default function Overview() {
 
       {/* Filter pills — matches the Figma file's Today / This Week / This Month segmented control.
           Switching periods recalculates the KPI row below via a linear tween, not a hard swap. */}
-      <PeriodTabs options={['Today', 'This Week', 'This Month']} active={activeFilter} onChange={setActiveFilter} />
+      <div className="mb-4">
+        <SlidingTabs options={['Today', 'This Week', 'This Month']} active={activeFilter} onChange={setActiveFilter} />
+      </div>
 
       {/* KPI row — one flat card divided by hairlines, matches the Figma file exactly.
           Every value is keyed to activeFilter so the two stay visibly connected. */}

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { ChevronLeft, ChevronRight, Video, Copy, Check, X, Plus, Calendar, Globe, CheckCircle2, Trash2, Edit3, ExternalLink } from '../lib/icons'
 import { Button, Card, Chip } from '@heroui/react'
 import { patients } from '../lib/data'
+import { SlidingTabs } from '../lib/animated'
 
 type View = 'Week' | 'Day' | 'Month'
 type SessionStatus = 'paid' | 'awaiting' | 'cancelled' | 'blocked' | 'free'
@@ -155,13 +156,7 @@ export default function CalendarPage() {
             <Button isIconOnly aria-label="Next week" variant="ghost" size="sm" onPress={() => setSelectedDate(d => Math.min(30, d + 1))}><ChevronRight /></Button>
             <span className="text-sm font-medium px-2 hidden sm:inline">August 2026</span>
           </div>
-          <div className="flex items-center gap-1 bg-surface border border-border rounded-full p-1">
-            {(['Day', 'Week', 'Month'] as View[]).map(v => (
-              <Button key={v} size="sm" variant="ghost" className="rounded-full"
-                style={view === v ? { background: 'var(--color-neutral-strong)', color: '#fff' } : undefined}
-                onPress={() => setView(v)}>{v}</Button>
-            ))}
-          </div>
+          <SlidingTabs options={['Day', 'Week', 'Month'] as const} active={view} onChange={setView} size="sm" />
           <Button size="sm" onPress={() => setShowCreate(true)}><Plus /> New Session</Button>
         </div>
       </div>

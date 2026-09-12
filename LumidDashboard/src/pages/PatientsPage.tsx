@@ -2,24 +2,33 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Search, SlidersHorizontal, ChevronRight, Clock, Users } from '../lib/icons'
 import { patients } from '../lib/data'
+import { AnimatedNumber, SlidingTabs } from '../lib/animated'
+
+const filters = ['All', 'Active', 'Follow-up due', 'Lapsed', 'New'] as const
+type PatientFilter = typeof filters[number]
+
+function matchesFilter(f: PatientFilter, status: string) {
+  return f === 'All' || (f === 'Active' && status === 'active') || (f === 'Lapsed' && status === 'lapsed') || (f === 'New' && status === 'new') || (f === 'Follow-up due' && status === 'lapsed')
+}
 
 export default function PatientsPage() {
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState('All')
-  const filters = ['All', 'Active', 'Follow-up due', 'Lapsed', 'New']
+  const [filter, setFilter] = useState<PatientFilter>('All')
 
   const filtered = patients.filter(p => {
     const matchesSearch = p.name.toLowerCase().includes(query.toLowerCase()) || p.email.toLowerCase().includes(query.toLowerCase())
-    const matchesFilter = filter === 'All' || (filter === 'Active' && p.status === 'active') || (filter === 'Lapsed' && p.status === 'lapsed') || (filter === 'New' && p.status === 'new') || (filter === 'Follow-up due' && p.status === 'lapsed')
-    return matchesSearch && matchesFilter
+    return matchesSearch && matchesFilter(filter, p.status)
   })
+  // Counts per tab — same slice logic as the active filter, so the badge
+  // next to each option always matches what selecting it would show.
+  const counts = Object.fromEntries(filters.map(f => [f, patients.filter(p => matchesFilter(f, p.status)).length])) as Record<PatientFilter, number>
 
   return (
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
           <h1 className="font-serif text-[26px] font-semibold tracking-tight flex items-center gap-2"><Users size={20} className="text-[var(--green-700)]" /> Patients</h1>
-          <p className="text-[12px] text-[var(--stone)] mt-1">{filtered.length} patients • No mental health scores — only meaningful context</p>
+          <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> patients • No mental health scores — only meaningful context</p>
         </div>
         <div className="flex items-center gap-2">
           <div className="flex-1 lg:w-[280px] flex items-center gap-2 bg-white border border-[var(--hairline)] rounded-full px-3.5 py-2.5">
@@ -30,10 +39,8 @@ export default function PatientsPage() {
         </div>
       </div>
 
-      <div className="mt-4 flex gap-2 overflow-x-auto scrollbar-none pb-1">
-        {filters.map(f => (
-          <button key={f} onClick={() => setFilter(f)} className={`shrink-0 px-4 py-1.5 rounded-full text-[12px] font-medium border ${filter === f ? 'bg-[var(--green-700)] text-white border-transparent' : 'bg-white border-[var(--hairline)] text-[var(--slate)]'}`}>{f}</button>
-        ))}
+      <div className="mt-4">
+        <SlidingTabs options={filters} active={filter} onChange={setFilter} counts={counts} size="sm" />
       </div>
 
       {/* Desktop table */}
