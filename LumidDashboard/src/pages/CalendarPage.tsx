@@ -180,7 +180,7 @@ export default function CalendarPage() {
                 { k: 'sessions', label: 'Sessions', color: 'bg-accent' },
                 { k: 'availability', label: 'Availability', color: 'bg-warning' },
                 { k: 'blocked', label: 'Blocked time', color: 'bg-muted' },
-                { k: 'personal', label: 'Personal', color: 'bg-sky-500' },
+                { k: 'personal', label: 'Personal', color: 'bg-[var(--badge-violet-fg)]' },
               ].map(f => (
                 <label key={f.k} className="flex items-center gap-2.5 text-xs cursor-pointer">
                   <input type="checkbox" checked={(filters as any)[f.k]} onChange={e => setFilters(prev => ({ ...prev, [f.k]: e.target.checked }))} className="w-3.5 h-3.5 rounded border-border accent-accent" />
@@ -211,7 +211,7 @@ export default function CalendarPage() {
 
         {/* MAIN CALENDAR + detail panel — a real grid column, not an overlay, so it reflows the calendar instead of ever covering it */}
         <div className={`grid grid-cols-1 gap-4 items-start min-w-0 ${selected && panelOpen ? 'xl:grid-cols-[1fr_300px]' : ''}`}>
-        <div className="bg-white border border-[var(--hairline)] rounded-[12px] overflow-hidden shadow-sm min-w-0">
+        <div className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden min-w-0">
           {/* Mobile day picker */}
           <div className="lg:hidden flex items-center gap-2 p-3 border-b border-[var(--hairline)] overflow-x-auto">
             {weekDays.map(d => (
@@ -259,7 +259,7 @@ export default function CalendarPage() {
                       <span className={`text-[11px] w-6 h-6 flex items-center justify-center rounded-full ${isToday ? 'bg-[var(--green-700)] text-white font-semibold' : 'font-medium'}`}>{inMonth ? date : ''}</span>
                       <div className="mt-1 space-y-1">
                         {evs.slice(0,2).map(ev => (
-                          <div key={ev.id} onClick={() => selectEvent(ev.id)} className={`text-[10px] leading-none px-1.5 py-1 rounded-full border truncate cursor-pointer ${ev.status === 'paid' ? 'bg-white border-[var(--hairline)] text-[var(--ink)]' : ev.status === 'awaiting' ? 'bg-[#FFFBEB] border-[#FDE68A] text-amber-800' : 'bg-[#F3F1EE] border-dashed'}`}>{ev.patient}</div>
+                          <div key={ev.id} onClick={() => selectEvent(ev.id)} className={`text-[10px] leading-none px-1.5 py-1 rounded-full border truncate cursor-pointer ${ev.status === 'paid' ? 'bg-white border-[var(--hairline)] text-[var(--ink)]' : ev.status === 'awaiting' ? 'bg-[var(--badge-amber-bg)] border-[var(--badge-amber-fg)] text-[var(--badge-amber-fg)]' : 'bg-[var(--color-canvas-parchment)] border-dashed border-[var(--color-hairline)]'}`}>{ev.patient}</div>
                         ))}
                         {evs.length > 2 && <p className="text-[10px] text-[var(--stone)]">+{evs.length-2} more</p>}
                       </div>
@@ -278,14 +278,14 @@ export default function CalendarPage() {
                 </div>
               </div>
               <div className="grid grid-cols-[56px_1fr] lg:grid-cols-[64px_1fr] max-h-[560px] overflow-auto">
-                <div className="border-r border-[var(--hairline)] bg-[#FDFCF9]">
+                <div className="border-r border-[var(--hairline)] bg-[var(--color-canvas-parchment)]">
                   {hours.map(h => <div key={h} style={{ height: HOUR_PX }} className="border-b border-[var(--hairline)] flex items-start justify-end pr-2 pt-1"><span className="text-[11px] text-[var(--stone)]">{h}</span></div>)}
                 </div>
                 <div className="relative bg-[var(--green-50)]/20" style={{ height: GRID_PX }}>
                   <div className="absolute inset-0 grid pointer-events-none" style={{ gridTemplateRows: `repeat(${hours.length - 1}, ${HOUR_PX}px)` }}>{Array.from({ length: hours.length - 1 }).map((__, i) => <div key={i} className="border-b border-[var(--hairline)]/60" />)}</div>
                   {filteredEvents.filter(ev => ev.day === weekDays.findIndex(w=>w.date===selectedDate)).map(ev => (
-                    <button key={ev.id} onClick={() => selectEvent(ev.id)} className={`absolute left-2 right-2 rounded-[10px] px-3 py-2.5 text-left border shadow-sm bg-white border-[var(--hairline)] hover:shadow-md ${selectedId===ev.id?'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]':''}`} style={{ top: `${(ev.start - 9) * HOUR_PX + 6}px`, height: `${ev.duration * HOUR_PX - 8}px`}}>
-                      <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-[var(--sage-50)] border flex items-center justify-center text-[10px] font-semibold text-[var(--green-700)]">{ev.initials}</span><p className="text-[13px] font-semibold truncate">{ev.patient}</p>{!['blocked','free'].includes(ev.status) && <span className={`ml-auto shrink-0 text-[11px] px-2 py-0.5 rounded-full border ${ev.status==='paid'?'bg-[#EFF6F1] border-[#D6E8DC] text-[#14543A]':'bg-[#FFFBEB] border-[#FDE68A] text-amber-800'}`}>{ev.status==='paid'?'✓ Paid':'Awaiting'}</span>}</div>
+                    <button key={ev.id} onClick={() => selectEvent(ev.id)} className={`absolute left-2 right-2 rounded-[10px] px-3 py-2.5 text-left border bg-white border-[var(--hairline)] ${selectedId===ev.id?'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]':''}`} style={{ top: `${(ev.start - 9) * HOUR_PX + 6}px`, height: `${ev.duration * HOUR_PX - 8}px`}}>
+                      <div className="flex items-center gap-2"><span className="w-6 h-6 rounded-full bg-[var(--sage-50)] border flex items-center justify-center text-[10px] font-semibold text-[var(--green-700)]">{ev.initials}</span><p className="text-[13px] font-semibold truncate">{ev.patient}</p>{!['blocked','free'].includes(ev.status) && <span className={`ml-auto shrink-0 inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full border ${ev.status==='paid'?'bg-[var(--badge-green-bg)] border-transparent text-[var(--badge-green-fg)]':'bg-[var(--badge-amber-bg)] border-[var(--badge-amber-fg)] text-[var(--badge-amber-fg)]'}`}>{ev.status==='paid' && <Check size={10} />}{ev.status==='paid'?'Paid':'Awaiting'}</span>}</div>
                       <p className="text-[11px] text-[var(--stone)] mt-1 truncate">{formatHour(ev.start)} – {formatHour(ev.start + ev.duration)} · {ev.type}</p>
                     </button>
                   ))}
@@ -296,14 +296,14 @@ export default function CalendarPage() {
           ) : (
           <div className="relative">
             {/* Now indicator — 5:30 PM today */}
-            <div className="hidden lg:block absolute left-[64px] right-0 h-px bg-red-400 z-10" style={{ top: `${(17.5 - 9) * HOUR_PX + 48}px` }}>
-              <span className="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-red-500" />
-              <span className="absolute -top-2 right-2 text-[10px] font-medium bg-red-500 text-white px-1.5 py-0.5 rounded-full">Now 5:30 PM</span>
+            <div className="hidden lg:block absolute left-[64px] right-0 h-px bg-[var(--badge-rose-fg)] z-10" style={{ top: `${(17.5 - 9) * HOUR_PX + 48}px` }}>
+              <span className="absolute -left-1 -top-1 w-2 h-2 rounded-full bg-[var(--badge-rose-fg)]" />
+              <span className="absolute -top-2 right-2 text-[10px] font-medium bg-[var(--badge-rose-fg)] text-white px-1.5 py-0.5 rounded-full">Now 5:30 PM</span>
             </div>
 
             <div className="grid grid-cols-[56px_1fr] lg:grid-cols-[64px_1fr] max-h-[560px] overflow-auto">
               {/* Time column */}
-              <div className="border-r border-[var(--hairline)] bg-[#FDFCF9]">
+              <div className="border-r border-[var(--hairline)] bg-[var(--color-canvas-parchment)]">
                 {hours.map(h => (
                   <div key={h} style={{ height: HOUR_PX }} className="border-b border-[var(--hairline)] flex items-start justify-end pr-2 pt-1">
                     <span className="text-[11px] text-[var(--stone)]">{h}</span>
@@ -321,7 +321,7 @@ export default function CalendarPage() {
                       </div>
                       {/* unavailable diagonal */}
                       {colIdx === 5 && (
-                        <div className="absolute inset-0 pointer-events-none opacity-[0.06]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #9AA9A3 0 1px, transparent 1px 8px)' }} />
+                        <div className="absolute inset-0 pointer-events-none opacity-[0.06]" style={{ backgroundImage: 'repeating-linear-gradient(45deg, var(--color-ink-muted-48) 0 1px, transparent 1px 8px)' }} />
                       )}
                       {filteredEvents.filter(ev => ev.day === colIdx).map(ev => (
                         <button
@@ -331,15 +331,15 @@ export default function CalendarPage() {
                           onDragEnd={() => setDragId(null)}
                           onClick={() => selectEvent(ev.id)}
                           title={`${ev.patient} · ${formatHour(ev.start)}–${formatHour(ev.start + ev.duration)} · ${ev.type}`}
-                          className={`absolute left-1 right-1 overflow-hidden rounded-[8px] pl-2.5 pr-1.5 py-1.5 text-left border transition group ${ev.status === 'blocked' ? 'bg-[#F3F1EE] border-dashed border-[var(--hairline-strong)]' : ev.status === 'free' ? 'bg-amber-50/60 border-dashed border-amber-200' : ev.status === 'awaiting' ? 'bg-[#FFFBEB] border-[#FDE68A] hover:shadow-md hover:border-amber-300' : ev.status === 'cancelled' ? 'bg-white border-[var(--hairline)] opacity-60 line-through' : 'bg-white border-[var(--hairline)] shadow-sm hover:shadow-md hover:border-[var(--green-700)]/30'} ${selectedId === ev.id ? 'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]' : ''} ${dragId === ev.id ? 'opacity-50' : ''}`}
+                          className={`absolute left-1 right-1 overflow-hidden rounded-[8px] pl-2.5 pr-1.5 py-1.5 text-left border transition group ${ev.status === 'blocked' ? 'bg-[var(--color-canvas-parchment)] border-dashed border-[var(--hairline-strong)]' : ev.status === 'free' ? 'bg-[var(--badge-amber-bg)] border-dashed border-[var(--badge-amber-fg)]/40' : ev.status === 'awaiting' ? 'bg-[var(--badge-amber-bg)] border-[var(--badge-amber-fg)] hover:border-[var(--badge-amber-fg)]' : ev.status === 'cancelled' ? 'bg-white border-[var(--hairline)] opacity-60 line-through' : 'bg-white border-[var(--hairline)] hover:border-[var(--green-700)]/30'} ${selectedId === ev.id ? 'ring-2 ring-[var(--green-700)]/20 border-[var(--green-700)]' : ''} ${dragId === ev.id ? 'opacity-50' : ''}`}
                           style={{ top: `${(ev.start - 9) * HOUR_PX + 6}px`, height: `${ev.duration * HOUR_PX - 8}px`, minHeight: '40px' }}
                         >
-                          {!['blocked', 'free'].includes(ev.status) && <span className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full ${ev.status === 'awaiting' ? 'bg-amber-400' : 'bg-[var(--green-700)]'}`} />}
+                          {!['blocked', 'free'].includes(ev.status) && <span className={`absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full ${ev.status === 'awaiting' ? 'bg-[var(--badge-amber-fg)]' : 'bg-[var(--green-700)]'}`} />}
                           <p className={`text-[12px] font-semibold leading-tight truncate ${ev.status === 'blocked' ? 'text-[var(--stone)]' : 'text-[var(--ink)]'}`}>{ev.patient}</p>
                           <div className="flex items-center gap-1 mt-0.5">
                             <p className="text-[10px] text-[var(--stone)] truncate">{formatHour(ev.start)}</p>
-                            {ev.status === 'paid' && <CheckCircle2 size={10} className="text-emerald-600 shrink-0" />}
-                            {ev.status === 'awaiting' && <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />}
+                            {ev.status === 'paid' && <CheckCircle2 size={10} className="text-[var(--badge-green-fg)] shrink-0" />}
+                            {ev.status === 'awaiting' && <span className="w-1.5 h-1.5 rounded-full bg-[var(--badge-amber-fg)] shrink-0" />}
                           </div>
                         </button>
                       ))}
@@ -365,7 +365,7 @@ export default function CalendarPage() {
                           <p className="text-[13px] font-semibold">{ev.patient} <span className="text-[11px] font-normal text-[var(--stone)]">{ev.start}:00</span></p>
                           <p className="text-[11px] text-[var(--stone)]">{ev.type} • {ev.fee || ''} {ev.status === 'paid' ? '• Paid' : ev.status === 'awaiting' ? '• Awaiting' : ''}</p>
                         </div>
-                        <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${ev.status === 'paid' ? 'bg-emerald-500' : ev.status === 'awaiting' ? 'bg-amber-400' : 'bg-[var(--stone)]'}`} />
+                        <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${ev.status === 'paid' ? 'bg-[var(--badge-green-fg)]' : ev.status === 'awaiting' ? 'bg-[var(--badge-amber-fg)]' : 'bg-[var(--stone)]'}`} />
                       </button>
                     ))
                   )}
@@ -468,7 +468,7 @@ export default function CalendarPage() {
             <div className="w-8 h-8 rounded-full bg-accent/10 flex items-center justify-center text-xs font-semibold text-accent">{selected.initials}</div>
             <div className="flex-1">
               <p className="text-sm font-semibold">{selected.patient} • {selected.type}</p>
-              <p className="text-xs text-muted">Tue 26 Aug • {selected.start}:00 • {selected.fee} {selected.status === 'paid' ? '✓ Paid' : 'Awaiting'}</p>
+              <p className="text-xs text-muted inline-flex items-center gap-1">Tue 26 Aug • {selected.start}:00 • {selected.fee} • {selected.status === 'paid' && <Check size={11} className="text-[var(--badge-green-fg)]" />}{selected.status === 'paid' ? 'Paid' : 'Awaiting'}</p>
             </div>
             <Button size="sm">Open</Button>
           </div>
@@ -476,13 +476,13 @@ export default function CalendarPage() {
       )}
 
       {/* FAB mobile */}
-      <Button isIconOnly aria-label="New session" className="lg:hidden fixed bottom-20 right-4 size-12 rounded-full shadow-lg" onPress={() => setShowCreate(true)}><Plus size={20} /></Button>
+      <Button isIconOnly aria-label="New session" className="lg:hidden fixed bottom-20 right-4 size-12 rounded-full" onPress={() => setShowCreate(true)}><Plus size={20} /></Button>
 
       {/* Create Session Modal */}
       {showCreate && (
         <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowCreate(false)} />
-          <div className="relative bg-white w-full sm:max-w-[520px] max-h-[90vh] sm:rounded-[16px] rounded-t-[16px] overflow-hidden shadow-xl animate-[fadeIn_200ms]">
+          <div className="relative bg-white w-full sm:max-w-[520px] max-h-[90vh] sm:rounded-[16px] rounded-t-[16px] overflow-hidden animate-[fadeIn_200ms]">
             <div className="px-5 py-4 border-b border-[var(--hairline)] flex items-center justify-between">
               <h3 className="text-[14px] font-semibold">New Session</h3>
               <button onClick={() => setShowCreate(false)} className="w-7 h-7 rounded-full hover:bg-[var(--surface-warm)] flex items-center justify-center"><X size={14} /></button>
@@ -542,8 +542,8 @@ export default function CalendarPage() {
       )}
 
       {toast && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[var(--ink)] text-white text-[13px] font-medium px-4 py-2 rounded-full shadow-lg flex items-center gap-2 z-50">
-          <Check size={14} className="text-emerald-400" /> {toast}
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 bg-[var(--ink)] text-white text-[13px] font-medium px-4 py-2 rounded-full flex items-center gap-2 z-50">
+          <Check size={14} className="text-[var(--color-primary-on-dark)]" /> {toast}
         </div>
       )}
     </div>
