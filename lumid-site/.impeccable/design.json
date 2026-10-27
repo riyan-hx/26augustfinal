@@ -1,0 +1,484 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-27T00:00:00Z",
+  "title": "Design System: Lumid AI public site",
+  "extensions": {
+    "colorMeta": {
+      "forest": {
+        "role": "primary",
+        "displayName": "Night Forest",
+        "canonical": "#0f2a17",
+        "tonalRamp": [
+          "#14381f",
+          "#236236",
+          "#328b4c",
+          "#40b463",
+          "#65c882",
+          "#8ed7a4",
+          "#bbe7c8",
+          "#ecf8f0"
+        ]
+      },
+      "forest-raise": {
+        "role": "primary",
+        "displayName": "Forest Raise",
+        "canonical": "#16381f",
+        "tonalRamp": [
+          "#16371e",
+          "#255f35",
+          "#35874b",
+          "#45b061",
+          "#69c481",
+          "#91d4a3",
+          "#bde5c8",
+          "#edf8f0"
+        ]
+      },
+      "forest-rule": {
+        "role": "primary",
+        "displayName": "Forest Rule",
+        "canonical": "#2a4a31",
+        "tonalRamp": [
+          "#1c3120",
+          "#305538",
+          "#447850",
+          "#599c67",
+          "#7ab386",
+          "#9dc8a7",
+          "#c4deca",
+          "#eff6f0"
+        ]
+      },
+      "lime": {
+        "role": "secondary",
+        "displayName": "Signal Lime",
+        "canonical": "#8bd65e",
+        "tonalRamp": [
+          "#213d10",
+          "#386a1b",
+          "#509626",
+          "#68c332",
+          "#87d558",
+          "#a7e085",
+          "#caecb6",
+          "#f0faeb"
+        ]
+      },
+      "lime-deep": {
+        "role": "secondary",
+        "displayName": "Pressed Lime",
+        "canonical": "#6fbf43",
+        "tonalRamp": [
+          "#213913",
+          "#396322",
+          "#518d30",
+          "#69b73e",
+          "#88ca63",
+          "#a8d88d",
+          "#cbe8bb",
+          "#f0f9ec"
+        ]
+      },
+      "lime-text": {
+        "role": "secondary",
+        "displayName": "Ledger Lime",
+        "canonical": "#2f7514",
+        "tonalRamp": [
+          "#1c3d0f",
+          "#316a1b",
+          "#459726",
+          "#5ac431",
+          "#7bd558",
+          "#9ee085",
+          "#c5edb6",
+          "#effaeb"
+        ]
+      },
+      "lime-wash": {
+        "role": "secondary",
+        "displayName": "Lime Wash",
+        "canonical": "#dff2d2",
+        "tonalRamp": [
+          "#223b11",
+          "#3b671e",
+          "#55922a",
+          "#6ebe37",
+          "#8cd05d",
+          "#abdd88",
+          "#cceab8",
+          "#f1f9eb"
+        ]
+      },
+      "paper": {
+        "role": "neutral",
+        "displayName": "Sage Paper",
+        "canonical": "#eef2ec",
+        "tonalRamp": [
+          "#242d1f",
+          "#3e4f36",
+          "#58704d",
+          "#739163",
+          "#90aa83",
+          "#aec1a4",
+          "#cedac8",
+          "#f1f5f0"
+        ]
+      },
+      "paper-deep": {
+        "role": "neutral",
+        "displayName": "Deep Sage",
+        "canonical": "#e3e9e0",
+        "tonalRamp": [
+          "#242d20",
+          "#3f4e37",
+          "#596e4e",
+          "#738f66",
+          "#91a885",
+          "#aebfa6",
+          "#cfd9c9",
+          "#f2f4f0"
+        ]
+      },
+      "stub-white": {
+        "role": "neutral",
+        "displayName": "Stub White",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "#262626",
+          "#424242",
+          "#5e5e5e",
+          "#7a7a7a",
+          "#969696",
+          "#b2b2b2",
+          "#d1d1d1",
+          "#f2f2f2"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Chart Ink",
+        "canonical": "#0f1a12",
+        "tonalRamp": [
+          "#1c3122",
+          "#31543a",
+          "#457853",
+          "#5a9b6b",
+          "#7ab28a",
+          "#9ec7a9",
+          "#c5ddcc",
+          "#eff6f1"
+        ]
+      },
+      "ink-soft": {
+        "role": "neutral",
+        "displayName": "Soft Ink",
+        "canonical": "#4a574d",
+        "tonalRamp": [
+          "#232925",
+          "#3d483f",
+          "#57665a",
+          "#718475",
+          "#8e9f92",
+          "#acb9af",
+          "#cdd5cf",
+          "#f1f3f2"
+        ]
+      },
+      "rule": {
+        "role": "neutral",
+        "displayName": "Sage Rule",
+        "canonical": "#cdd6c9",
+        "tonalRamp": [
+          "#242b21",
+          "#3f4b39",
+          "#596b51",
+          "#748b6a",
+          "#91a588",
+          "#aebda8",
+          "#cfd7cb",
+          "#f2f4f1"
+        ]
+      },
+      "on-forest": {
+        "role": "neutral",
+        "displayName": "Paper on Forest",
+        "canonical": "#eef2ec",
+        "tonalRamp": [
+          "#242d1f",
+          "#3e4f36",
+          "#58704d",
+          "#739163",
+          "#90aa83",
+          "#aec1a4",
+          "#cedac8",
+          "#f1f5f0"
+        ]
+      },
+      "on-forest-soft": {
+        "role": "neutral",
+        "displayName": "Sage on Forest",
+        "canonical": "#a7bda8",
+        "tonalRamp": [
+          "#212c21",
+          "#394c3a",
+          "#516c52",
+          "#698c6b",
+          "#88a589",
+          "#a8bda9",
+          "#cbd8cb",
+          "#f0f4f1"
+        ]
+      },
+      "error": {
+        "role": "error",
+        "displayName": "Error Red",
+        "canonical": "#b3261e",
+        "tonalRamp": [
+          "#3d120f",
+          "#6a1f1b",
+          "#972c26",
+          "#c43931",
+          "#d55e58",
+          "#e08a85",
+          "#edb9b6",
+          "#faebeb"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headline and sub-page h1s, stacked lines in forest."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section heads in forest, paired with a soft-ink paragraph on columns 9-12."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Ledger, timeline, principle and index row titles."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Running copy; tabular figures on globally."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Column headers, field keys, captions. General Sans, sentence case."
+      },
+      "data": {
+        "displayName": "Data (mono)",
+        "purpose": "Booking codes, screen codes, category codes, status stamps, the TBD value. Data only."
+      }
+    },
+    "shadows": [
+      {
+        "name": "ticket-lift",
+        "value": "0 1px 0 rgba(15,26,18,.04), 0 24px 48px -28px rgba(15,42,23,.35)",
+        "purpose": "Ticket stubs only."
+      },
+      {
+        "name": "device-drop",
+        "value": "0 30px 60px -30px rgba(15,42,23,.45)",
+        "purpose": "Phone screenshots."
+      },
+      {
+        "name": "inset-ring",
+        "value": "inset 0 0 0 1.5px #0f1a12",
+        "purpose": "WL stamp, TBD value and FAQ marker outlines without layout shift."
+      },
+      {
+        "name": "active-ring",
+        "value": "inset 0 0 0 1px #cdd6c9",
+        "purpose": "Current-page nav pill."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-out",
+        "value": "cubic-bezier(0.16, 1, 0.3, 1)",
+        "purpose": "Every transition on the site."
+      },
+      {
+        "name": "control",
+        "value": "250ms",
+        "purpose": "Button, row and card hover and press."
+      },
+      {
+        "name": "accordion",
+        "value": "450ms",
+        "purpose": "Index row description reveal (grid-template-rows)."
+      },
+      {
+        "name": "status-roll",
+        "value": "700ms",
+        "purpose": "Stub status roll WL to CNF; border and fill shift at 450ms, pay strip at 500ms."
+      },
+      {
+        "name": "reveal",
+        "value": "900ms",
+        "purpose": "Scroll reveal: 18px rise plus fade. Reduced motion disables all motion."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "stub-stack",
+        "value": "560px"
+      },
+      {
+        "name": "chart-compact",
+        "value": "640px"
+      },
+      {
+        "name": "ledger-stack",
+        "value": "760px"
+      },
+      {
+        "name": "nav-sheet",
+        "value": "920px"
+      },
+      {
+        "name": "grid-stack",
+        "value": "960px"
+      },
+      {
+        "name": "hero-stack",
+        "value": "1080px"
+      },
+      {
+        "name": "container",
+        "value": "1360px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Lime Button",
+      "kind": "button",
+      "refersTo": "button-lime",
+      "description": "Primary call to action (Start free) on paper or forest.",
+      "html": "<button class=\"ds-btn-lime\">Start free <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M5 12h14\"/><path d=\"m12 5 7 7-7 7\"/></svg></button>",
+      "css": ".ds-btn-lime { display:inline-flex; align-items:center; gap:10px; height:48px; padding:0 22px; border-radius:999px; border:0; background:#8bd65e; color:#0f2a17; font-family:\"General Sans\", \"Manrope\", system-ui, sans-serif; font-weight:600; font-size:16px; letter-spacing:-0.005em; cursor:pointer; transition:background-color .25s cubic-bezier(0.16,1,0.3,1), transform .25s cubic-bezier(0.16,1,0.3,1); } .ds-btn-lime svg { width:18px; height:18px; transition:transform .3s cubic-bezier(0.16,1,0.3,1); } .ds-btn-lime:hover { background:#6fbf43; } .ds-btn-lime:hover svg { transform:translateX(3px); } .ds-btn-lime:active { transform:translateY(1px); } .ds-btn-lime:focus-visible { outline:2px solid #0f2a17; outline-offset:3px; }"
+    },
+    {
+      "name": "Forest Button",
+      "kind": "button",
+      "refersTo": "button-forest",
+      "description": "Dark alternative action on paper.",
+      "html": "<button class=\"ds-btn-forest\">See how it works</button>",
+      "css": ".ds-btn-forest { display:inline-flex; align-items:center; height:48px; padding:0 22px; border-radius:999px; border:0; background:#0f2a17; color:#eef2ec; font-family:\"General Sans\", \"Manrope\", system-ui, sans-serif; font-weight:600; font-size:16px; cursor:pointer; transition:background-color .25s cubic-bezier(0.16,1,0.3,1), transform .25s cubic-bezier(0.16,1,0.3,1); } .ds-btn-forest:hover { background:#16381f; } .ds-btn-forest:active { transform:translateY(1px); } .ds-btn-forest:focus-visible { outline:2px solid #0f2a17; outline-offset:3px; }"
+    },
+    {
+      "name": "Line Button",
+      "kind": "button",
+      "refersTo": "button-line",
+      "description": "Outline action that inverts to ink on hover.",
+      "html": "<button class=\"ds-btn-line\">Talk to us</button>",
+      "css": ".ds-btn-line { display:inline-flex; align-items:center; height:48px; padding:0 22px; border-radius:999px; border:1px solid #0f1a12; background:transparent; color:#0f1a12; font-family:\"General Sans\", \"Manrope\", system-ui, sans-serif; font-weight:600; font-size:16px; cursor:pointer; transition:background-color .25s cubic-bezier(0.16,1,0.3,1), color .25s cubic-bezier(0.16,1,0.3,1); } .ds-btn-line:hover { background:#0f1a12; color:#eef2ec; } .ds-btn-line:focus-visible { outline:2px solid #0f2a17; outline-offset:3px; }"
+    },
+    {
+      "name": "Navigation",
+      "kind": "nav",
+      "refersTo": "nav-link",
+      "description": "Sticky translucent paper bar with pill links; current page is a white pill.",
+      "html": "<nav class=\"ds-nav\"><a class=\"ds-wordmark\" href=\"#\">Lumid <b>AI</b></a><a class=\"ds-nav-link\" href=\"#\" aria-current=\"page\">Features</a><a class=\"ds-nav-link\" href=\"#\">Pricing</a><a class=\"ds-nav-link\" href=\"#\">About</a></nav>",
+      "css": ".ds-nav { display:flex; align-items:center; gap:4px; height:76px; padding:0 24px; background:color-mix(in srgb,#eef2ec 88%,transparent); backdrop-filter:saturate(1.4) blur(14px); border-bottom:1px solid #cdd6c9; font-family:\"General Sans\", \"Manrope\", system-ui, sans-serif; } .ds-wordmark { font-weight:700; font-size:22px; letter-spacing:-0.02em; color:#0f2a17; text-decoration:none; margin-right:auto; } .ds-wordmark b { color:#2f7514; } .ds-nav-link { display:inline-flex; align-items:center; height:40px; padding:0 14px; border-radius:99px; text-decoration:none; font-weight:500; font-size:15px; color:#4a574d; transition:background-color .2s, color .2s; } .ds-nav-link:hover { color:#0f1a12; background:#e3e9e0; } .ds-nav-link[aria-current=page] { color:#0f2a17; background:#fff; box-shadow:inset 0 0 0 1px #cdd6c9; } .ds-nav-link:focus-visible { outline:2px solid #0f2a17; outline-offset:3px; }"
+    },
+    {
+      "name": "Status Stamps",
+      "kind": "chip",
+      "refersTo": "stamp-cnf",
+      "description": "Status only: WL ink outline (held, unpaid), CNF lime fill (paid, confirmed), CAN struck rule outline (cancelled).",
+      "html": "<span class=\"ds-tag ds-tag-wl\">WL 1</span> <span class=\"ds-tag ds-tag-cnf\">CNF</span> <span class=\"ds-tag ds-tag-can\">CAN</span>",
+      "css": ".ds-tag { display:inline-flex; align-items:center; justify-content:center; min-width:52px; height:26px; padding:0 8px; border-radius:7px; font-family:\"JetBrains Mono\", ui-monospace, monospace; font-size:12px; font-weight:700; letter-spacing:0.04em; font-feature-settings:'zero' 1; } .ds-tag-cnf { background:#8bd65e; color:#0f2a17; } .ds-tag-wl { box-shadow:inset 0 0 0 1.5px #0f1a12; color:#0f1a12; } .ds-tag-can { box-shadow:inset 0 0 0 1.5px #cdd6c9; color:#4a574d; text-decoration:line-through; }"
+    },
+    {
+      "name": "Code Cell",
+      "kind": "custom",
+      "refersTo": "code-cell",
+      "description": "Neutral category marker: mono, soft ink, 2px left rule. Never a stamp.",
+      "html": "<span class=\"ds-code\">CONSENT</span>",
+      "css": ".ds-code { display:inline-flex; align-items:center; height:26px; padding-left:10px; border-left:2px solid currentColor; font-family:\"JetBrains Mono\", ui-monospace, monospace; font-size:12px; font-weight:700; letter-spacing:0.04em; color:#4a574d; }"
+    },
+    {
+      "name": "Ticket Stub",
+      "kind": "card",
+      "refersTo": "ticket-stub",
+      "description": "Signature white perforated stub; the side panel holds the WL to CNF status roll.",
+      "html": "<div class=\"ds-stub\"><div class=\"ds-stub-main\"><div class=\"ds-stub-head\"><b>Lumid</b><span class=\"ds-mono\">LMD 4821 0937</span></div><div><div class=\"ds-k\">Patient</div><div class=\"ds-v\">Divya Prasad</div></div><div><div class=\"ds-k\">Fee</div><div class=\"ds-v\">₹1,500</div></div></div><div class=\"ds-stub-side\"><div class=\"ds-k\">Status</div><div class=\"ds-roll\">CNF</div></div></div>",
+      "css": ".ds-stub { --notch:13px; --perf-x:calc(100% - 160px); display:grid; grid-template-columns:1fr 160px; background:#fff; border-radius:18px; font-family:\"General Sans\", \"Manrope\", system-ui, sans-serif; color:#0f1a12; box-shadow:0 1px 0 rgba(15,26,18,.04), 0 24px 48px -28px rgba(15,42,23,.35); -webkit-mask:radial-gradient(circle var(--notch) at var(--perf-x) 0,#0000 98%,#000) top/100% 51% no-repeat, radial-gradient(circle var(--notch) at var(--perf-x) 100%,#0000 98%,#000) bottom/100% 51% no-repeat; mask:radial-gradient(circle var(--notch) at var(--perf-x) 0,#0000 98%,#000) top/100% 51% no-repeat, radial-gradient(circle var(--notch) at var(--perf-x) 100%,#0000 98%,#000) bottom/100% 51% no-repeat; } .ds-stub-main { padding:24px 26px; display:grid; gap:16px; } .ds-stub-head { display:flex; justify-content:space-between; color:#0f2a17; font-size:15px; } .ds-mono { font-family:\"JetBrains Mono\", ui-monospace, monospace; font-size:13px; color:#4a574d; } .ds-k { font-size:12px; font-weight:500; color:#4a574d; } .ds-v { font-size:17px; font-weight:600; letter-spacing:-0.01em; } .ds-stub-side { padding:24px 20px; border-left:2px dashed #cdd6c9; } .ds-roll { margin-top:6px; height:64px; display:grid; place-items:center; border-radius:12px; background:#8bd65e; border:2px solid #8bd65e; color:#0f2a17; font-family:\"JetBrains Mono\", ui-monospace, monospace; font-weight:700; font-size:26px; letter-spacing:0.04em; }"
+    },
+    {
+      "name": "Chart Table",
+      "kind": "card",
+      "refersTo": "chart-sheet",
+      "description": "White ruled chart sheet: 2px ink title rule, 1px sage row rules, tabular figures.",
+      "html": "<div class=\"ds-chart\"><div class=\"ds-chart-title\"><b>Reservation chart</b><span>THU 28 AUG · 5 SESSIONS</span></div><table><tr><th>Time</th><th>Patient</th><th>Status</th></tr><tr><td>5:00 PM</td><td>Divya Prasad</td><td><span class=\"ds-cnf\">CNF</span></td></tr><tr><td>8:00 PM</td><td>Arjun Nair</td><td><span class=\"ds-wl\">WL 1</span></td></tr></table></div>",
+      "css": ".ds-chart { background:#fff; border:1px solid #cdd6c9; border-radius:20px; overflow:hidden; font-family:\"General Sans\", \"Manrope\", system-ui, sans-serif; color:#0f1a12; font-feature-settings:'tnum' 1; } .ds-chart-title { display:flex; justify-content:space-between; gap:16px; padding:16px 20px; border-bottom:2px solid #0f1a12; font-size:15px; } .ds-chart-title span { font-family:\"JetBrains Mono\", ui-monospace, monospace; font-size:12px; color:#4a574d; } .ds-chart table { width:100%; border-collapse:collapse; font-size:15px; } .ds-chart th { text-align:left; font-weight:500; font-size:12px; color:#4a574d; padding:10px 20px; border-bottom:1px solid #cdd6c9; } .ds-chart td { padding:12px 20px; border-bottom:1px solid #cdd6c9; } .ds-chart tr:last-child td { border-bottom:0; } .ds-cnf, .ds-wl { display:inline-flex; align-items:center; justify-content:center; min-width:52px; height:26px; padding:0 8px; border-radius:7px; font-family:\"JetBrains Mono\", ui-monospace, monospace; font-size:12px; font-weight:700; letter-spacing:0.04em; } .ds-cnf { background:#8bd65e; color:#0f2a17; } .ds-wl { box-shadow:inset 0 0 0 1.5px #0f1a12; }"
+    },
+    {
+      "name": "Text Field",
+      "kind": "input",
+      "refersTo": "field",
+      "description": "Paper-filled field that turns white with a forest border on focus.",
+      "html": "<label class=\"ds-fld\"><span>Your name</span><input placeholder=\"Dr. Anitha Raghavan\"></label>",
+      "css": ".ds-fld { display:block; font-family:\"General Sans\", \"Manrope\", system-ui, sans-serif; } .ds-fld span { display:block; font-size:14px; font-weight:500; margin-bottom:8px; color:#0f1a12; } .ds-fld input { width:100%; font:inherit; font-size:16px; color:#0f1a12; background:#eef2ec; border:1px solid transparent; border-radius:12px; padding:14px 16px; caret-color:#6fbf43; transition:border-color .2s, background-color .2s; } .ds-fld input::placeholder { color:#6d7a70; } .ds-fld input:hover { border-color:#cdd6c9; } .ds-fld input:focus { outline:none; border-color:#0f2a17; background:#fff; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Reservation Chart",
+    "overview": "The site speaks the language of the Indian Railways reservation chart: ruled chart tables, perforated white ticket stubs, booking codes, and the move from WL to CNF. That familiar grammar carries the product's one mechanism, that a session is confirmed only once it is paid, without explanation. Pages are sheets of sage paper ruled with thin lines, and the forest bands read as the night pages of the same ledger.\n\nThe system runs on two inks, forest and lime, over sage paper, with white reserved for the things you hold: stubs, chart sheets, form slips, cards. Density is calm and editorial. Large tight-set General Sans headlines sit on a 12-column module, and data lives in ruled rows with tabular figures. Status is never shown with a third hue. It is shown by the form of the stamp: an outline while held, a lime fill once paid, a strike once cancelled.\n\nThe site explicitly rejects the centred-headline-plus-screenshot SaaS page. Proof comes from the real dashboard screens, framed on paper-deep mats.",
+    "keyCharacteristics": [
+      "Two inks (forest, lime) on sage paper, white stubs and sheets, no third brand hue.",
+      "Ruled chart grammar: 2px ink head rule, 1px sage rules between rows.",
+      "Perforated ticket stubs with notched edges and a dashed tear line.",
+      "Status carried by stamp form (WL outline, CNF lime fill, CAN struck outline).",
+      "Mono only for data; every label and heading is General Sans.",
+      "Pill controls throughout, matching the dashboard."
+    ],
+    "rules": [
+      {
+        "name": "The Two Inks Rule",
+        "body": "Forest and lime are the only brand hues. Status, emphasis and category never get a third color. Error red is used for validation and nowhere else.",
+        "section": "colors"
+      },
+      {
+        "name": "The Lime Contrast Rule",
+        "body": "Bright lime is a fill, or text on forest. Lime text on paper or white is always Ledger Lime (lime-text). Never set bright lime or Pressed Lime as text on paper.",
+        "section": "colors"
+      },
+      {
+        "name": "The Data-Only Mono Rule",
+        "body": "Mono is used for what a chart would print: booking codes, screen codes, status stamps, and the TBD value. Labels, headings, captions and buttons are always General Sans.",
+        "section": "typography"
+      },
+      {
+        "name": "The Tight Display Rule",
+        "body": "Display and headline type is tracked negative (-0.028em to -0.045em) with leading at or below 1.02. Body type is never tracked.",
+        "section": "typography"
+      },
+      {
+        "name": "The Held Object Rule",
+        "body": "Only things a person would hold (stubs, phones) cast a shadow. Sheets, cards and forms sit flat on 1px rules.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do show status by stamp form: WL as an ink outline, CNF as a lime fill, CAN as a struck rule outline.",
+      "Do mark categories with the neutral code cell (mono, soft ink, 2px left rule), never a stamp.",
+      "Do keep mono to data: booking codes, screen codes, stamps and the TBD value.",
+      "Do use Ledger Lime (lime-text) for any lime text on paper. Keep bright lime for fills and for text on forest.",
+      "Do open every chart or ruled list with a 2px ink head rule and separate rows with 1px Sage Rule.",
+      "Do put held objects (stubs, forms, chart sheets) on Stub White over sage paper.",
+      "Do show the real dashboard screens on a Deep Sage mat with 12px inner corners."
+    ],
+    "donts": [
+      "Don't introduce a third brand hue for status, category, or emphasis.",
+      "Don't put a category or step label in a WL or CNF stamp. Stamps mean held, paid, or cancelled.",
+      "Don't set labels, headings, or buttons in mono.",
+      "Don't set bright lime (#8bd65e) or Pressed Lime as text on paper or white.",
+      "Don't add shadows to sheets, cards, or forms. Shadow is reserved for stubs and phone screenshots.",
+      "Don't use square or small-radius buttons. Controls are pills."
+    ]
+  }
+}

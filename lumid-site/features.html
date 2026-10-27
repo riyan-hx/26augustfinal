@@ -1,0 +1,149 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Features · Lumid AI</title>
+  <meta name="description" content="Everything in Lumid: a booking page with payment built in, bookings, calendar, patients, follow-ups, earnings and consented check-ins between sessions.">
+  <meta name="theme-color" content="#eef2ec">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="assets/site.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-row">
+      <a class="wordmark" href="index.html" aria-label="Lumid AI home">LUMID <b>AI</b></a>
+      <ul class="nav-links">
+        <li><a href="features.html" aria-current="page">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a class="nav-signin" href="https://riyan.lumid.ai">Sign in</a>
+        <a class="btn btn-forest btn-sm" href="https://riyan.lumid.ai">Start free <i data-lucide="arrow-right"></i></a>
+      </div>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+  <div class="nav-sheet" id="sheet">
+    <a class="sheet-link" href="features.html">Features <i data-lucide="arrow-up-right"></i></a>
+    <a class="sheet-link" href="pricing.html">Pricing <i data-lucide="arrow-up-right"></i></a>
+    <a class="sheet-link" href="about.html">About <i data-lucide="arrow-up-right"></i></a>
+    <a class="sheet-link" href="contact.html">Contact <i data-lucide="arrow-up-right"></i></a>
+    <div class="sheet-actions">
+      <a class="btn btn-line" href="https://riyan.lumid.ai">Sign in</a>
+      <a class="btn btn-lime" href="https://riyan.lumid.ai">Start free</a>
+    </div>
+  </div>
+
+  <main id="main">
+    <section class="page-head">
+      <div class="wrap page-head-grid">
+        <h1>Everything on one chart.</h1>
+        <p>Pick a row to see that screen. Every screen is the real Lumid dashboard, shown with sample patients and amounts.</p>
+        <div class="route-line"><span class="tag tag-wl">WL</span> held <i data-lucide="arrow-right" style="width:14px;height:14px"></i> paid <i data-lucide="arrow-right" style="width:14px;height:14px"></i> <span class="tag tag-cnf">CNF</span> confirmed</div>
+      </div>
+    </section>
+
+    <section class="section-tight" style="padding-top:0">
+      <div class="wrap index-grid index-open" data-index>
+        <div class="index-col">
+          <div class="chart-title chart-title-flat">
+            <h2>Practice chart · Lumid</h2>
+            <span>9 screens · 1 practitioner</span>
+          </div>
+          <ul class="index-list" role="tablist" aria-label="Lumid screens" aria-orientation="vertical">
+            <li class="index-item"><button role="tab" aria-selected="true" data-target="pge" data-cap="Your page · what patients see before they book">
+              <span class="ix-code">PGE</span>
+              <span><span class="ix-title">Your page</span><span class="ix-desc"><span>Your own link, like anitha.lumid.in, with your bio, session types, fees and open slots. Patients book and pay in one go, by UPI, card or netbanking.</span></span><span class="ix-meta">Shared on Instagram, WhatsApp, email</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="ovw" data-cap="Overview · what needs you before tonight">
+              <span class="ix-code">OVW</span>
+              <span><span class="ix-title">Overview</span><span class="ix-desc"><span>Who’s next and whether they’ve paid, today’s earnings, what’s still awaiting payment, and the short list of things to handle before tonight.</span></span><span class="ix-meta">Checked between sessions</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="bkg" data-cap="Bookings · paid, awaiting, completed, cancelled">
+              <span class="ix-code">BKG</span>
+              <span><span class="ix-title">Bookings</span><span class="ix-desc"><span>Every booking with its payment status. Remind everyone who hasn’t paid with one click, and see refunds next to the booking.</span></span><span class="ix-meta"><span class="tag tag-cnf">CNF</span> <span class="tag tag-wl">WL</span> <span class="tag tag-can">CAN</span></span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="cal" data-cap="Calendar · only paid sessions block time">
+              <span class="ix-code">CAL</span>
+              <span><span class="ix-title">Calendar</span><span class="ix-desc"><span>Your week at a glance. Confirmed sessions block time. Held slots don’t until they’re paid, and open slots flow straight to your page.</span></span><span class="ix-meta">50 min · 30 min · 60 min blocks</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="prf" data-cap="Patient profile · history, notes, next step">
+              <span class="ix-code">PTS</span>
+              <span><span class="ix-title">Patients</span><span class="ix-desc"><span>Session history, intake answers, notes and payments in one profile, so you walk into each session prepared.</span></span><span class="ix-meta">Intake reviewed before session 1</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="fup" data-cap="Follow-ups · due, overdue, done">
+              <span class="ix-code">FUP</span>
+              <span><span class="ix-title">Follow-ups</span><span class="ix-desc"><span>Due, overdue or done. Lumid shows who hasn’t booked again, so the check-in happens on time instead of three weeks late.</span></span><span class="ix-meta">Overdue at the top</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="ern" data-cap="Earnings · collected, awaiting, by month">
+              <span class="ix-code">ERN</span>
+              <span><span class="ix-title">Earnings</span><span class="ix-desc"><span>Monthly earnings by session type, payouts, and anything still waiting to be paid. You won’t need a spreadsheet.</span></span><span class="ix-meta">In ₹, by month</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="ses" data-cap="Sessions · past and upcoming, with notes">
+              <span class="ix-code">SES</span>
+              <span><span class="ix-title">Sessions</span><span class="ix-desc"><span>Past and upcoming sessions with their length, type, status and notes, ready when you need to look back.</span></span><span class="ix-meta">Notes kept with each visit</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="mob" data-cap="On your phone · the day’s overview">
+              <span class="ix-code">MOB</span>
+              <span><span class="ix-title">On your phone</span><span class="ix-desc"><span>The day’s chart fits on your phone: who’s next, who has paid, and what needs you.</span></span><span class="ix-meta">Same chart, 390 px wide</span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+          </ul>
+        </div>
+        <div class="index-view">
+          <div class="view-frame">
+            <div class="view-stage">
+              <img class="is-on" data-view="pge" src="assets/screens/your-page.png" alt="Your page editor with a live preview of the public booking page" width="1728" height="1063">
+              <img data-view="ovw" src="assets/screens/overview.png" alt="Overview dashboard" width="1728" height="1533">
+              <img data-view="bkg" src="assets/screens/bookings.png" alt="Bookings screen with payment statuses" width="1728" height="1000">
+              <img data-view="cal" src="assets/screens/calendar.png" alt="Weekly calendar screen" width="1728" height="981">
+              <img data-view="prf" src="assets/screens/patient-profile.png" alt="Patient profile screen" width="1728" height="1205">
+              <img data-view="fup" src="assets/screens/follow-ups.png" alt="Follow-ups screen" width="1728" height="1241">
+              <img data-view="ern" src="assets/screens/earnings.png" alt="Earnings screen" width="1728" height="1250">
+              <img data-view="ses" src="assets/screens/sessions.png" alt="Sessions screen" width="1728" height="965">
+              <img class="is-phone" data-view="mob" src="assets/screens/mobile-overview.png" alt="Lumid overview on a phone" width="390" height="829">
+            </div>
+            <div class="view-cap"><span data-cap>Your page · what patients see before they book</span><span>Sample data</span></div>
+          </div>
+          <p style="margin-top:18px"><a class="btn btn-lime" href="https://riyan.lumid.ai">Start free <i data-lucide="arrow-right"></i></a></p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="on-forest closing">
+    <div class="wrap">
+      <div class="closing-grid rv">
+        <h2>Your next session, <em>confirmed.</em></h2>
+        <div class="closing-actions">
+          <p>Set up your booking page in a few minutes. It’s free to start.</p>
+          <a class="btn btn-lime btn-lg" href="https://riyan.lumid.ai">Start free <i data-lucide="arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div class="fc-about">
+          <a class="wordmark" href="index.html">LUMID <b>AI</b></a>
+          <p>The practice desk for independent psychologists. Built in Kerala, for practices across India.</p>
+        </div>
+        <nav aria-label="Product"><h3>Product</h3><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="https://riyan.lumid.ai">Sign in</a></li></ul></nav>
+        <nav aria-label="Company"><h3>Company</h3><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul></nav>
+        <nav aria-label="Reach us"><h3>Reach us</h3><ul><li><a href="mailto:riyan@lumid.in">riyan@lumid.in</a></li><li><a href="https://wa.me/918590174679">WhatsApp</a></li></ul></nav>
+      </div>
+      <div class="giant" aria-hidden="true">LUMID <b>AI</b></div>
+      <div class="legal"><span>© <span data-year>2026</span> Lumid AI</span><span>Lumid is a practice tool, not a medical service.</span></div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@0.452.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/site.js"></script>
+</body>
+</html>
