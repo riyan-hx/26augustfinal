@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lumid AI · Booked, paid, confirmed</title>
+  <meta name="description" content="Lumid is the practice desk for independent psychologists in India. A session is confirmed only when it is paid, so no-shows and payment-chasing stop costing you.">
+  <meta name="theme-color" content="#eef2ec">
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&display=swap">
+  <link rel="stylesheet" href="assets/site.css">
+  <link rel="preload" as="image" href="assets/screens/overview.png">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="nav">
+    <div class="wrap nav-row">
+      <a class="wordmark" href="index.html" aria-label="Lumid AI home">LUMID <b>AI</b></a>
+      <ul class="nav-links">
+        <li><a href="features.html">Features</a></li>
+        <li><a href="pricing.html">Pricing</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+      <div class="nav-cta">
+        <a class="nav-signin" href="https://riyan.lumid.ai">Sign in</a>
+        <a class="btn btn-forest btn-sm" href="https://riyan.lumid.ai">Start free <i data-lucide="arrow-right"></i></a>
+      </div>
+      <button class="nav-toggle" aria-expanded="false" aria-controls="sheet" aria-label="Open menu"><i data-lucide="menu"></i></button>
+    </div>
+  </header>
+  <div class="nav-sheet" id="sheet">
+    <a class="sheet-link" href="features.html">Features <i data-lucide="arrow-up-right"></i></a>
+    <a class="sheet-link" href="pricing.html">Pricing <i data-lucide="arrow-up-right"></i></a>
+    <a class="sheet-link" href="about.html">About <i data-lucide="arrow-up-right"></i></a>
+    <a class="sheet-link" href="contact.html">Contact <i data-lucide="arrow-up-right"></i></a>
+    <div class="sheet-actions">
+      <a class="btn btn-line" href="https://riyan.lumid.ai">Sign in</a>
+      <a class="btn btn-lime" href="https://riyan.lumid.ai">Start free</a>
+    </div>
+  </div>
+
+  <main id="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <h1><span>Booked.</span><span>Paid.</span><span class="h-lime">Confirmed.</span></h1>
+          <p class="hero-lede">Lumid is the practice desk for independent psychologists. <strong>A session goes on your calendar only once it’s paid</strong>, so you stop chasing payments on WhatsApp and stop losing hours to no-shows.</p>
+          <div class="hero-actions">
+            <a class="btn btn-lime btn-lg" href="https://riyan.lumid.ai">Start free <i data-lucide="arrow-right"></i></a>
+            <a class="btn btn-line btn-lg" href="#how">See how it works</a>
+          </div>
+          <div class="hero-meta">
+            <span><i data-lucide="check"></i> Free to start</span>
+            <span><i data-lucide="check"></i> No card needed</span>
+            <span><i data-lucide="check"></i> Built for solo practice</span>
+          </div>
+        </div>
+
+        <div class="hero-stub">
+          <article class="stub" data-stub data-state="wl" aria-live="polite" aria-label="Sample booking ticket">
+            <div class="stub-main">
+              <div class="stub-head">
+                <span class="stub-brand">LUMID <b>AI</b></span>
+                <span class="stub-code mono" data-f="code">LMD 4821 0937</span>
+              </div>
+              <div class="stub-fields">
+                <div class="f-who">
+                  <div class="field-k">Patient</div>
+                  <div class="field-v big" data-f="who">Divya Prasad</div>
+                </div>
+                <div>
+                  <div class="field-k">Session</div>
+                  <div class="field-v" data-f="session">Individual · 50 min</div>
+                </div>
+                <div>
+                  <div class="field-k">When</div>
+                  <div class="field-v" data-f="when">Thu 28 Aug · 5:00 PM</div>
+                </div>
+                <div>
+                  <div class="field-k">Fee</div>
+                  <div class="field-v" data-f="fee">₹1,500</div>
+                </div>
+              </div>
+              <div class="stub-pay">
+                <i data-lucide="loader" class="pay-wait"></i>
+                <i data-lucide="circle-check" class="pay-check"></i>
+                <span data-f="pay">Waiting for ₹1,500 via UPI</span>
+              </div>
+            </div>
+            <div class="stub-side">
+              <div>
+                <div class="status-k">Status</div>
+                <div class="status-roll"><div class="status-track"><span>WL 1</span><span>CNF</span></div></div>
+                <p class="status-note" data-f="note">Slot held for 30 min. Not on your calendar yet.</p>
+              </div>
+              <div class="stub-seat">Room<strong data-f="seat">Google Meet</strong></div>
+            </div>
+          </article>
+          <p class="stub-caption"><span>WL means held, CNF means paid and confirmed.</span><span>Sample patients</span></p>
+        </div>
+      </div>
+
+      <!-- Reservation chart band -->
+      <div class="wrap chart-band rv">
+        <div class="chart-sheet">
+          <div class="chart-title">
+            <h2>Reservation chart · Dr. Anitha Raghavan</h2>
+            <span class="mono">THU 28 AUG · 5 SESSIONS · 4 h 10 min</span>
+          </div>
+          <div class="chart-scroll">
+            <table class="chart">
+              <thead>
+                <tr><th>Time</th><th>Booking</th><th>Patient</th><th>Session</th><th>Fee</th><th>Status</th></tr>
+              </thead>
+              <tbody>
+                <tr class="is-live"><td class="num">5:00 PM</td><td class="mono">LMD 4821 0937</td><td class="who">Divya Prasad<span class="sub pnr mono">LMD 4821 0937</span><span class="sub">Session 9</span></td><td>Individual · 50 min</td><td class="num">₹1,500</td><td><span class="tag tag-cnf">CNF</span></td></tr>
+                <tr><td class="num">6:30 PM</td><td class="mono">LMD 4821 1044</td><td class="who">Vikram Shetty<span class="sub pnr mono">LMD 4821 1044</span><span class="sub">New patient</span></td><td>First consultation · 60 min</td><td class="num">₹2,000</td><td><span class="tag tag-cnf">CNF</span></td></tr>
+                <tr><td class="num">8:00 PM</td><td class="mono">LMD 4821 1102</td><td class="who">Arjun Nair<span class="sub pnr mono">LMD 4821 1102</span><span class="sub">Link sent at 2:10 PM</span></td><td>Individual · 50 min</td><td class="num">₹1,500</td><td><span class="tag tag-wl">WL 1</span></td></tr>
+                <tr><td class="num">Fri 11:00 AM</td><td class="mono">LMD 4822 0215</td><td class="who">Lakshmi Iyer<span class="sub pnr mono">LMD 4822 0215</span><span class="sub">From the waitlist</span></td><td>Individual · 50 min</td><td class="num">₹1,500</td><td><span class="tag tag-cnf">CNF</span></td></tr>
+                <tr><td class="num">Fri 3:00 PM</td><td class="mono">LMD 4822 0388</td><td class="who">Sneha Kulkarni<span class="sub pnr mono">LMD 4822 0388</span><span class="sub">Reminder at 6 PM</span></td><td>Individual · 50 min</td><td class="num">₹1,500</td><td><span class="tag tag-wl">WL 2</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="screen-frame">
+          <img src="assets/screens/overview.png" width="1728" height="1533" alt="The Lumid overview dashboard: next session, today's earnings, payments awaiting, today's schedule, follow-ups and waitlist." fetchpriority="high">
+          <span class="sample-note">Real product · sample data</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- The leak -->
+    <section class="section">
+      <div class="wrap">
+        <div class="sec-head rv">
+          <h2>Your practice leaks money in the gaps between messages.</h2>
+          <p>Most solo psychologists run bookings on WhatsApp, payments on UPI and follow-ups from memory. Each handoff is a place a session can slip.</p>
+        </div>
+        <div class="ledger rv">
+          <div class="ledger-row ledger-head">
+            <span class="ledger-k"></span>
+            <span class="ledger-before">Today, on WhatsApp</span>
+            <span class="ledger-after">With Lumid</span>
+          </div>
+          <div class="ledger-row">
+            <span class="ledger-k tag tag-wl">HOLD</span>
+            <div class="ledger-before">
+              <h3>“Can I do Thursday 5?” Then nothing.</h3>
+              <p>You hold the slot, turn someone else away, and the hour stays empty.</p>
+            </div>
+            <div class="ledger-after">
+              <h3>A slot is held for 30 minutes, then released.</h3>
+              <p>If the payment doesn’t arrive, the slot goes back on your page by itself.</p>
+            </div>
+          </div>
+          <div class="ledger-row">
+            <span class="ledger-k tag tag-wl">PAY</span>
+            <div class="ledger-before">
+              <h3>Checking UPI screenshots between sessions.</h3>
+              <p>Matching names to payments, then sending the polite “just a reminder” text.</p>
+            </div>
+            <div class="ledger-after">
+              <h3>Payment is matched to the booking for you.</h3>
+              <p>Patients pay by UPI, card or netbanking on your page. Reminders go out without you.</p>
+            </div>
+          </div>
+          <div class="ledger-row">
+            <span class="ledger-k tag tag-wl">F-UP</span>
+            <div class="ledger-before">
+              <h3>The follow-up that quietly lapses.</h3>
+              <p>Three weeks pass and a patient who needed a check-in never hears from you.</p>
+            </div>
+            <div class="ledger-after">
+              <h3>Follow-ups are due, overdue or done.</h3>
+              <p>Every patient has a next step on the chart, so nobody falls through.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section on-forest" id="how">
+      <div class="wrap">
+        <div class="sec-head rv">
+          <h2>Three stops from “Hi, are you free?” to a confirmed session.</h2>
+          <p>Every booking takes the same route. Nothing reaches your calendar until it has been paid for.</p>
+        </div>
+        <div class="route rv">
+          <div class="station">
+            <span class="station-stamp tag tag-wl">BOOK</span>
+            <h3>Patients pick a slot on your page</h3>
+            <p>Share one link in your Instagram bio or WhatsApp. They see your real availability, session types and fees.</p>
+            <div class="crop" role="img" aria-label="A psychologist's public booking page with time slots and a Book and pay button"
+                 style="aspect-ratio:5/4;background-image:url(assets/screens/your-page.png);background-size:392.7% auto;background-position:97.05% 55.13%"></div>
+          </div>
+          <div class="station">
+            <span class="station-stamp tag tag-wl">PAY</span>
+            <h3>They pay to hold it</h3>
+            <p>UPI, card or netbanking. The slot is held while they pay and released if they don’t.</p>
+            <div class="crop" role="img" aria-label="Checklist showing how a booking confirms: slot picked, payment made, booking confirmed, link and reminder sent"
+                 style="aspect-ratio:5/4;background-image:url(assets/screens/bookings.png);background-size:454.7% auto;background-position:96.74% 57.47%"></div>
+          </div>
+          <div class="station is-end">
+            <span class="station-stamp tag tag-cnf">CNF</span>
+            <h3>It lands on your chart, confirmed</h3>
+            <p>The Meet link and reminder go out by themselves. You open Lumid and see who’s next, and that they’ve paid.</p>
+            <div class="crop" role="img" aria-label="Next session card: Divya Prasad, 5:00 PM, ₹1,500 paid, intake form reviewed, Meet link sent"
+                 style="aspect-ratio:5/4;background-image:url(assets/screens/overview.png);background-size:360% auto;background-position:9.62% 18.1%"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Feature chart -->
+    <section class="section">
+      <div class="wrap">
+        <div class="sec-head rv">
+          <h2>One desk for the whole practice.</h2>
+          <p>Bookings, calendar, patients, follow-ups and earnings in one place, all built around the paid booking.</p>
+        </div>
+        <div class="index-grid rv" data-index>
+          <ul class="index-list" role="tablist" aria-label="Lumid features" aria-orientation="vertical">
+            <li class="index-item"><button role="tab" aria-selected="true" data-target="ovw" data-cap="Overview · what needs you before tonight">
+              <span class="ix-code">OVW</span>
+              <span><span class="ix-title">Overview</span><span class="ix-desc"><span>Who’s next, what’s been paid, what’s still waiting, and the four things that need you before tonight.</span></span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="bkg" data-cap="Bookings · paid, awaiting, completed, cancelled">
+              <span class="ix-code">BKG</span>
+              <span><span class="ix-title">Bookings</span><span class="ix-desc"><span>Each booking shows its payment status. Remind everyone who hasn’t paid with one click.</span></span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="cal" data-cap="Calendar · only paid sessions block time">
+              <span class="ix-code">CAL</span>
+              <span><span class="ix-title">Calendar</span><span class="ix-desc"><span>Your week at a glance. Only confirmed, paid sessions take up time.</span></span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="prf" data-cap="Patient profile · history, notes, next step">
+              <span class="ix-code">PTS</span>
+              <span><span class="ix-title">Patients</span><span class="ix-desc"><span>Session history, intake answers, notes and the next step for every patient, in one profile.</span></span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="fup" data-cap="Follow-ups · due, overdue, done">
+              <span class="ix-code">FUP</span>
+              <span><span class="ix-title">Follow-ups</span><span class="ix-desc"><span>See who’s due for a check-in and who has gone quiet, before it becomes a lost patient.</span></span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+            <li class="index-item"><button role="tab" aria-selected="false" tabindex="-1" data-target="ern" data-cap="Earnings · collected, awaiting, by month">
+              <span class="ix-code">ERN</span>
+              <span><span class="ix-title">Earnings</span><span class="ix-desc"><span>What’s collected and what’s still owed, without opening a spreadsheet.</span></span></span>
+              <i data-lucide="arrow-right"></i></button></li>
+          </ul>
+          <div class="index-view">
+            <div class="view-frame">
+              <div class="view-stage">
+                <img class="is-on" data-view="ovw" src="assets/screens/overview.png" alt="Overview dashboard" loading="lazy" width="1728" height="1533">
+                <img data-view="bkg" src="assets/screens/bookings.png" alt="Bookings screen with payment statuses" loading="lazy" width="1728" height="1000">
+                <img data-view="cal" src="assets/screens/calendar.png" alt="Weekly calendar screen" loading="lazy" width="1728" height="981">
+                <img data-view="prf" src="assets/screens/patient-profile.png" alt="Patient profile screen" loading="lazy" width="1728" height="1205">
+                <img data-view="fup" src="assets/screens/follow-ups.png" alt="Follow-ups screen" loading="lazy" width="1728" height="1241">
+                <img data-view="ern" src="assets/screens/earnings.png" alt="Earnings screen" loading="lazy" width="1728" height="1250">
+              </div>
+              <div class="view-cap"><span data-cap>Overview · what needs you before tonight</span><span>Sample data</span></div>
+            </div>
+            <p style="margin-top:18px"><a class="btn btn-line btn-sm" href="features.html">All features <i data-lucide="arrow-right"></i></a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Consent + principles -->
+    <section class="section on-forest">
+      <div class="wrap">
+        <div class="consent-split rv">
+          <div class="consent-copy">
+            <h2>Between sessions, only what patients choose to share.</h2>
+            <p>Patients can use the Lumid app for check-ins between sessions. If they choose to share them, you see the pattern on your dashboard. You never see their chats, and nothing is shared by default.</p>
+            <span class="quiet"><i data-lucide="shield-check"></i> Patients choose what to share. Chats are never shared.</span>
+          </div>
+          <div class="consent-view">
+            <div class="crop" role="img" aria-label="Between sessions panel: consented check-ins from three patients with mood trends"
+                 style="margin-top:0;aspect-ratio:560/365;background-image:url(assets/screens/overview.png);background-size:308.6% auto;background-position:53.08% 96.32%"></div>
+          </div>
+        </div>
+        <div class="rules rv">
+          <div class="rule-row"><span class="code">PAY</span><h3>Payment before confirmation, always</h3><p>It isn’t a setting you can forget to turn on. It’s how every booking works.</p></div>
+          <div class="rule-row"><span class="code">CONSENT</span><h3>Consent before anything is shared</h3><p>Patient check-ins reach you only when the patient decides they should.</p></div>
+          <div class="rule-row"><span class="code">NO DX</span><h3>No diagnosis, ever</h3><p>Lumid shows patterns with the evidence behind them. The clinical judgement stays yours.</p></div>
+          <div class="rule-row"><span class="code">SOLO</span><h3>Built for one practitioner</h3><p>Lumid assumes you run the practice yourself, so there are no admin roles or clinic setups to learn.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Pricing teaser -->
+    <section class="section">
+      <div class="wrap fare rv">
+        <div class="fare-copy">
+          <h2>Free to start. A small fee only when you’re paid.</h2>
+          <p>There’s no subscription. Lumid takes a small share of each paid booking, so it only earns when you do. We’re setting the exact rate with our first psychologists.</p>
+          <p style="margin-top:28px"><a class="btn btn-line" href="pricing.html">How pricing works <i data-lucide="arrow-right"></i></a></p>
+        </div>
+        <article class="stub fare-stub" aria-label="Fare breakdown">
+          <div class="stub-main">
+            <div class="stub-head">
+              <span class="stub-brand">Fare breakdown</span>
+              <span class="stub-code">Per paid booking</span>
+            </div>
+            <div class="fare-lines">
+              <div class="fare-line"><span class="k">Lumid account<small>Booking page, dashboard, reminders</small></span><span class="v">₹0</span></div>
+              <div class="fare-line"><span class="k">Monthly subscription</span><span class="v">None</span></div>
+              <div class="fare-line"><span class="k">Lumid fee<small>Only on bookings that are paid</small></span><span class="v tbd">__% · TBD</span></div>
+              <div class="fare-line"><span class="k">Payment gateway<small>Standard UPI and card charges</small></span><span class="v">At cost</span></div>
+            </div>
+            <div class="fare-foot">
+              <small>Unpaid and cancelled bookings cost you nothing.</small>
+              <a class="btn btn-lime" href="https://riyan.lumid.ai">Start free <i data-lucide="arrow-right"></i></a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section-tight">
+      <div class="wrap faq-layout">
+        <div class="sec-side rv">
+          <h2>Questions</h2>
+          <p>Something else on your mind? <a href="contact.html">Write to us</a>.</p>
+        </div>
+        <div class="faq rv">
+          <details>
+            <summary>What if a patient can’t pay right away? <span class="pm"><i data-lucide="plus"></i></span></summary>
+            <p class="ans">The slot stays held for a short window while they pay. If the payment doesn’t come through, the slot is released and goes back on your page. You can also add a booking yourself, for example for a patient who pays in person.</p>
+          </details>
+          <details>
+            <summary>Do my patients need to install anything? <span class="pm"><i data-lucide="plus"></i></span></summary>
+            <p class="ans">No. They open your booking link, pick a time and pay in the browser. The Lumid app for check-ins between sessions is optional.</p>
+          </details>
+          <details>
+            <summary>Can Lumid see my session notes? <span class="pm"><i data-lucide="plus"></i></span></summary>
+            <p class="ans">Your notes are part of your practice record and are not used for anything else. Check-ins from the patient app are visible to you only when the patient chooses to share them.</p>
+          </details>
+          <details>
+            <summary>I already use WhatsApp and UPI. Why switch? <span class="pm"><i data-lucide="plus"></i></span></summary>
+            <p class="ans">Keep using them. Share your Lumid link on WhatsApp, and patients still pay with UPI. What changes is that the booking, the payment and the reminder now happen in one place without you.</p>
+          </details>
+          <details>
+            <summary>Is Lumid available outside India? <span class="pm"><i data-lucide="plus"></i></span></summary>
+            <p class="ans">Lumid is built for Indian practices first, with fees in rupees and Indian payment methods. Tell us if you practise elsewhere and we’ll let you know when that changes.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="on-forest closing">
+    <div class="wrap">
+      <div class="closing-grid rv">
+        <h2>Your next session, <em>confirmed.</em></h2>
+        <div class="closing-actions">
+          <p>Set up your booking page in a few minutes. It’s free to start.</p>
+          <a class="btn btn-lime btn-lg" href="https://riyan.lumid.ai">Start free <i data-lucide="arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="footer-cols">
+        <div class="fc-about">
+          <a class="wordmark" href="index.html">LUMID <b>AI</b></a>
+          <p>The practice desk for independent psychologists. Built in Kerala, for practices across India.</p>
+        </div>
+        <nav aria-label="Product"><h3>Product</h3><ul><li><a href="features.html">Features</a></li><li><a href="pricing.html">Pricing</a></li><li><a href="https://riyan.lumid.ai">Sign in</a></li></ul></nav>
+        <nav aria-label="Company"><h3>Company</h3><ul><li><a href="about.html">About</a></li><li><a href="contact.html">Contact</a></li></ul></nav>
+        <nav aria-label="Reach us"><h3>Reach us</h3><ul><li><a href="mailto:riyan@lumid.in">riyan@lumid.in</a></li><li><a href="https://wa.me/918590174679">WhatsApp</a></li></ul></nav>
+      </div>
+      <div class="giant" aria-hidden="true">LUMID <b>AI</b></div>
+      <div class="legal"><span>© <span data-year>2026</span> Lumid AI</span><span>Lumid is a practice tool, not a medical service.</span></div>
+    </div>
+  </footer>
+
+  <script src="https://unpkg.com/lucide@0.452.0/dist/umd/lucide.min.js"></script>
+  <script src="assets/site.js"></script>
+</body>
+</html>
