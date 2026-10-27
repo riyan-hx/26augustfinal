@@ -4,6 +4,46 @@ Last updated 2026-09-22.
 
 ---
 
+## 0. Free-only mode (decided 22 Sep — this overrides the budget in §5)
+
+Riyan's call: spend nothing. That is achievable, and it changes which half of
+the tool gets used.
+
+**The free stack:**
+
+| Piece | Cost | Why |
+|---|---|---|
+| Groq LLM (`groq:llama-3.3-70b-versatile`) | free tier, no card | Anthropic/OpenAI both need paid credits. Groq's free tier does the qualifying. |
+| BetterContact account | free, 50 credits, no card | Signup only. We never spend the credits. |
+| `find N` **without** `emails` | **zero credits** | Discovery and qualification are free. Only address resolution costs. |
+
+**The insight that makes this work:** `openoutfind/core/export.py:107` maps
+`"linkedin_url": lead.profile_url`. The profile URL arrives during *discovery*,
+which is the free half — it is not something the paid email lookup adds. So a
+free `find` returns qualified leads **each carrying a LinkedIn profile URL**,
+with a written reason for why they fit.
+
+That is the whole answer to "use it to get leads through LinkedIn." Not the
+sending half — the finding half, feeding LinkedIn outreach done by hand.
+
+**Never run `send` or `run`.** Three separate reasons beyond cost:
+
+1. Every message the tool sends ends with the fixed line **"Sent with
+   OpenOutreach"**. There is no setting that removes it. On a founder-to-founder
+   pitch that line announces mass outreach and will cost replies.
+2. Sending makes you the sender in law — anti-spam compliance, a postal address
+   the software does not supply, and a `+unsub` alias that has to actually work.
+3. **The contacts store.** Legal Notice §6: because India is not in the
+   EU/EEA/UK/CH set, contribution is **on with no toggle** — resolved emails get
+   pooled and may be disclosed to other operators. But contribution happens only
+   *"after a paid email-finder returns a verified work email."* Spend no credits,
+   resolve no emails, contribute nothing. Free-only mode sidesteps §6 entirely.
+
+Also note: outside protected jurisdictions the onboarding newsletter default is
+**yes**. Say no at the prompt if you do not want it.
+
+---
+
 ## 1. The correction this plan is built on
 
 OpenOutreach does not touch LinkedIn. It is browserless by design — it sources

@@ -1,0 +1,21 @@
+@lumid.ai went live on Instagram today, with its first post. It's a teaser, and the dashboard in it is blurred on purpose.
+
+Here's why it exists.
+
+Many independent psychologists here in Kerala, from Kozhikode to Kochi, run their whole practice from WhatsApp and UPI. Sessions end around 7. Then a second shift starts: reschedule messages, checking a ₹1,500 payment screenshot, a reminder that should have gone out at 10 PM. None of that is therapy, and it eats the evening.
+
+That second shift is what I'm building Lumid for. One dashboard for bookings, payment before the session and follow-ups.
+
+Where it stands right now:
+A working prototype. Every name and number on that screen is demo data.
+No paying users yet.
+I'm still interviewing psychologists through TinkerHub Nights & Weekends to check I've got the problem right before I build more.
+
+We started the Instagram from zero because that's where a lot of these psychologists already show up for their clients. Building for them somewhere they don't spend time felt wrong.
+
+If you run your own practice as a psychologist or counsellor, or you know someone who does, I'd like 20 minutes with you. Tell me where your evenings actually go. Comment or DM me and I'll reach out.
+
+Follow along on Instagram, the full reveal goes up there next:
+instagram.com/lumid.ai
+
+#BuildingLumid #mentalhealth #startups

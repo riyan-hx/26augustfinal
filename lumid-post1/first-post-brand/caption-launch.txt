@@ -1,0 +1,11 @@
+Introducing Lumid. The calm side of private practice.
+
+Your last client leaves at 7. Then the other job starts: fixing next week's slots over WhatsApp, checking a ₹1,500 UPI screenshot, and sending the reminder you meant to send yesterday.
+
+Lumid is one dashboard for that part. Clients book a free slot, pay before the session and get a reminder, and you see your calendar, payments and follow-ups in one place.
+
+We're building it in Kozhikode with psychologists. It's early, and the next post walks through each part.
+
+Run a private practice? Comment PRACTICE and we'll DM you about early access.
+
+#psychologistkerala #privatepractice #therapistsofindia

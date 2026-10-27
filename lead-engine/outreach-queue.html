@@ -1,0 +1,462 @@
+<title>Outreach Queue</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --ground: #f4f6f5;
+    --surface: #ffffff;
+    --surface-2: #eceff0;
+    --ink: #14191a;
+    --ink-2: #4a5658;
+    --ink-3: #5a686b;
+    --rule: #d8dedf;
+    --rule-2: #c3cccd;
+    --accent: #1f5f52;
+    --accent-ink: #ffffff;
+    --accent-soft: #e2eeea;
+    --sent: #2f6f4f;
+    --sent-soft: #e0efe6;
+    --wait: #8a6112;
+    --wait-soft: #f6ecd8;
+    --stop: #8d3b3b;
+    --stop-soft: #f3e2e2;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground: #0e1213;
+      --surface: #171d1e;
+      --surface-2: #1f2728;
+      --ink: #eaf0ef;
+      --ink-2: #a7b5b6;
+      --ink-3: #8a9799;
+      --rule: #2a3435;
+      --rule-2: #3a4647;
+      --accent: #6fbfa9;
+      --accent-ink: #08201b;
+      --accent-soft: #17302a;
+      --sent: #7fc79c;
+      --sent-soft: #172c21;
+      --wait: #d9ae5c;
+      --wait-soft: #2e2617;
+      --stop: #d98d8d;
+      --stop-soft: #2e1d1d;
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground: #0e1213;
+    --surface: #171d1e;
+    --surface-2: #1f2728;
+    --ink: #eaf0ef;
+    --ink-2: #a7b5b6;
+    --ink-3: #8a9799;
+    --rule: #2a3435;
+    --rule-2: #3a4647;
+    --accent: #6fbfa9;
+    --accent-ink: #08201b;
+    --accent-soft: #17302a;
+    --sent: #7fc79c;
+    --sent-soft: #172c21;
+    --wait: #d9ae5c;
+    --wait-soft: #2e2617;
+    --stop: #d98d8d;
+    --stop-soft: #2e1d1d;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    line-height: 1.5;
+    margin: 0;
+    padding-inline: 16px;
+    padding-block: 32px 64px;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+  header h1 {
+    font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.2rem);
+    line-height: 1.15; margin: 0 0 6px; letter-spacing: -0.02em; text-wrap: balance;
+  }
+  .sub { color: var(--ink-2); margin: 0; max-width: 60ch; }
+  .stamp {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--ink-3); margin: 0 0 10px;
+  }
+
+  .counts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .count {
+    display: flex; align-items: baseline; gap: 7px;
+    border: 1px solid var(--rule); border-radius: 3px;
+    background: var(--surface); padding: 7px 11px;
+    font-size: 0.82rem; color: var(--ink-2);
+  }
+  .count b { font-family: "IBM Plex Mono", monospace; font-size: 0.98rem; color: var(--ink); font-variant-numeric: tabular-nums; }
+
+  .scroller { overflow-x: auto; border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 0.85rem; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+  th {
+    font-family: "IBM Plex Mono", monospace; font-weight: 500;
+    font-size: 0.68rem; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-2); background: var(--surface-2);
+  }
+  tbody tr:last-child td { border-bottom: 0; }
+  td.addr { font-family: "IBM Plex Mono", monospace; font-size: 0.78rem; color: var(--ink-2); word-break: break-all; }
+  .who { font-weight: 600; }
+  .org { color: var(--ink-3); font-size: 0.78rem; }
+
+  .pill {
+    display: inline-block; font-family: "IBM Plex Mono", monospace;
+    font-size: 0.65rem; letter-spacing: 0.06em; text-transform: uppercase;
+    padding: 2px 7px; border-radius: 2px; white-space: nowrap;
+  }
+  .p-ready { background: var(--accent-soft); color: var(--accent); }
+  .p-sent  { background: var(--sent-soft);   color: var(--sent); }
+  .p-wait  { background: var(--wait-soft);   color: var(--wait); }
+  .p-stop  { background: var(--stop-soft);   color: var(--stop); }
+
+  h2 {
+    font-size: 0.72rem; font-family: "IBM Plex Mono", monospace; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3);
+    margin: 0; padding-bottom: 8px; border-bottom: 1px solid var(--rule-2);
+  }
+  .stack { display: flex; flex-direction: column; gap: 14px; }
+  .group { display: flex; flex-direction: column; gap: 14px; }
+
+  .msg { border: 1px solid var(--rule); border-radius: 4px; background: var(--surface); overflow: hidden; }
+  .msg.is-sent { border-left: 3px solid var(--sent); }
+  .msg.is-ready { border-left: 3px solid var(--accent); }
+  .msg.is-stop { background: var(--surface-2); }
+
+  .msg-head { display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; padding: 13px 15px 0; }
+  .msg-head .n {
+    font-family: "IBM Plex Mono", monospace; color: var(--ink-3);
+    font-size: 0.8rem; font-variant-numeric: tabular-nums;
+  }
+  .msg-head .name { font-weight: 600; font-size: 1.02rem; }
+  .msg-head .meta { color: var(--ink-3); font-size: 0.8rem; }
+  .msg-note { padding: 7px 15px 0; color: var(--ink-2); font-size: 0.85rem; }
+  .msg-note strong { color: var(--ink); }
+
+  .field { padding: 11px 15px 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: baseline; }
+  .field .k {
+    font-family: "IBM Plex Mono", monospace; font-size: 0.66rem;
+    letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-3);
+    min-width: 62px;
+  }
+  .field .v { font-family: "IBM Plex Mono", monospace; font-size: 0.8rem; word-break: break-all; }
+
+  pre {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 0.81rem; line-height: 1.62;
+    background: var(--surface-2); color: var(--ink);
+    border: 1px solid var(--rule); border-radius: 3px;
+    margin: 11px 15px 0; padding: 13px 14px;
+    white-space: pre-wrap; word-wrap: break-word;
+  }
+  .slot { color: var(--wait); font-weight: 500; }
+
+  .actions { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px 15px 15px; }
+  button {
+    font-family: "IBM Plex Sans", sans-serif; font-size: 0.8rem; font-weight: 500;
+    padding: 7px 13px; border-radius: 3px; cursor: pointer;
+    border: 1px solid var(--accent); background: var(--accent); color: var(--accent-ink);
+    transition: opacity 0.12s ease;
+  }
+  button.ghost { background: transparent; color: var(--accent); }
+  button:hover { opacity: 0.85; }
+  button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  button.done { background: var(--sent); border-color: var(--sent); color: var(--accent-ink); }
+  a { color: var(--accent); }
+
+  .foot {
+    border-top: 1px solid var(--rule-2); padding-top: 16px;
+    color: var(--ink-2); font-size: 0.85rem;
+  }
+  .foot p { margin: 0 0 8px; max-width: 64ch; }
+  .foot p:last-child { margin-bottom: 0; }
+
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+  @media (max-width: 520px) {
+    .field .k { min-width: 100%; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <p class="stamp">Riyan Safeekh · riyan.lumid.in · 22 Sep 2026</p>
+    <h1>Outreach Queue</h1>
+    <p class="sub">Nine leads from one LinkedIn search. Six have a message written and ready to go, one is sent, two are not worth sending. Copy a message, send it in its own channel, mark it off.</p>
+  </header>
+
+  <div class="counts">
+    <span class="count"><b>6</b> ready</span>
+    <span class="count"><b>1</b> sent</span>
+    <span class="count"><b>2</b> skip</span>
+    <span class="count"><b>2</b> asked a price</span>
+  </div>
+
+  <div class="scroller">
+    <table>
+      <thead>
+        <tr><th>#</th><th>Who</th><th>Channel</th><th>Address</th><th>Age</th><th>Status</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><div class="who">Rakesh Ghumatkar</div><div class="org">Think Big Digital</div></td>
+          <td>WhatsApp</td><td class="addr">+91 93739 56958</td><td>5d</td>
+          <td><span class="pill p-ready">Ready</span></td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><div class="who">Anja Kluver</div><div class="org">Memorify / Yoree</div></td>
+          <td>Careers form</td><td class="addr">memorifytech.com</td><td>20h</td>
+          <td><span class="pill p-ready">Ready</span></td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><div class="who">Pratik Patel</div><div class="org">Ashitti Oil</div></td>
+          <td>LinkedIn DM</td><td class="addr">/in/ppratik27</td><td>3d</td>
+          <td><span class="pill p-ready">Ready</span></td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><div class="who">Nickelfox</div><div class="org">Shivani Sharma · Seema Diwakr</div></td>
+          <td>MS Form</td><td class="addr">lnkd.in/gHdM-fPf</td><td>5d</td>
+          <td><span class="pill p-ready">Ready</span></td>
+        </tr>
+        <tr>
+          <td>5</td>
+          <td><div class="who">Himanshu Choudhary</div><div class="org">73 Estate</div></td>
+          <td>Email</td><td class="addr">official@73estate.com</td><td>1d</td>
+          <td><span class="pill p-ready">Ready</span></td>
+        </tr>
+        <tr>
+          <td>6</td>
+          <td><div class="who">Abhishek Singla</div><div class="org">Growth Spark Studio</div></td>
+          <td>WhatsApp</td><td class="addr">+91 62841 53335</td><td>3d</td>
+          <td><span class="pill p-ready">Ready</span></td>
+        </tr>
+        <tr>
+          <td>7</td>
+          <td><div class="who">Bhagyashri Jena</div><div class="org">Naks Consulting</div></td>
+          <td>Email</td><td class="addr">Bhagyashri.j@naksconsulting.com</td><td>3d</td>
+          <td><span class="pill p-sent">Sent</span></td>
+        </tr>
+        <tr>
+          <td>8</td>
+          <td><div class="who">Akash Kumar Singhal</div><div class="org">B2B project mgmt</div></td>
+          <td>LinkedIn DM</td><td class="addr">/in/akashksinghal</td><td>3d</td>
+          <td><span class="pill p-stop">Skip</span></td>
+        </tr>
+        <tr>
+          <td>9</td>
+          <td><div class="who">Andrej Arsenijevic</div><div class="org">Game UX, Dubai</div></td>
+          <td>LinkedIn DM</td><td class="addr">/in/andrej-arsenijevic</td><td>16h</td>
+          <td><span class="pill p-stop">Skip</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <section class="group">
+    <h2>Ready to send</h2>
+    <div class="stack">
+
+      <article class="msg is-ready">
+        <div class="msg-head"><span class="n">01</span><span class="name">Rakesh Ghumatkar</span><span class="meta">Think Big Digital · Founder &amp; CEO</span></div>
+        <p class="msg-note"><strong>Send first.</strong> He asked for a rate range and said he gets similar projects regularly — the only repeat-revenue signal in the batch. Only 3 comments, so you are not shouting into a crowd. He said do not call initially.</p>
+        <div class="field"><span class="k">WhatsApp</span><span class="v">+91 93739 56958</span></div>
+        <pre id="m1">Hi Rakesh, saw your post about the freelance UI/UX website designer for a client project.
+
+Portfolio: riyan.lumid.in
+
+Straight answers to your three asks:
+
+Live work / portfolio — product and dashboard UI is my core. I design in Figma and build the front end in React myself, so developer handover is not a guess about what is buildable.
+
+Independent — yes. I am a CSE student and I am building my own product, Lumid, so I am not fitting this around a full-time job. Saying that upfront rather than letting you find it later.
+
+Rate range — Rs 35,000 for a fixed one-week scope, delivered as a dev-ready Figma file with components and tokens. Larger sites scoped flow by flow at the same rate.
+
+On WordPress: I can design properly for a WordPress build and hand over clean specs, but I am not going to claim deep theme implementation experience. If that is essential in the same person, I am probably not your fit for this one.</pre>
+        <div class="actions">
+          <button type="button" data-copy="m1" id="b1">Copy message</button>
+          <button type="button" class="ghost" onclick="window.open('https://wa.me/919373956958','_blank','noopener')">Open WhatsApp</button>
+        </div>
+      </article>
+
+      <article class="msg is-ready">
+        <div class="msg-head"><span class="n">02</span><span class="name">Anja Kluver</span><span class="meta">Memorify / Yoree · Co-founder</span></div>
+        <p class="msg-note"><strong>Best strategic fit.</strong> She is a design leader, so she judges reasoning over portfolio shots. Apply through her careers link first — she wrote "no recruitment agencies," so a cold pitch DM reads wrong. This is the follow-up note after applying.</p>
+        <div class="field"><span class="k">Apply</span><span class="v">memorifytech.com careers → then DM</span></div>
+        <pre id="m2">Hi Anja, I applied through the Yoree link just now.
+
+The reason I did: I am building Lumid, a practice-management product for independent psychologists in India, and I am five weeks into customer interviews before building further. Memory and reflection products have a problem I have been sitting with on my own product — the interface has to earn the right to ask someone for something personal, and most of them ask too early.
+
+Portfolio is at riyan.lumid.in. I design and build the front end myself, so handover is not a translation exercise.
+
+Happy to talk through how I would approach the Beta if it is useful.</pre>
+        <div class="actions">
+          <button type="button" data-copy="m2" id="b2">Copy message</button>
+          <button type="button" class="ghost" onclick="window.open('https://www.linkedin.com/in/anja-kl%C3%BCver/','_blank','noopener')">Open profile</button>
+        </div>
+      </article>
+
+      <article class="msg is-ready">
+        <div class="msg-head"><span class="n">03</span><span class="name">Pratik Patel</span><span class="meta">Ashitti Oil · women's ethnic D2C</span></div>
+        <p class="msg-note"><strong>Time-sensitive — 37 comments.</strong> He asked for four things and most repliers will send only a portfolio link. Answering all four in order puts you in the top three. The honesty about fashion work is deliberate; it would collapse on the first call otherwise.</p>
+        <div class="field"><span class="k">LinkedIn</span><span class="v">linkedin.com/in/ppratik27</span></div>
+        <pre id="m3">Hi Pratik — answering your four asks directly.
+
+Portfolio: riyan.lumid.in
+
+Relevant work: straight answer, I have not shipped a fashion D2C store. My work is product and dashboard UI — flows where people have to complete something. Checkout is that same problem with higher stakes, but if you need someone with ethnic-wear shoots in their portfolio, I am not that person.
+
+Timeline: the full scope you listed is roughly 5-6 weeks. I would not start there. I would do the product-discovery-to-checkout path first, in one week, because that is the path carrying the revenue and it tells you whether you want to keep working with me.
+
+Quotation: Rs 35,000 for that first week, fixed, delivered as a dev-ready Figma file with components and tokens. The rest scoped flow by flow at the same rate once you have seen the first one.
+
+I design and build front end myself, so the handover will not need a translation meeting.</pre>
+        <div class="actions">
+          <button type="button" data-copy="m3" id="b3">Copy message</button>
+          <button type="button" class="ghost" onclick="window.open('https://www.linkedin.com/in/ppratik27/','_blank','noopener')">Open profile</button>
+        </div>
+      </article>
+
+      <article class="msg is-ready">
+        <div class="msg-head"><span class="n">04</span><span class="name">Nickelfox Technologies</span><span class="meta">Shivani Sharma · Seema Diwakr</span></div>
+        <p class="msg-note"><strong>Use the form, not a DM.</strong> Two people posted the same opening, so it is one opportunity. AI product design is listed as mandatory — a filter most applicants fail and you clear honestly. Paste this into the form's introduction or notes field.</p>
+        <div class="field"><span class="k">Form</span><span class="v">https://lnkd.in/gHdM-fPf</span></div>
+        <pre id="m4">I am applying because of the AI product design requirement specifically.
+
+I am building Lumid AI, a practice-management platform for independent psychologists in India — booking, payment before session, patient records and follow-ups. I designed it and built its front end myself in React. So AI product design is not a line on my CV, it is what I am doing this month.
+
+Portfolio: riyan.lumid.in
+
+Available for ad-hoc work and happy to start with something small.</pre>
+        <div class="actions">
+          <button type="button" data-copy="m4" id="b4">Copy message</button>
+          <button type="button" class="ghost" onclick="window.open('https://lnkd.in/gHdM-fPf','_blank','noopener')">Open form</button>
+        </div>
+      </article>
+
+      <article class="msg is-ready">
+        <div class="msg-head"><span class="n">05</span><span class="name">Himanshu Choudhary</span><span class="meta">73 Estate · email available</span></div>
+        <p class="msg-note"><strong>Two lines only.</strong> His post says on-site in Gurgaon and you are in Kozhikode. Do not spend a long pitch finding that out — ask the one question that decides it. If the answer is no, it is over cheaply.</p>
+        <div class="field"><span class="k">Email</span><span class="v">official@73estate.com</span></div>
+        <div class="field"><span class="k">Subject</span><span class="v">Freelance UI/UX — is remote possible?</span></div>
+        <pre id="m5">Hi,
+
+Saw your post for a freelance UI/UX designer. Before I send anything longer — the post says on-site in Gurgaon, and I work from Kerala. Is remote possible for the right person?
+
+If it is, my portfolio is at riyan.lumid.in and I will follow up properly. If not, no problem at all.
+
+Riyan Safeekh
+riyan.lumid.in</pre>
+        <div class="actions">
+          <button type="button" data-copy="m5" id="b5">Copy message</button>
+        </div>
+      </article>
+
+      <article class="msg is-ready">
+        <div class="msg-head"><span class="n">06</span><span class="name">Abhishek Singla</span><span class="meta">Growth Spark Studio · Co-founder</span></div>
+        <p class="msg-note">Lowest-information post in the batch and an agency, so expect price pressure. Worth three lines because agencies buy design repeatedly, not worth more than that.</p>
+        <div class="field"><span class="k">WhatsApp</span><span class="v">+91 62841 53335</span></div>
+        <pre id="m6">Hi Abhishek — saw you are looking for freelance UI/UX. Portfolio: riyan.lumid.in
+
+I do product and dashboard UI, dev-ready Figma handover, and I build front end myself so your developers get files they can work from directly.
+
+What kind of projects are you staffing?</pre>
+        <div class="actions">
+          <button type="button" data-copy="m6" id="b6">Copy message</button>
+          <button type="button" class="ghost" onclick="window.open('https://wa.me/916284153335','_blank','noopener')">Open WhatsApp</button>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Sent — follow-up due 26 Sep</h2>
+    <div class="stack">
+      <article class="msg is-sent">
+        <div class="msg-head"><span class="n">07</span><span class="name">Bhagyashri Jena</span><span class="meta">Naks Consulting · Project Manager</span></div>
+        <p class="msg-note">Sent 22 Sep from riyansk255@gmail.com, Gmail thread <code>1a0c77bc2a5d1582</code>. Her brief asked for thinking rather than screens, so the opener led with the Lumid payment problem. <strong>If nothing by 26 Sep, send this once and then stop.</strong></p>
+        <div class="field"><span class="k">Email</span><span class="v">Bhagyashri.j@naksconsulting.com</span></div>
+        <div class="field"><span class="k">Subject</span><span class="v">Re: A problem I solved, not a portfolio dump</span></div>
+        <pre id="m7">Hi Bhagyashri,
+
+Following up once on the note I sent on Monday, then I will leave it.
+
+If the project you are staffing is still open, the fastest way to judge whether I am useful is the work itself rather than more writing from me: riyan.lumid.in
+
+If it has been filled or I am not the fit, no reply needed at all — I would rather you ignore this than feel you owe me an answer.
+
+Riyan Safeekh
+riyan.lumid.in</pre>
+        <div class="actions">
+          <button type="button" data-copy="m7" id="b7">Copy follow-up</button>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <section class="group">
+    <h2>Not worth sending</h2>
+    <div class="stack">
+      <article class="msg is-stop">
+        <div class="msg-head"><span class="n">08</span><span class="name">Akash Kumar Singhal</span><span class="meta">part-time web designer</span></div>
+        <p class="msg-note">Requires <strong>"Based in Delhi NCR"</strong> and <strong>3+ years</strong>, both written as requirements rather than preferences, and 23 people have already commented. Applying anyway reads as not having read the post.</p>
+      </article>
+      <article class="msg is-stop">
+        <div class="msg-head"><span class="n">09</span><span class="name">Andrej Arsenijevic</span><span class="meta">freelance Game UX/UI, Dubai</span></div>
+        <p class="msg-note">Game UX is a separate craft and none of your work is games. He has 80+ international awards and will see through a product designer presenting as a game designer. Small field — not worth the credibility cost.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="foot">
+    <p><strong>Brochure slot.</strong> When your brochure URL lands, it goes into four of these: Anja, Pratik, Rakesh and the Bhagyashri follow-up. Himanshu and Abhishek stay short on purpose — a link would be the third thing in a three-line message.</p>
+    <p><strong>Before each LinkedIn message,</strong> open the person's profile first. They get a notification, your name registers, and the message arrives from someone they have already seen once.</p>
+    <p><strong>One follow-up per lead, then stop.</strong> The second follow-up converts almost nothing and costs you the reputation of the first.</p>
+  </div>
+
+</div>
+
+<script>
+  document.querySelectorAll("button[data-copy]").forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var pre = document.getElementById(btn.getAttribute("data-copy"));
+      if (!pre) return;
+      var text = pre.innerText;
+      var label = btn.textContent;
+      var ok = function () {
+        btn.textContent = "Copied";
+        btn.classList.add("done");
+        setTimeout(function () { btn.textContent = label; btn.classList.remove("done"); }, 1600);
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(ok, function () { fallback(text, ok); });
+      } else {
+        fallback(text, ok);
+      }
+    });
+  });
+  function fallback(text, ok) {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+      ok();
+    } catch (e) { /* selection is still available to copy by hand */ }
+  }
+</script>
