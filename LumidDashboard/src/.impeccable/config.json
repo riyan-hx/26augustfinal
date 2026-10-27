@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "clipped-overflow-container",
+        "value": "*",
+        "files": [
+          "C:/Users/HP/AppData/Local/Temp/claude/C--Users-HP-Desktop-26Augustfinal/5972da64-a88a-4fb9-ae5a-c68a3815d969/scratchpad/post1/slides.html"
+        ],
+        "createdAt": "2026-10-27T05:53:49.233Z",
+        "reason": "Claude: fixed 1080x1350 Instagram slide canvases rendered to PNG; overflow:hidden is the frame crop, no popovers or menus exist"
+      }
+    ]
+  }
+}

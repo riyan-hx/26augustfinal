@@ -1,0 +1,56 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F6F8F2;--lime:#88D95F;--forest:#242E21;--muted:rgba(36,46,33,.6)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'General Sans',system-ui,sans-serif;color:var(--forest);background:#777}
+.s{width:1080px;height:1350px;position:relative;overflow:hidden;margin-bottom:40px}
+.grain::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.18;mix-blend-mode:multiply;z-index:9;
+ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+em{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:500;letter-spacing:-.01em;font-size:1.16em}
+.c{position:absolute;border-radius:50%;background:#fff;filter:blur(30px)}
+.photo{position:absolute;inset:0;background-size:cover;background-position:center}
+
+/* A: sky */
+#a{background:linear-gradient(#3f78b8 0%,#6d9fd2 28%,#a8c9e8 55%,#dfe9ef 78%,#f1eee4 100%)}
+#a h1{position:absolute;left:96px;right:96px;top:150px;color:#fff;font-weight:500;font-size:112px;line-height:.98;letter-spacing:-.045em;text-shadow:0 2px 40px rgba(30,60,100,.25);z-index:5}
+#a p{position:absolute;left:96px;top:420px;width:560px;color:rgba(255,255,255,.95);font-size:32px;line-height:1.35;letter-spacing:-.01em;text-shadow:0 1px 18px rgba(30,60,100,.35);z-index:5}
+#a .bot{position:absolute;left:96px;right:96px;bottom:70px;display:flex;justify-content:space-between;align-items:center;color:#fff;font-size:28px;font-weight:500;z-index:5;text-shadow:0 1px 14px rgba(20,40,20,.4)}
+#a .bot img{height:28px;filter:brightness(0) invert(1)}
+
+/* B: paper */
+#b{background:var(--paper)}
+#b .glow{position:absolute;left:90px;right:90px;top:380px;height:640px;border-radius:50%;background:radial-gradient(closest-side,rgba(136,217,95,.5),rgba(136,217,95,0));filter:blur(20px)}
+#b .logo{position:absolute;top:110px;left:0;right:0;text-align:center}
+#b .logo img{height:30px}
+#b h1{position:absolute;left:80px;right:80px;top:500px;text-align:center;font-weight:500;font-size:124px;line-height:.98;letter-spacing:-.045em}
+#b p{position:absolute;left:0;right:0;top:800px;text-align:center;font-size:32px;color:var(--muted);letter-spacing:-.01em;line-height:1.4}
+#b .bot{position:absolute;left:96px;right:96px;bottom:80px;display:flex;justify-content:space-between;font-size:26px;font-weight:500;color:var(--muted)}
+</style></head><body>
+
+<section class="s grain" id="a">
+ <div class="c" style="width:620px;height:200px;left:-160px;top:760px;opacity:.9"></div>
+ <div class="c" style="width:520px;height:220px;left:300px;top:820px;opacity:.85"></div>
+ <div class="c" style="width:560px;height:190px;right:-180px;top:740px;opacity:.9"></div>
+ <div class="c" style="width:900px;height:260px;left:90px;top:930px;opacity:.95"></div>
+ <div class="c" style="width:260px;height:80px;left:640px;top:560px;opacity:.55"></div>
+ <svg style="position:absolute;left:0;bottom:0;z-index:2" width="1080" height="420" viewBox="0 0 1080 420">
+  <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fcb79"/><stop offset=".5" stop-color="#5e9640"/><stop offset="1" stop-color="#2b4a22"/></linearGradient></defs>
+  <path d="M-30 420 C 140 300, 360 236, 560 228 C 770 220, 950 290, 1110 380 L1110 420Z" fill="url(#g)"/>
+ </svg>
+ <div class="photo" style="background-image:url(brand-bg.jpg);z-index:3"></div>
+ <h1>The calm side of<br><em>private practice.</em></h1>
+ <p>Lumid is a practice dashboard for independent psychologists.</p>
+ <div class="bot"><img src="lumid-logo.svg"><span>lumidai.in</span></div>
+</section>
+
+<section class="s grain" id="b">
+ <div class="glow"></div>
+ <div class="logo"><img src="lumid-logo.svg"></div>
+ <h1>The calm side of<br><em>private practice.</em></h1>
+ <p>A practice dashboard for independent psychologists.</p>
+ <div class="bot"><span>@lumid.ai</span><span>Kozhikode, Kerala</span></div>
+</section>
+</body></html>

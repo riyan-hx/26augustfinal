@@ -1,0 +1,206 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "design-system-font",
+        "value": "hedvig letters serif",
+        "createdAt": "2026-10-02T18:34:54.783Z",
+        "reason": "Font is specified by the user's Figma design (Arum); root DESIGN.md belongs to the unrelated Lumid dashboard"
+      },
+      {
+        "rule": "design-system-font",
+        "value": "inter",
+        "createdAt": "2026-10-02T18:34:54.971Z",
+        "reason": "Font is specified by the user's Figma design (Arum); root DESIGN.md belongs to the unrelated Lumid dashboard"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "arum/index.html"
+        ],
+        "createdAt": "2026-10-02T18:35:26.455Z",
+        "reason": "assistant triage: Light text is set over full-bleed photos with a shade overlay (hero, banners, join); the checker only sees the page background"
+      },
+      {
+        "rule": "buried-raster",
+        "value": "*",
+        "files": [
+          "arum/index.html"
+        ],
+        "createdAt": "2026-10-02T18:35:26.642Z",
+        "reason": "assistant triage: Opacity-0 img is the hero card hover-swap thumbnail, revealed on hover by design"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "arum/index.html"
+        ],
+        "createdAt": "2026-10-02T18:35:26.843Z",
+        "reason": "assistant triage: card__img is an image tile with an inset product image and absolutely inset Quick-add button; list rows pad inside their anchors"
+      },
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-10-02T18:35:27.019Z",
+        "reason": "user's Figma design for Arum specifies Inter"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "lumid-site/index.html"
+        ],
+        "createdAt": "2026-10-27T17:33:59.583Z",
+        "reason": "assistant triage: giant footer wordmark is aria-hidden decoration in forest-on-forest by design; real text passes"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "lumid-site/index.html"
+        ],
+        "createdAt": "2026-10-27T17:33:59.738Z",
+        "reason": "assistant triage: ruled chart tables/FAQ/sections use rules as the design, content is inset by the page grid"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "lumid-site/index.html"
+        ],
+        "createdAt": "2026-10-27T17:33:59.899Z",
+        "reason": "assistant triage: display headlines at 0.92-1.02 leading, body is 1.55"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "lumid-site/features.html"
+        ],
+        "createdAt": "2026-10-27T17:34:00.061Z",
+        "reason": "assistant triage: giant footer wordmark is aria-hidden decoration in forest-on-forest by design; real text passes"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "lumid-site/features.html"
+        ],
+        "createdAt": "2026-10-27T17:34:00.217Z",
+        "reason": "assistant triage: ruled chart tables/FAQ/sections use rules as the design, content is inset by the page grid"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "lumid-site/features.html"
+        ],
+        "createdAt": "2026-10-27T17:34:00.389Z",
+        "reason": "assistant triage: display headlines at 0.92-1.02 leading, body is 1.55"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "lumid-site/pricing.html"
+        ],
+        "createdAt": "2026-10-27T17:34:00.537Z",
+        "reason": "assistant triage: giant footer wordmark is aria-hidden decoration in forest-on-forest by design; real text passes"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "lumid-site/pricing.html"
+        ],
+        "createdAt": "2026-10-27T17:34:00.687Z",
+        "reason": "assistant triage: ruled chart tables/FAQ/sections use rules as the design, content is inset by the page grid"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "lumid-site/pricing.html"
+        ],
+        "createdAt": "2026-10-27T17:34:00.842Z",
+        "reason": "assistant triage: display headlines at 0.92-1.02 leading, body is 1.55"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "lumid-site/about.html"
+        ],
+        "createdAt": "2026-10-27T17:34:00.992Z",
+        "reason": "assistant triage: giant footer wordmark is aria-hidden decoration in forest-on-forest by design; real text passes"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "lumid-site/about.html"
+        ],
+        "createdAt": "2026-10-27T17:34:01.140Z",
+        "reason": "assistant triage: ruled chart tables/FAQ/sections use rules as the design, content is inset by the page grid"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "lumid-site/about.html"
+        ],
+        "createdAt": "2026-10-27T17:34:01.281Z",
+        "reason": "assistant triage: display headlines at 0.92-1.02 leading, body is 1.55"
+      },
+      {
+        "rule": "low-contrast",
+        "value": "*",
+        "files": [
+          "lumid-site/contact.html"
+        ],
+        "createdAt": "2026-10-27T17:34:01.427Z",
+        "reason": "assistant triage: giant footer wordmark is aria-hidden decoration in forest-on-forest by design; real text passes"
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "lumid-site/contact.html"
+        ],
+        "createdAt": "2026-10-27T17:34:01.581Z",
+        "reason": "assistant triage: ruled chart tables/FAQ/sections use rules as the design, content is inset by the page grid"
+      },
+      {
+        "rule": "tight-leading",
+        "value": "*",
+        "files": [
+          "lumid-site/contact.html"
+        ],
+        "createdAt": "2026-10-27T17:34:01.729Z",
+        "reason": "assistant triage: display headlines at 0.92-1.02 leading, body is 1.55"
+      },
+      {
+        "rule": "buried-raster",
+        "value": "*",
+        "files": [
+          "lumid-site/index.html"
+        ],
+        "createdAt": "2026-10-27T17:34:01.876Z",
+        "reason": "assistant triage: opacity-0 images are the crossfading feature-tab screens, revealed on selection"
+      },
+      {
+        "rule": "flat-type-hierarchy",
+        "value": "*",
+        "files": [
+          "lumid-site/index.html"
+        ],
+        "createdAt": "2026-10-27T17:43:16.552Z",
+        "reason": "assistant triage: measured roles are chart micro-type (13/14/17px in table headers); page hierarchy runs 17px body to 120px display"
+      }
+    ]
+  }
+}

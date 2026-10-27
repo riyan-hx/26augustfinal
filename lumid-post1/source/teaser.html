@@ -1,0 +1,91 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://api.fontshare.com/v2/css?f[]=general-sans@400,500,600,700&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#F6F8F2;--lime:#88D95F;--forest:#242E21;--muted:rgba(36,46,33,.6)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'General Sans',system-ui,sans-serif;color:var(--forest);background:#666}
+.s{width:1080px;height:1350px;position:relative;overflow:hidden;margin-bottom:40px;background:var(--paper)}
+.s::after{content:"";position:absolute;inset:0;pointer-events:none;opacity:.15;mix-blend-mode:multiply;z-index:20;
+ background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .55 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>")}
+.grid{position:absolute;inset:0;background-image:linear-gradient(rgba(36,46,33,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(36,46,33,.045) 1px,transparent 1px);background-size:60px 60px}
+.rays{position:absolute;top:120px;width:620px;height:900px;filter:blur(7px);
+ background:repeating-linear-gradient(90deg,rgba(60,190,90,.0) 0 18px,rgba(60,190,90,.55) 26px,rgba(120,220,120,.15) 40px,rgba(60,190,90,0) 52px);
+ -webkit-mask-image:radial-gradient(60% 55% at 50% 55%,#000 30%,transparent 75%)}
+.top{position:absolute;top:70px;left:76px;right:76px;display:flex;justify-content:space-between;align-items:center;font-size:24px;font-weight:500;color:var(--muted);z-index:6}
+.top img{height:24px}
+.h{position:absolute;left:76px;z-index:6;letter-spacing:-.04em;line-height:.95;font-weight:500}
+.sm{font-size:92px;color:#3d463a}
+.big{display:block;font-size:250px;font-weight:700;letter-spacing:-.055em;line-height:.88;background:linear-gradient(#0a4a23,#11a04a 55%,#43e07a);-webkit-background-clip:text;background-clip:text;color:transparent;padding-bottom:6px}
+.stage{position:absolute;perspective:1800px;z-index:4}
+.dev{transform:rotateZ(-9deg) rotateX(12deg) rotateY(-12deg);background:rgba(255,255,255,.85);border-radius:30px;padding:12px;box-shadow:0 60px 120px -40px rgba(20,60,30,.5)}
+.dev img{display:block;width:100%;border-radius:20px;filter:blur(5px) saturate(1.05)}
+.peek{position:absolute;z-index:7;color:var(--forest);display:inline-flex;align-items:center;gap:10px;font-size:22px;font-weight:500;padding:9px 18px;border-radius:999px;background:rgba(255,255,255,.9);border:1px solid rgba(36,46,33,.12)}
+.peek i{width:9px;height:9px;border-radius:50%;background:var(--lime)}
+.what{position:absolute;left:76px;bottom:190px;z-index:6;max-width:420px}
+.what b{display:block;font-size:44px;font-weight:500;letter-spacing:-.025em;line-height:1.1}
+.what b span{color:#1f8a3e}
+.what small{display:block;margin-top:14px;font-size:24px;color:var(--muted);font-weight:500}
+.foot{position:absolute;left:76px;right:76px;bottom:60px;display:flex;justify-content:space-between;align-items:center;font-size:23px;font-weight:500;color:var(--muted);z-index:8}
+.cta{display:inline-flex;align-items:center;gap:12px;background:var(--forest);color:var(--paper);padding:15px 26px;border-radius:999px}
+.cta strong{color:var(--lime);font-weight:600;letter-spacing:.03em}
+/* dark */
+.dark{background:#0d140e;color:#f2f6ee}
+.dark .grid{background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px)}
+.dark .top,.dark .foot{color:rgba(242,246,238,.6)}
+.dark .sm{color:#e9efe4}
+.dark .big{background:linear-gradient(#c9f7a8,#5fe08a 50%,#1fb35a);-webkit-background-clip:text;background-clip:text}
+.dark .rays{background:repeating-linear-gradient(90deg,rgba(40,220,110,0) 0 18px,rgba(40,220,110,.7) 26px,rgba(120,255,150,.2) 40px,rgba(40,220,110,0) 52px)}
+.dark .what b{color:#f2f6ee}.dark .what b span{color:#7ee08f}.dark .what small{color:rgba(242,246,238,.6)}
+.dark .cta{background:var(--lime);color:#0d140e}.dark .cta strong{color:#0d140e}
+.dark::after{mix-blend-mode:screen;opacity:.07}
+</style></head><body>
+
+<!-- V1: CALM, closest to the original -->
+<section class="s" id="t1">
+ <div class="grid"></div>
+ <div class="rays" style="right:-40px"></div>
+ <div class="top"><img src="lumid-logo.svg"><span>For independent psychologists</span></div>
+ <h1 class="h" style="top:190px"><span class="sm">Something</span><span class="big">CALM</span><span class="sm">is coming.</span></h1>
+ <div class="stage" style="left:470px;top:600px;width:860px"><div class="dev"><img src="crop_overview.png"></div></div>
+ <span class="peek" style="left:640px;top:600px"><i></i>Sneak peek</span>
+ <div class="what"><b>One dashboard for<br><span>your whole practice.</span></b><small>Bookings · Payments · Follow-ups</small></div>
+ <div class="foot"><span>@lumid.ai · Kozhikode</span><span class="cta">Comment <strong>PRACTICE</strong> for early access →</span></div>
+</section>
+
+<!-- V2: QUIETER, dark -->
+<section class="s dark" id="t2">
+ <div class="grid"></div>
+ <div class="rays" style="right:-60px;top:260px"></div>
+ <div class="top"><img src="lumid-logo.svg" style="filter:brightness(0) invert(1)"><span>For independent psychologists</span></div>
+ <h1 class="h" style="top:190px"><span class="sm">Your evenings are<br>about to get</span><span class="big" style="font-size:210px">QUIETER.</span></h1>
+ <div class="stage" style="left:480px;top:640px;width:840px"><div class="dev" style="background:rgba(255,255,255,.12)"><img src="crop_overview.png"></div></div>
+ <span class="peek" style="left:650px;top:640px"><i></i>Sneak peek</span>
+ <div class="what"><b>Bookings, payments<br><span>and follow-ups.</span></b><small>In one place, soon.</small></div>
+ <div class="foot"><span>@lumid.ai · Kozhikode</span><span class="cta">Comment <strong>PRACTICE</strong> for early access →</span></div>
+</section>
+
+<!-- V3: CHASING, problem-led -->
+<section class="s" id="t3">
+ <div class="grid"></div>
+ <div class="rays" style="right:-80px;top:300px"></div>
+ <div class="top"><img src="lumid-logo.svg"><span>For independent psychologists</span></div>
+ <h1 class="h" style="top:190px"><span class="sm">The end of</span><span class="big" style="font-size:196px">CHASING</span><span class="sm">UPI screenshots.</span></h1>
+ <div class="stage" style="left:480px;top:660px;width:840px"><div class="dev"><img src="crop_overview.png"></div></div>
+ <span class="peek" style="left:650px;top:660px"><i></i>Sneak peek</span>
+ <div class="what"><b>Paid before<br><span>the session.</span></b><small>Coming to Lumid</small></div>
+ <div class="foot"><span>@lumid.ai · Kozhikode</span><span class="cta">Comment <strong>PRACTICE</strong> for early access →</span></div>
+</section>
+
+<!-- V4: AFTER, time-led -->
+<section class="s" id="t4">
+ <div class="grid"></div>
+ <div class="rays" style="left:200px;top:220px;width:700px"></div>
+ <div class="top"><img src="lumid-logo.svg"><span>For independent psychologists</span></div>
+ <h1 class="h" style="top:190px"><span class="sm">Built for the hours</span><span class="big">AFTER</span><span class="sm">the session.</span></h1>
+ <div class="stage" style="left:470px;top:620px;width:860px"><div class="dev"><img src="crop_overview.png"></div></div>
+ <span class="peek" style="left:640px;top:620px"><i></i>Sneak peek</span>
+ <div class="what"><b>7 PM to 11 PM,<br><span>handled.</span></b><small>Bookings · Payments · Follow-ups</small></div>
+ <div class="foot"><span>@lumid.ai · Kozhikode</span><span class="cta">Comment <strong>PRACTICE</strong> for early access →</span></div>
+</section>
+</body></html>
