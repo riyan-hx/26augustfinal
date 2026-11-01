@@ -7,6 +7,7 @@ import { useNow } from '../../lib/useNow'
 import { useBookings } from '../bookings/hooks'
 import { useSetupStatus } from '../practice/hooks'
 import { CopyBookingLinkButton } from '../practice/CopyBookingLinkButton'
+import { NewBookingButton } from '../bookings/NewBookingDialog'
 import { Avatar } from '../../components/ui/Avatar'
 import { EmptyState, ErrorState, Skeleton, SkeletonRows } from '../../components/ui/StateViews'
 import type { BookingSummary, SetupStatus } from '../../types/domain'
@@ -38,7 +39,10 @@ export default function LiveOverview() {
           <h1 className="text-[26px] font-semibold tracking-tight">{greeting()}{firstName ? `, ${firstName}` : ''}</h1>
           <p className="text-[13px] text-[var(--stone)] mt-1">Here’s what needs your attention today.</p>
         </div>
-        {setup.status?.published && <CopyBookingLinkButton className="btn-secondary" />}
+        <div className="flex gap-2">
+          {setup.status?.published && <CopyBookingLinkButton className="btn-secondary" />}
+          {setup.status?.hasSessionTypes && <NewBookingButton />}
+        </div>
       </div>
 
       {setup.error && <div className="mt-4 bg-white border border-[var(--hairline)] rounded-[16px]"><ErrorState compact error={setup.error} /></div>}
@@ -170,7 +174,7 @@ function ScheduleRow({ booking: b, now }: { booking: BookingSummary; now: number
 
 const steps: { key: keyof SetupStatus; label: string; hint: string; href: string }[] = [
   { key: 'hasProfile', label: 'Add your name and photo', hint: 'Shown on your booking page', href: '/app/settings#profile' },
-  { key: 'hasSlug', label: 'Choose your booking link', hint: 'yourname.lumidai.in', href: '/app/settings#profile' },
+  { key: 'hasSlug', label: 'Choose your booking link', hint: 'The link patients book from', href: '/app/settings#profile' },
   { key: 'hasSessionTypes', label: 'Add a session type', hint: 'Length and price', href: '/app/settings#sessions' },
   { key: 'hasAvailability', label: 'Set your weekly hours', hint: 'When patients can book', href: '/app/settings#hours' },
 ]
