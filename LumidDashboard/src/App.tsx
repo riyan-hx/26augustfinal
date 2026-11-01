@@ -1,34 +1,79 @@
+import { lazy, Suspense, type ReactNode } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { QueryClientProvider } from '@tanstack/react-query'
+import { queryClient } from './lib/query'
+import { isDemoMode } from './lib/env'
+import { AuthProvider } from './features/auth/AuthProvider'
+import { RequireAuth } from './features/auth/RequireAuth'
 import { AppShell } from './components/AppShell'
-import Overview from './pages/Overview'
-import CalendarPage from './pages/CalendarPage'
-import BookingsPage from './pages/BookingsPage'
-import PatientsPage from './pages/PatientsPage'
-import PatientProfile from './pages/PatientProfile'
-import { SessionsPage, FollowUpsPage, EarningsPage, InsightsPage, YourPage, SettingsPage } from './pages/OtherPages'
-import PublicBooking from './pages/PublicBooking'
+import { Skeleton } from './components/ui/StateViews'
+
+// Route-level code splitting: each screen loads on first visit.
+const DemoOverview = lazy(() => import('./pages/Overview'))
+const LiveOverview = lazy(() => import('./features/overview/LiveOverview'))
+const CalendarPage = lazy(() => import('./pages/CalendarPage'))
+const BookingsPage = lazy(() => import('./pages/BookingsPage'))
+const PatientsPage = lazy(() => import('./pages/PatientsPage'))
+const PatientProfile = lazy(() => import('./pages/PatientProfile'))
+const PracticeSettings = lazy(() => import('./features/practice/PracticeSettings'))
+const PublicBooking = lazy(() => import('./pages/PublicBooking'))
+const LoginPage = lazy(() => import('./features/auth/LoginPage'))
+const SessionsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.SessionsPage })))
+const FollowUpsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.FollowUpsPage })))
+const EarningsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.EarningsPage })))
+const InsightsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.InsightsPage })))
+const YourPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.YourPage })))
+
+const Overview = isDemoMode ? DemoOverview : LiveOverview
+
+function PageFallback() {
+  return (
+    <div className="px-4 lg:px-6 py-6 space-y-4" role="status" aria-label="Loading">
+      <Skeleton className="h-8 w-56" />
+      <Skeleton className="h-[120px] rounded-[16px]" />
+      <Skeleton className="h-[320px] rounded-[16px]" />
+    </div>
+  )
+}
+
+/** Protected dashboard screen inside the app shell. */
+function App_({ children }: { children: ReactNode }) {
+  return (
+    <RequireAuth>
+      <AppShell>
+        <Suspense fallback={<PageFallback />}>{children}</Suspense>
+      </AppShell>
+    </RequireAuth>
+  )
+}
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* No marketing landing page — the dashboard is the product. */}
-        <Route path="/" element={<Navigate to="/app" replace />} />
-        <Route path="/book" element={<PublicBooking />} />
-        <Route path="/app" element={<AppShell><Overview /></AppShell>} />
-        <Route path="/app/calendar" element={<AppShell><CalendarPage /></AppShell>} />
-        <Route path="/app/bookings" element={<AppShell><BookingsPage /></AppShell>} />
-        <Route path="/app/patients" element={<AppShell><PatientsPage /></AppShell>} />
-        <Route path="/app/patients/:id" element={<AppShell><PatientProfile /></AppShell>} />
-        <Route path="/app/sessions" element={<AppShell><SessionsPage /></AppShell>} />
-        <Route path="/app/follow-ups" element={<AppShell><FollowUpsPage /></AppShell>} />
-        <Route path="/app/earnings" element={<AppShell><EarningsPage /></AppShell>} />
-        <Route path="/app/payments" element={<Navigate to="/app/earnings" replace />} />
-        <Route path="/app/your-page" element={<AppShell><YourPage /></AppShell>} />
-        <Route path="/app/insights" element={<AppShell><InsightsPage /></AppShell>} />
-        <Route path="/app/settings" element={<AppShell><SettingsPage /></AppShell>} />
-        <Route path="*" element={<Navigate to="/app" replace />} />
-      </Routes>
-    </BrowserRouter>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <BrowserRouter>
+          <Suspense fallback={null}>
+            <Routes>
+              <Route path="/" element={<Navigate to="/app" replace />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/book" element={<PublicBooking />} />
+              <Route path="/app" element={<App_><Overview /></App_>} />
+              <Route path="/app/calendar" element={<App_><CalendarPage /></App_>} />
+              <Route path="/app/bookings" element={<App_><BookingsPage /></App_>} />
+              <Route path="/app/patients" element={<App_><PatientsPage /></App_>} />
+              <Route path="/app/patients/:id" element={<App_><PatientProfile /></App_>} />
+              <Route path="/app/sessions" element={<App_><SessionsPage /></App_>} />
+              <Route path="/app/follow-ups" element={<App_><FollowUpsPage /></App_>} />
+              <Route path="/app/earnings" element={<App_><EarningsPage /></App_>} />
+              <Route path="/app/payments" element={<Navigate to="/app/earnings" replace />} />
+              <Route path="/app/your-page" element={<App_><YourPage /></App_>} />
+              <Route path="/app/insights" element={<App_><InsightsPage /></App_>} />
+              <Route path="/app/settings" element={<App_><PracticeSettings /></App_>} />
+              <Route path="*" element={<Navigate to="/app" replace />} />
+            </Routes>
+          </Suspense>
+        </BrowserRouter>
+      </AuthProvider>
+    </QueryClientProvider>
   )
 }
