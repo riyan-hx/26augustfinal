@@ -109,3 +109,23 @@ export async function getBookingStatus(bookingId: string, manageToken: string): 
   const j = unwrap(await db().rpc('public_booking_status', { p_booking_id: bookingId, p_manage_token: manageToken })) as { status: BookingStatus }
   return j.status
 }
+
+export interface BookingRequestResult { bookingId: string; code: string; startsAt: Date; endsAt: Date; pricePaise: number }
+
+/** Pay-at-session request: reserves the slot; the psychologist collects payment and marks it paid. */
+export async function requestBooking(input: BookingRequest): Promise<BookingRequestResult> {
+  if (isDemoMode) {
+    await demoDelay(null, 500)
+    const start = new Date(input.starts_at)
+    return { bookingId: crypto.randomUUID(), code: `B-${Math.random().toString(36).slice(2, 8).toUpperCase()}`, startsAt: start, endsAt: new Date(start.getTime() + 50 * 60_000), pricePaise: 0 }
+  }
+  const token = crypto.randomUUID() + crypto.randomUUID()
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token))
+  const hash = [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, '0')).join('')
+  const j = unwrap(await db().rpc('request_booking', {
+    p_slug: input.slug, p_session_type_id: input.session_type_id, p_start: input.starts_at,
+    p_full_name: input.full_name, p_email: input.email, p_phone: input.phone || null, p_note: input.note || null,
+    p_manage_token_hash: hash,
+  })) as { booking_id: string; code: string; starts_at: string; ends_at: string; price_paise: number }
+  return { bookingId: j.booking_id, code: j.code, startsAt: new Date(j.starts_at), endsAt: new Date(j.ends_at), pricePaise: j.price_paise }
+}
