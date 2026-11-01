@@ -39,7 +39,7 @@ export default function LiveYourPage() {
         <section className="bg-[var(--color-canvas-parchment)] border border-[var(--hairline)] rounded-[20px] p-4 sm:p-8" aria-label="Page preview">
           <div className="mx-auto max-w-[560px] bg-white rounded-[16px] border border-[var(--hairline)] shadow-sm overflow-hidden">
             <div className="h-9 border-b border-[var(--hairline)] flex items-center justify-center">
-              <span className="text-[11px] text-[var(--stone)] bg-[var(--color-canvas-parchment)] rounded-full px-3 py-0.5 truncate max-w-[80%]">{url?.replace('https://', '') ?? 'your-link.lumidai.in'}</span>
+              <span className="text-[11px] text-[var(--stone)] bg-[var(--color-canvas-parchment)] rounded-full px-3 py-0.5 truncate max-w-[80%]">{url?.replace(/^https?:\/\//, '') ?? 'Choose your link in Settings'}</span>
             </div>
             {!profile ? <div className="p-8 space-y-3"><Skeleton className="h-14 w-14 rounded-full mx-auto" /><Skeleton className="h-4 w-40 mx-auto" /><Skeleton className="h-3 w-64 mx-auto" /></div> : (
               <div className="p-8 text-center">
