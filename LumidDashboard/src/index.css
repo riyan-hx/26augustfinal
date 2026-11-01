@@ -100,5 +100,5 @@ body { background: var(--canvas); color: var(--ink); -webkit-font-smoothing: ant
 }
 .field:focus { border-color: var(--color-neutral-strong); box-shadow: 0 0 0 3px var(--color-neutral-strong-soft); }
 .field[aria-invalid="true"] { border-color: var(--badge-rose-fg); }
-.field-error { margin-top: 4px; font-size: 12px; color: #c62f57; }
+.form-error { margin-top: 4px; font-size: 12px; color: #c62f57; }
 .field-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--ink); }
