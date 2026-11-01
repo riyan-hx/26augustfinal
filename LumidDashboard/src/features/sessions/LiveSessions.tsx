@@ -67,7 +67,7 @@ export default function LiveSessions() {
                   <p className="text-[12px] text-[var(--stone)] truncate">{b.sessionTypeName} · {formatDateTime(b.startsAt)} · {formatINR(b.pricePaise)}</p>
                 </div>
               </div>
-              <BookingActions booking={b} />
+              <BookingActions booking={b} inline />
             </li>
           ))}
         </ul>
