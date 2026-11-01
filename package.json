@@ -8,6 +8,9 @@
     "build": "npm --prefix LumidDashboard run build",
     "preview": "npm --prefix LumidDashboard run preview -- --host 0.0.0.0 --port 4173",
     "lint": "npm --prefix LumidDashboard run lint",
-    "start": "npm --prefix LumidDashboard run preview -- --host 0.0.0.0 --port 4173"
+    "start": "npm --prefix LumidDashboard run preview -- --host 0.0.0.0 --port 4173",
+    "typecheck": "npm --prefix LumidDashboard run typecheck",
+    "test": "npm --prefix LumidDashboard test",
+    "test:db": "scripts/db-test.sh"
   }
 }
