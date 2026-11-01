@@ -72,6 +72,7 @@ export default function LiveOverview() {
           </ul>
         </section>
 
+        <div className="space-y-6">
         <section className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden" aria-labelledby="attention-h">
           <header className="px-5 py-4 border-b border-[var(--hairline)] flex items-center gap-2">
             <h2 id="attention-h" className="text-[16px] font-semibold">Needs attention</h2>
@@ -100,8 +101,38 @@ export default function LiveOverview() {
             ))}
           </ul>
         </section>
+        <WeekStrip bookings={week.data ?? []} start={start} loading={week.isLoading} />
+        </div>
       </div>
     </div>
+  )
+}
+
+/** Next seven days at a glance: one bar per day, height by sessions booked. */
+function WeekStrip({ bookings, start, loading }: { bookings: BookingSummary[]; start: Date; loading: boolean }) {
+  const days = Array.from({ length: 7 }, (_, i) => {
+    const from = start.getTime() + i * DAY
+    const n = bookings.filter((b) => b.status !== 'cancelled' && b.status !== 'expired' && b.startsAt.getTime() >= from && b.startsAt.getTime() < from + DAY).length
+    return { label: new Date(from + 12 * 3_600_000).toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'narrow' }), n }
+  })
+  const max = Math.max(1, ...days.map((d) => d.n))
+  return (
+    <section className="bg-white border border-[var(--hairline)] rounded-[16px] p-5" aria-labelledby="week-h">
+      <div className="flex items-baseline justify-between">
+        <h2 id="week-h" className="text-[16px] font-semibold">Next 7 days</h2>
+        <Link to="/app/calendar" className="text-[12px] text-[var(--stone)] hover:text-[var(--ink)]">Calendar →</Link>
+      </div>
+      <div className="mt-5 grid grid-cols-7 gap-2 items-end h-[96px]" aria-label="Sessions per day">
+        {days.map((d, i) => (
+          <div key={i} className="flex flex-col items-center gap-2 h-full justify-end">
+            <span className="text-[11px] tabular-nums text-[var(--stone)]">{loading ? '' : d.n || ''}</span>
+            <span className={`w-full rounded-[6px] transition-[height] duration-300 ${i === 0 ? 'bg-[var(--color-primary)]' : 'bg-[var(--color-primary-soft)]'}`}
+              style={{ height: loading ? 8 : Math.max(6, (d.n / max) * 56) }} />
+            <span className={`text-[11px] ${i === 0 ? 'font-semibold' : 'text-[var(--stone)]'}`}>{d.label}</span>
+          </div>
+        ))}
+      </div>
+    </section>
   )
 }
 

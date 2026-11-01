@@ -11,22 +11,32 @@ import { Skeleton } from './components/ui/StateViews'
 // Route-level code splitting: each screen loads on first visit.
 const DemoOverview = lazy(() => import('./pages/Overview'))
 const LiveOverview = lazy(() => import('./features/overview/LiveOverview'))
-const CalendarPage = lazy(() => import('./pages/CalendarPage'))
+const DemoCalendar = lazy(() => import('./pages/CalendarPage'))
+const LiveCalendar = lazy(() => import('./features/calendar/LiveCalendar'))
+const LiveSessions = lazy(() => import('./features/sessions/LiveSessions'))
+const LiveYourPage = lazy(() => import('./features/practice/LiveYourPage'))
+const LiveFollowUps = lazy(() => import('./features/coming-soon').then((m) => ({ default: m.FollowUpsSoon })))
+const LiveInsights = lazy(() => import('./features/coming-soon').then((m) => ({ default: m.InsightsSoon })))
 const BookingsPage = lazy(() => import('./pages/BookingsPage'))
 const PatientsPage = lazy(() => import('./pages/PatientsPage'))
 const PatientProfile = lazy(() => import('./pages/PatientProfile'))
 const PracticeSettings = lazy(() => import('./features/practice/PracticeSettings'))
 const PublicBooking = lazy(() => import('./features/public-booking/PublicBookingPage'))
 const LoginPage = lazy(() => import('./features/auth/LoginPage'))
-const SessionsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.SessionsPage })))
-const FollowUpsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.FollowUpsPage })))
+const DemoSessions = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.SessionsPage })))
+const DemoFollowUps = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.FollowUpsPage })))
 const DemoEarnings = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.EarningsPage })))
 const LiveEarnings = lazy(() => import('./features/earnings/LiveEarnings'))
-const InsightsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.InsightsPage })))
-const YourPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.YourPage })))
+const DemoInsights = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.InsightsPage })))
+const DemoYourPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.YourPage })))
 
 const Overview = isDemoMode ? DemoOverview : LiveOverview
 const Earnings = isDemoMode ? DemoEarnings : LiveEarnings
+const CalendarPage = isDemoMode ? DemoCalendar : LiveCalendar
+const SessionsPage = isDemoMode ? DemoSessions : LiveSessions
+const FollowUpsPage = isDemoMode ? DemoFollowUps : LiveFollowUps
+const InsightsPage = isDemoMode ? DemoInsights : LiveInsights
+const YourPage = isDemoMode ? DemoYourPage : LiveYourPage
 
 function PageFallback() {
   return (

@@ -7,6 +7,7 @@ import { useBookings } from '../features/bookings/hooks'
 import { Avatar } from '../components/ui/Avatar'
 import { EmptyState, ErrorState, SkeletonRows } from '../components/ui/StateViews'
 import { CopyBookingLinkButton } from '../features/practice/CopyBookingLinkButton'
+import { BookingActions } from '../features/bookings/BookingActions'
 import type { BookingStatus } from '../types/domain'
 
 const statusStyles: Record<BookingStatus, string> = {
@@ -131,6 +132,7 @@ export default function BookingsPage() {
                   </span>
                 </div>
               </div>
+              <BookingActions booking={b} />
             </li>
           ))}
         </ul>
