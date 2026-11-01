@@ -53,7 +53,7 @@ export default function Overview() {
     { label: 'Mon', sessions: 5 }, { label: 'Tue', sessions: 4 }, { label: 'Wed', sessions: 3 },
     { label: 'Thu', sessions: 7 }, { label: 'Fri', sessions: 6 }, { label: 'Sat', sessions: 4 }, { label: 'Sun', sessions: 3 },
   ]
-  const busiestDay = weekBars.reduce((max, b) => b.sessions > max.sessions ? b : max, weekBars[0])
+  const busiestDay = weekBars.reduce((max, b) => b.sessions > max.sessions ? b : max, weekBars[0]!)
   const weekTotal = weekBars.reduce((sum, b) => sum + b.sessions, 0)
 
   // KPI row, by period — Today is exact (derived from todaySchedule); This
@@ -101,7 +101,7 @@ export default function Overview() {
   ]
 
   const actionItems = [
-    { icon: Clock3, tone: 'amber' as const, title: `${followUps[0].patient} — follow-up due`, sub: followUps[0].note, href: '/app/follow-ups', cta: 'Send nudge' },
+    { icon: Clock3, tone: 'amber' as const, title: `${followUps[0]!.patient} — follow-up due`, sub: followUps[0]!.note, href: '/app/follow-ups', cta: 'Send nudge' },
     { icon: CreditCard, tone: 'rose' as const, title: 'Arjun Nair — payment pending', sub: '₹1,500 · Individual Session, 8:00 PM', href: '/app/bookings', cta: 'Remind' },
     { icon: AlertTriangle, tone: 'rose' as const, title: 'Sneha Kulkarni — booking unconfirmed', sub: 'Fri · 3:00 PM, awaiting payment', href: '/app/bookings', cta: 'Review' },
     { icon: FileText, tone: 'neutral' as const, title: 'Vikram Shetty — note incomplete', sub: 'Session ended yesterday', href: '/app/sessions', cta: 'Add note' },
