@@ -16,15 +16,17 @@ const BookingsPage = lazy(() => import('./pages/BookingsPage'))
 const PatientsPage = lazy(() => import('./pages/PatientsPage'))
 const PatientProfile = lazy(() => import('./pages/PatientProfile'))
 const PracticeSettings = lazy(() => import('./features/practice/PracticeSettings'))
-const PublicBooking = lazy(() => import('./pages/PublicBooking'))
+const PublicBooking = lazy(() => import('./features/public-booking/PublicBookingPage'))
 const LoginPage = lazy(() => import('./features/auth/LoginPage'))
 const SessionsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.SessionsPage })))
 const FollowUpsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.FollowUpsPage })))
-const EarningsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.EarningsPage })))
+const DemoEarnings = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.EarningsPage })))
+const LiveEarnings = lazy(() => import('./features/earnings/LiveEarnings'))
 const InsightsPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.InsightsPage })))
 const YourPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.YourPage })))
 
 const Overview = isDemoMode ? DemoOverview : LiveOverview
+const Earnings = isDemoMode ? DemoEarnings : LiveEarnings
 
 function PageFallback() {
   return (
@@ -57,6 +59,7 @@ export default function App() {
               <Route path="/" element={<Navigate to="/app" replace />} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/book" element={<PublicBooking />} />
+              <Route path="/p/:slug" element={<PublicBooking />} />
               <Route path="/app" element={<App_><Overview /></App_>} />
               <Route path="/app/calendar" element={<App_><CalendarPage /></App_>} />
               <Route path="/app/bookings" element={<App_><BookingsPage /></App_>} />
@@ -64,7 +67,7 @@ export default function App() {
               <Route path="/app/patients/:id" element={<App_><PatientProfile /></App_>} />
               <Route path="/app/sessions" element={<App_><SessionsPage /></App_>} />
               <Route path="/app/follow-ups" element={<App_><FollowUpsPage /></App_>} />
-              <Route path="/app/earnings" element={<App_><EarningsPage /></App_>} />
+              <Route path="/app/earnings" element={<App_><Earnings /></App_>} />
               <Route path="/app/payments" element={<Navigate to="/app/earnings" replace />} />
               <Route path="/app/your-page" element={<App_><YourPage /></App_>} />
               <Route path="/app/insights" element={<App_><InsightsPage /></App_>} />

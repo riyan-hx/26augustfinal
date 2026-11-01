@@ -89,7 +89,7 @@ export default function LoginPage() {
                   className="field"
                   placeholder="you@practice.in"
                 />
-                {error && <p id="login-error" className="field-error">{error}</p>}
+                {error && <p id="login-error" className="form-error">{error}</p>}
                 <PrimaryButton type="submit" loading={sending} className="w-full mt-4">Email me a sign-in link</PrimaryButton>
               </form>
             </>

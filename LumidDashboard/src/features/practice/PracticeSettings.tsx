@@ -67,7 +67,7 @@ function PublishCard() {
             ? bookingUrl(profile.slug)
             : ready ? 'Everything is set. Publish to start taking bookings.' : 'Add your link, a session type and weekly hours to publish.'}
         </p>
-        {error && <p className="field-error">{error.code === 'PUBLISH_REQUIREMENTS' ? 'Finish the sections below before publishing.' : error.userMessage}</p>}
+        {error && <p className="form-error">{error.code === 'PUBLISH_REQUIREMENTS' ? 'Finish the sections below before publishing.' : error.userMessage}</p>}
       </div>
       {status.published ? (
         <button className="btn-secondary" disabled={publish.isPending} onClick={() => publish.mutate(false)}>Unpublish</button>
@@ -136,14 +136,14 @@ function ProfileForm({ profile }: { profile: PracticeProfile }) {
           <input id="slug" value={form.slug} onChange={set('slug')} className="flex-1 px-3 py-2.5 outline-none text-[13px] min-w-0" placeholder="yourname" aria-describedby={fields.slug ? 'slug-err' : undefined} />
           <span className="px-3 text-[13px] text-[var(--stone)] py-2.5">.lumidai.in</span>
         </div>
-        {fields.slug && <p id="slug-err" className="field-error">{fields.slug}</p>}
+        {fields.slug && <p id="slug-err" className="form-error">{fields.slug}</p>}
       </div>
       <Field id="city" label="City" value={form.city} onChange={set('city')} error={fields.city} />
       <Field id="languages" label="Languages (comma separated)" value={form.languages} onChange={set('languages')} error={fields.languages} />
       <div className="sm:col-span-2">
         <label htmlFor="bio" className="field-label">About you</label>
         <textarea id="bio" rows={4} value={form.bio} onChange={set('bio')} className="field resize-y" maxLength={2000} />
-        {fields.bio && <p className="field-error">{fields.bio}</p>}
+        {fields.bio && <p className="form-error">{fields.bio}</p>}
       </div>
       <FormFooter pending={save.isPending} saved={saved} error={save.error} />
     </form>
@@ -223,7 +223,7 @@ function SessionTypeForm({ type, onDone }: { type?: SessionType; onDone: () => v
         <button type="button" className="btn-secondary" onClick={onDone}>Cancel</button>
         <PrimaryButton type="submit" loading={save.isPending}>Save</PrimaryButton>
       </div>
-      {save.error && !Object.keys(fields).length && <p className="field-error sm:col-span-4">{toApiError(save.error).userMessage}</p>}
+      {save.error && !Object.keys(fields).length && <p className="form-error sm:col-span-4">{toApiError(save.error).userMessage}</p>}
     </form>
   )
 }
@@ -288,7 +288,7 @@ function WeeklyHoursForm({ rules }: { rules: AvailabilityRule[] }) {
                 <input type="time" aria-label={`${WEEKDAYS[i]} start`} value={d.start} onChange={(e) => update(i, { start: e.target.value })} className="field !w-[116px] !py-2" />
                 <span className="text-[12px] text-[var(--stone)]">to</span>
                 <input type="time" aria-label={`${WEEKDAYS[i]} end`} value={d.end} onChange={(e) => update(i, { end: e.target.value })} aria-invalid={d.end <= d.start || undefined} className="field !w-[116px] !py-2" />
-                {d.end <= d.start && <span className="field-error !mt-0">End must be after start</span>}
+                {d.end <= d.start && <span className="form-error !mt-0">End must be after start</span>}
               </div>
             ) : (
               <span className="text-[12px] text-[var(--stone)]">Unavailable</span>
@@ -328,7 +328,7 @@ function Field({ id, label, error, ...input }: React.InputHTMLAttributes<HTMLInp
     <div>
       <label htmlFor={id} className="field-label">{label}</label>
       <input id={id} {...input} className="field" aria-invalid={error ? true : undefined} aria-describedby={error ? `${id}-err` : undefined} />
-      {error && <p id={`${id}-err`} className="field-error">{error}</p>}
+      {error && <p id={`${id}-err`} className="form-error">{error}</p>}
     </div>
   )
 }
@@ -337,7 +337,7 @@ function FormFooter({ pending, saved, error, disabled }: { pending: boolean; sav
   const apiError = error ? toApiError(error) : null
   return (
     <div className="sm:col-span-2 flex items-center justify-end gap-3 mt-4">
-      {apiError && !apiError.fields && <p className="field-error !mt-0 mr-auto">{apiError.userMessage}</p>}
+      {apiError && !apiError.fields && <p className="form-error !mt-0 mr-auto">{apiError.userMessage}</p>}
       {saved && !pending && <span className="text-[12px] text-[var(--badge-green-fg)] inline-flex items-center gap-1" aria-live="polite"><Check size={13} /> Saved</span>}
       <PrimaryButton type="submit" loading={pending} disabled={disabled}>Save changes</PrimaryButton>
     </div>

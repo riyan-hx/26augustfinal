@@ -29,8 +29,8 @@ export const demoProfile: PracticeProfile = {
 }
 
 export const demoSessionTypes: SessionType[] = [
-  { id: 'st-1', name: 'Individual Consultation', description: 'One-on-one support for overwhelm, avoidance, focus', durationMinutes: 50, pricePaise: 150000, bufferMinutes: 10, isActive: true },
-  { id: 'st-2', name: 'Follow-up Session', description: 'For returning patients', durationMinutes: 30, pricePaise: 120000, bufferMinutes: 10, isActive: true },
+  { id: '6f1c2a10-0000-4000-8000-000000000001', name: 'Individual Consultation', description: 'One-on-one support for overwhelm, avoidance, focus', durationMinutes: 50, pricePaise: 150000, bufferMinutes: 10, isActive: true },
+  { id: '6f1c2a10-0000-4000-8000-000000000002', name: 'Follow-up Session', description: 'For returning patients', durationMinutes: 30, pricePaise: 120000, bufferMinutes: 10, isActive: true },
 ]
 
 export const demoAvailability: AvailabilityRule[] = [1, 2, 3, 4, 5].map((weekday) => ({
