@@ -1,3 +1,4 @@
+import { Avatar } from '../components/ui/Avatar'
 import { Check, CreditCard, TrendingUp, Shield, Sparkles, Repeat2, Globe, Settings, Calendar, MapPin, Award, Languages, Copy, ExternalLink } from '../lib/icons'
 
 export function SessionsPage() {
@@ -73,7 +74,7 @@ export function FollowUpsPage() {
             { name: 'Karthik Iyer', due: 'Overdue • 3 days', msg: '“Would you like to reflect on performance expectations?”', sent: false },
           ].map(item => (
             <div key={item.name} className="rounded-[12px] border border-[var(--hairline)] p-4 flex gap-4 items-center">
-              <img src={`https://i.pravatar.cc/100?img=${item.name.length + 8}`} alt="" className="w-10 h-10 rounded-full object-cover" />
+              <Avatar name={item.name} size={40} />
               <div className="flex-1 min-w-0">
                 <p className="text-[13px] font-semibold">{item.name} <span className={`ml-2 text-[11px] px-2 py-0.5 rounded-full border font-medium ${item.sent ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 'bg-amber-50 border-amber-200 text-amber-700'}`}>{item.due}</span></p>
                 <p className="text-[12px] text-[var(--slate)] mt-1 truncate">{item.msg}</p>
@@ -205,7 +206,7 @@ export function YourPage() {
       <div className="mt-6 grid lg:grid-cols-[1.1fr_0.9fr] gap-6">
         <div className="bg-white border border-[var(--hairline)] rounded-[16px] p-5 lg:p-6 space-y-4">
           <div className="flex gap-4">
-            <img src="https://i.pravatar.cc/200?img=5" alt="" className="w-20 h-20 rounded-2xl object-cover" />
+            <Avatar name="Anitha Raghavan" size={80} />
             <div>
               <p className="text-[18px] font-semibold">Dr. Anitha Raghavan</p>
               <p className="text-[13px] text-[var(--stone)]">Psychologist • Bengaluru • 8 years experience</p>
@@ -250,7 +251,7 @@ export function YourPage() {
               <span className="text-[11px] px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-medium">Live</span>
             </div>
             <div className="p-6 text-center">
-              <img src="https://i.pravatar.cc/200?img=5" alt="" className="w-16 h-16 rounded-full object-cover mx-auto" />
+              <span className="flex justify-center"><Avatar name="Anitha Raghavan" size={64} /></span>
               <p className="font-serif text-[18px] font-semibold mt-3">Dr. Anitha Raghavan</p>
               <p className="text-[12px] text-[var(--stone)]">Psychologist in Bengaluru</p>
               <p className="text-[12px] leading-relaxed mt-3 max-w-[320px] mx-auto">Warm, evidence-based support for young adults navigating overwhelm and avoidance.</p>

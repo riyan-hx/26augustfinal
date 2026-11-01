@@ -2,6 +2,25 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, Download, Menu, X, Bell, Search } from '../lib/icons'
 import { useState } from 'react'
 import { LumidLogo } from './LumidLogo'
+import { Avatar } from './ui/Avatar'
+import { useProfile } from '../features/practice/hooks'
+import { env, isDemoMode } from '../lib/env'
+import { useTodayBookings } from '../features/bookings/hooks'
+import { bookingUrl } from '../lib/links'
+import { formatINR, sumPaise } from '../lib/money'
+
+/** "Sunday, 1 November • 3 sessions • ₹4,500" for today in IST. */
+function TodaySummary() {
+  const { data } = useTodayBookings()
+  const day = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())
+  const active = (data ?? []).filter((b) => b.status === 'confirmed' || b.status === 'completed' || b.status === 'pending_payment')
+  const paid = sumPaise(active.filter((b) => b.status !== 'pending_payment').map((b) => b.pricePaise))
+  return (
+    <span className="text-[11px] text-[var(--color-ink-muted-48)]">
+      {day}{data ? ` • ${active.length} ${active.length === 1 ? 'session' : 'sessions'} • ${formatINR(paid)} paid` : ''}
+    </span>
+  )
+}
 
 // v1 nav: only routes with real content behind them. Ranked by the validated
 // wedge — booking + payment enforcement and calendar first, care second.
@@ -31,6 +50,8 @@ const navGroups = [
 export function AppShell({ children }: { children: React.ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false)
   const location = useLocation()
+  const { data: profile } = useProfile()
+  const name = profile?.displayName || 'Your practice'
   const isApp = location.pathname.startsWith('/app')
   if (!isApp) return <>{children}</>
 
@@ -62,12 +83,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
 
         <div className="p-3 border-t border-[var(--lumid-border)] space-y-3">
           <div className="flex items-center gap-3 px-2">
-            <img src="https://i.pravatar.cc/100?img=5" alt="Dr Anitha" className="w-8 h-8 rounded-full object-cover border border-[var(--color-hairline)]" />
+            <Avatar name={name} size={32} />
             <div className="flex-1 min-w-0">
-              <p className="text-[13px] font-semibold leading-none truncate text-[var(--color-ink)]">Dr. Anitha Raghavan</p>
-              <p className="text-[11px] text-[var(--color-ink-muted-48)]">Bengaluru</p>
+              <p className="text-[13px] font-semibold leading-none truncate text-[var(--color-ink)]">{name}</p>
+              <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate">{profile?.published ? 'Booking page live' : 'Not published yet'}</p>
             </div>
-            <span className="w-2 h-2 rounded-full bg-[var(--badge-green-fg)] shrink-0 ring-2 ring-[var(--badge-green-bg)]" />
+            <span className={`w-2 h-2 rounded-full shrink-0 ring-2 ${profile?.published ? 'bg-[var(--badge-green-fg)] ring-[var(--badge-green-bg)]' : 'bg-[var(--color-ink-muted-48)] ring-[var(--color-hairline)]'}`} />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <NavLink to="/app/settings" className="flex items-center justify-center gap-1.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)]">
@@ -101,7 +122,8 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Bell size={16} />
               <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-neutral-strong)] rounded-full border-2 border-white" />
             </button>
-            <img src="https://i.pravatar.cc/100?img=5" alt="" className="w-8 h-8 rounded-full object-cover border border-[var(--color-hairline)] hidden sm:block" />
+            {isDemoMode && <span className="hidden sm:inline-flex text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[var(--badge-amber-bg)] text-[var(--badge-amber-fg)]">Demo data</span>}
+            <span className="hidden sm:block"><Avatar name={name} size={32} /></span>
           </div>
         </header>
 
@@ -130,8 +152,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {/* Frosted sub-nav — Lumid */}
         <div className="hidden lg:flex h-[36px] items-center gap-4 px-6 bg-[var(--color-canvas-parchment)]/80 backdrop-blur border-b border-[var(--color-hairline)] sticky top-[52px] z-20">
           <span className="text-[12px] font-semibold text-[var(--color-ink)]">Today</span>
-          <span className="text-[11px] text-[var(--color-ink-muted-48)]">Tuesday, 26 August • 3 sessions • ₹5,000</span>
-          <a href="/book" className="ml-auto text-[11px] font-medium text-[var(--color-neutral-strong)] hover:underline">anitha.lumidai.in →</a>
+          <TodaySummary />
+          {profile?.slug && profile.published && (
+            <a href={isDemoMode ? '/book' : bookingUrl(profile.slug)} target={isDemoMode ? undefined : '_blank'} rel="noreferrer" className="ml-auto text-[11px] font-medium text-[var(--color-neutral-strong)] hover:underline">
+              {profile.slug}.{env.publicSiteDomain} →
+            </a>
+          )}
         </div>
 
         <main className="flex-1 min-w-0">

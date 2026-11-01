@@ -77,3 +77,28 @@ body { background: var(--canvas); color: var(--ink); -webkit-font-smoothing: ant
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+/* Shared buttons for new data-driven screens (match existing pill buttons). */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  background: var(--color-primary); color: #fff; transition: background 200ms ease, opacity 200ms ease;
+}
+.btn-primary:hover:not(:disabled) { background: var(--color-primary-focus); }
+.btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--color-canvas); color: var(--ink); border: 1px solid var(--hairline); transition: background 200ms ease;
+}
+.btn-secondary:hover:not(:disabled) { background: var(--color-canvas-parchment); }
+.btn-primary:focus-visible, .btn-secondary:focus-visible { outline: 2px solid var(--color-neutral-strong); outline-offset: 2px; }
+.field {
+  width: 100%; padding: 10px 12px; border-radius: 10px; font-size: 13px;
+  background: var(--color-canvas); border: 1px solid var(--hairline); color: var(--ink); outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.field:focus { border-color: var(--color-neutral-strong); box-shadow: 0 0 0 3px var(--color-neutral-strong-soft); }
+.field[aria-invalid="true"] { border-color: var(--badge-rose-fg); }
+.field-error { margin-top: 4px; font-size: 12px; color: #c62f57; }
+.field-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--ink); }
