@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { localDayBounds } from '../../lib/dates'
-import { cancelBooking, listBookings, markOutcome, type BookingRange } from './api'
+import { cancelBooking, createBooking, listBookings, markOutcome, markPaid, type BookingRange, type NewBookingInput, type PaymentMethod } from './api'
 
 export const bookingKeys = {
   all: ['bookings'] as const,
@@ -35,5 +35,23 @@ export function useMarkOutcome() {
   return useMutation({
     mutationFn: ({ id, outcome }: { id: string; outcome: 'completed' | 'no_show' }) => markOutcome(id, outcome),
     onSettled: invalidate,
+  })
+}
+
+export function useMarkPaid() {
+  const invalidate = useInvalidateCare()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: ({ id, method }: { id: string; method: PaymentMethod }) => markPaid(id, method),
+    onSettled: () => Promise.all([invalidate(), qc.invalidateQueries({ queryKey: ['earnings'] })]),
+  })
+}
+
+export function useCreateBooking() {
+  const invalidate = useInvalidateCare()
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (input: NewBookingInput) => createBooking(input),
+    onSettled: () => Promise.all([invalidate(), qc.invalidateQueries({ queryKey: ['earnings'] })]),
   })
 }

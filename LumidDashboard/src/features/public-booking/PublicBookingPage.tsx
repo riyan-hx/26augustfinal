@@ -7,16 +7,19 @@ import { Avatar } from '../../components/ui/Avatar'
 import { EmptyState, ErrorState, Skeleton } from '../../components/ui/StateViews'
 import { newIdempotencyKey } from '../../lib/api'
 import { formatCountdown, formatDateTime, localDateKey } from '../../lib/dates'
-import { isDemoMode } from '../../lib/env'
+import { env, isDemoMode } from '../../lib/env'
+import { bookingUrlLabel } from '../../lib/links'
 import { toApiError } from '../../lib/errors'
 import { formatINR } from '../../lib/money'
 import { bookingRequestSchema, fieldErrors } from '../../lib/schemas'
 import { groupSlotsByDay } from '../../lib/slots'
 import { useNow } from '../../lib/useNow'
-import { createHold, getBookingStatus, getPublicProfile, getSlots, verifyPayment, type Hold, type PaymentProof, type PublicProfile } from './api'
+import { createHold, getBookingStatus, getPublicProfile, getSlots, requestBooking, verifyPayment, type BookingRequestResult, type Hold, type PaymentProof, type PublicProfile } from './api'
 import { openCheckout } from './razorpay'
 
-type Phase = 'pick' | 'pay' | 'confirming' | 'done' | 'refund' | 'unsure'
+type Phase = 'pick' | 'pay' | 'confirming' | 'done' | 'refund' | 'unsure' | 'requested'
+/** Without online payments the patient requests a slot and pays the psychologist directly. */
+const payAtSession = !isDemoMode && !env.onlinePayments
 const POLL_MS = 3_000
 const POLL_MAX_MS = 60_000
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -65,7 +68,7 @@ function Shell({ children, slug }: { children: ReactNode; slug?: string }) {
         <div className="max-w-[980px] mx-auto px-4 lg:px-6 h-[52px] flex items-center justify-between">
           <span className="flex items-center gap-2.5">
             <LumidLogo className="h-[15px] sm:h-[17px]" />
-            {slug && <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline border-l border-[var(--hairline)] pl-2.5 uppercase">{slug}.lumidai.in</span>}
+            {slug && <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline border-l border-[var(--hairline)] pl-2.5 uppercase">{bookingUrlLabel(slug)}</span>}
           </span>
           <span className="text-[12px] text-[var(--stone)]">Secure • Private</span>
         </div>
@@ -84,6 +87,7 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [phase, setPhase] = useState<Phase>('pick')
   const [hold, setHold] = useState<Hold | null>(null)
+  const [requested, setRequested] = useState<BookingRequestResult | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const attemptKey = useRef<string | null>(null)
@@ -125,6 +129,7 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
     setErrors({}); setNotice(null); setBusy(true)
     attemptKey.current ??= newIdempotencyKey()
     try {
+      if (payAtSession) { setRequested(await requestBooking(parsed.data)); setPhase('requested'); return }
       setHold(await createHold(parsed.data, attemptKey.current)); setPhase('pay')
     } catch (error) {
       const err = toApiError(error)
@@ -151,6 +156,11 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
     } finally { setBusy(false) }
   }
 
+  if (phase === 'requested' && requested) return (
+    <Panel tone="success" icon={<CheckCircle2 size={20} />} title="Your time is reserved"
+      body={`${sessionType?.name ?? 'Session'} with ${profile.displayName} · ${formatDateTime(requested.startsAt, tz)}. ${profile.displayName} will confirm and share how to pay (${formatINR(requested.pricePaise)}) and the call link with you at ${form.email}.`}
+      footer={<span className="font-mono text-[12px]">Booking ID {requested.code}</span>} />
+  )
   if (phase === 'confirming') return <Panel tone="info" title="Confirming your payment…" body="This usually takes a few seconds. Please don’t close this page or pay again." spinner />
   if (phase === 'done' && hold) return (
     <Panel tone="success" icon={<CheckCircle2 size={20} />} title="You’re booked"
@@ -226,8 +236,8 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
                   <span>I agree to the booking terms. Cancellation is free up to {profile.cancellationCutoffHours} hours before the session.</span>
                 </label>
                 {errors.accept_terms && <p className="form-error">{errors.accept_terms}</p>}
-                <button className="btn-primary w-full justify-center" disabled={busy}>{busy ? 'Holding your time…' : `Continue to payment${sessionType ? ` · ${formatINR(sessionType.pricePaise)}` : ''}`}</button>
-                <p className="text-[11px] text-[var(--stone)] text-center">Your time is held for 10 minutes while you pay.</p>
+                <button className="btn-primary w-full justify-center" disabled={busy}>{busy ? 'Holding your time…' : payAtSession ? `Request this time${sessionType ? ` · ${formatINR(sessionType.pricePaise)}` : ''}` : `Continue to payment${sessionType ? ` · ${formatINR(sessionType.pricePaise)}` : ''}`}</button>
+                <p className="text-[11px] text-[var(--stone)] text-center">{payAtSession ? 'No payment now. You pay the psychologist directly before the session.' : 'Your time is held for 10 minutes while you pay.'}</p>
               </div>
             )}
           </form>

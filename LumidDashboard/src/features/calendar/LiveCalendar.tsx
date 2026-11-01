@@ -8,6 +8,7 @@ import { useBookings } from '../bookings/hooks'
 import { BookingActions } from '../bookings/BookingActions'
 import { useAvailability } from '../practice/hooks'
 import { CopyBookingLinkButton } from '../practice/CopyBookingLinkButton'
+import { NewBookingButton } from '../bookings/NewBookingDialog'
 import { Avatar } from '../../components/ui/Avatar'
 import { ErrorState, Skeleton } from '../../components/ui/StateViews'
 import type { BookingStatus, BookingSummary } from '../../types/domain'
@@ -66,13 +67,14 @@ export default function LiveCalendar() {
           <h1 className="text-[26px] font-semibold tracking-tight">Calendar</h1>
           <p className="text-[13px] text-[var(--stone)] mt-1">{range} · times in IST</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <button type="button" className="btn-secondary" onClick={() => setOffset(0)} disabled={offset === 0}>Today</button>
           <div className="flex rounded-full border border-[var(--hairline)] bg-white">
             <button type="button" aria-label="Previous week" className="w-9 h-9 flex items-center justify-center rounded-l-full hover:bg-[var(--color-canvas-parchment)]" onClick={() => setOffset((o) => o - 1)}><ChevronLeft size={16} /></button>
             <button type="button" aria-label="Next week" className="w-9 h-9 flex items-center justify-center rounded-r-full hover:bg-[var(--color-canvas-parchment)] border-l border-[var(--hairline)]" onClick={() => setOffset((o) => o + 1)}><ChevronRight size={16} /></button>
           </div>
-          <CopyBookingLinkButton className="btn-primary" />
+          <CopyBookingLinkButton className="btn-secondary" />
+          <NewBookingButton />
         </div>
       </div>
 
@@ -196,7 +198,7 @@ function BookingPanel({ booking: b, onClose }: { booking: BookingSummary; onClos
       {b.meetUrl
         ? <a href={b.meetUrl} target="_blank" rel="noreferrer" className="btn-primary w-full justify-center mt-4"><Video size={14} />Join Google Meet</a>
         : <p className="mt-4 text-[12px] text-[var(--stone)] bg-[var(--color-canvas-parchment)] rounded-[10px] px-3 py-2">Meet link appears here once Google Calendar is connected.</p>}
-      <div className="mt-3"><BookingActions booking={b} /></div>
+      <div className="mt-3"><BookingActions booking={b} inline /></div>
     </section>
   )
 }

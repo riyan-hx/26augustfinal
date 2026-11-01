@@ -5,7 +5,7 @@ import { toApiError } from '../../lib/errors'
 import { isDemoMode } from '../../lib/env'
 import { ErrorState, PrimaryButton, Skeleton } from '../../components/ui/StateViews'
 import { useAuth } from '../auth/AuthProvider'
-import { bookingUrl } from '../../lib/links'
+import { bookingUrl, bookingUrlParts } from '../../lib/links'
 import {
   useArchiveSessionType, useAvailability, useProfile, usePublish, useSaveSessionType,
   useSaveWeeklyHours, useSessionTypes, useSetupStatus, useUpdateProfile,
@@ -132,9 +132,9 @@ function ProfileForm({ profile }: { profile: PracticeProfile }) {
       <div className="sm:col-span-2">
         <label htmlFor="slug" className="field-label">Booking link</label>
         <div className="flex items-center gap-0 field !p-0 overflow-hidden" aria-invalid={fields.slug ? true : undefined}>
-          <span className="hidden sm:inline px-3 text-[13px] text-[var(--stone)] border-r border-[var(--hairline)] bg-[var(--color-canvas-parchment)] py-2.5">https://</span>
+          <span className="hidden sm:inline px-3 text-[13px] text-[var(--stone)] border-r border-[var(--hairline)] bg-[var(--color-canvas-parchment)] py-2.5 whitespace-nowrap">{bookingUrlParts().prefix}</span>
           <input id="slug" value={form.slug} onChange={set('slug')} className="flex-1 px-3 py-2.5 outline-none text-[13px] min-w-0" placeholder="yourname" aria-describedby={fields.slug ? 'slug-err' : undefined} />
-          <span className="px-3 text-[13px] text-[var(--stone)] py-2.5">.lumidai.in</span>
+          {bookingUrlParts().suffix && <span className="px-3 text-[13px] text-[var(--stone)] py-2.5">{bookingUrlParts().suffix}</span>}
         </div>
         {fields.slug && <p id="slug-err" className="form-error">{fields.slug}</p>}
       </div>
