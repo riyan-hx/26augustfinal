@@ -5,6 +5,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  pull-requests: read
+
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -46,7 +50,7 @@ jobs:
         run: |
           sudo apt-get update -q
           sudo apt-get install -y -q postgresql-16 postgresql-16-pgtap
-      - run: PG_BIN=/usr/lib/postgresql/16/bin scripts/db-test.sh
+      - run: PG_BIN=/usr/lib/postgresql/16/bin bash scripts/db-test.sh
 
   functions:
     name: Edge Functions typecheck
