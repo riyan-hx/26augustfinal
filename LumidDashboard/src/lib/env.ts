@@ -9,7 +9,10 @@ export const env = {
   supabaseUrl: supabaseUrl ?? '',
   supabaseAnonKey: supabaseAnonKey ?? '',
   functionsUrl: functionsUrl ?? (supabaseUrl ? `${supabaseUrl}/functions/v1` : ''),
-  publicSiteDomain: (import.meta.env.VITE_PUBLIC_SITE_DOMAIN as string | undefined) ?? 'lumidai.in',
+  publicSiteDomain: (import.meta.env.VITE_PUBLIC_SITE_DOMAIN as string | undefined) ?? '',
+  appUrl: (import.meta.env.VITE_APP_URL as string | undefined) ?? '',
+  /** Razorpay checkout through Edge Functions. Off: patients request a slot and pay at the session. */
+  onlinePayments: import.meta.env.VITE_ONLINE_PAYMENTS === 'true',
 }
 
 export const isDemoMode =
