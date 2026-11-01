@@ -7,6 +7,7 @@ import { useBookings } from '../features/bookings/hooks'
 import { Avatar } from '../components/ui/Avatar'
 import { EmptyState, ErrorState, SkeletonRows } from '../components/ui/StateViews'
 import { CopyBookingLinkButton } from '../features/practice/CopyBookingLinkButton'
+import { NewBookingButton } from '../features/bookings/NewBookingDialog'
 import { BookingActions } from '../features/bookings/BookingActions'
 import type { BookingStatus } from '../types/domain'
 
@@ -68,13 +69,16 @@ export default function BookingsPage() {
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
           <h1 className="font-serif text-[26px] font-semibold tracking-tight">Bookings</h1>
-          <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> {filter === 'All' ? 'total' : filter.toLowerCase()} • Confirmed only after payment is verified</p>
+          <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> {filter === 'All' ? 'total' : filter.toLowerCase()} • Confirmed once paid</p>
         </div>
+        <div className="flex items-center gap-2">
         <label className="flex items-center gap-2 bg-white border border-[var(--hairline)] rounded-full px-3 py-2">
           <Search size={14} className="text-[var(--stone)]" />
           <span className="sr-only">Search bookings</span>
           <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search patient, booking ID…" className="bg-transparent outline-none text-[12px] w-[180px]" />
         </label>
+        <NewBookingButton />
+        </div>
       </div>
 
       <div className="mt-4">
