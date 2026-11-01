@@ -4,9 +4,9 @@ import { useState } from 'react'
 import { LumidLogo } from './LumidLogo'
 import { Avatar } from './ui/Avatar'
 import { useProfile } from '../features/practice/hooks'
-import { env, isDemoMode } from '../lib/env'
+import { isDemoMode } from '../lib/env'
 import { useTodayBookings } from '../features/bookings/hooks'
-import { bookingUrl } from '../lib/links'
+import { bookingUrl, bookingUrlLabel } from '../lib/links'
 import { formatINR, sumPaise } from '../lib/money'
 
 /** "Sunday, 1 November • 3 sessions • ₹4,500" for today in IST. */
@@ -155,7 +155,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           <TodaySummary />
           {profile?.slug && profile.published && (
             <a href={isDemoMode ? '/book' : bookingUrl(profile.slug)} target={isDemoMode ? undefined : '_blank'} rel="noreferrer" className="ml-auto text-[11px] font-medium text-[var(--color-neutral-strong)] hover:underline">
-              {profile.slug}.{env.publicSiteDomain} →
+              {bookingUrlLabel(profile.slug)} →
             </a>
           )}
         </div>
