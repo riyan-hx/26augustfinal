@@ -5,6 +5,7 @@ import { LumidLogo } from './LumidLogo'
 import { Avatar } from './ui/Avatar'
 import { useProfile } from '../features/practice/hooks'
 import { isDemoMode } from '../lib/env'
+import { setUiVersion } from '../lib/uiVersion'
 import { useTodayBookings } from '../features/bookings/hooks'
 import { bookingUrl, bookingUrlLabel } from '../lib/links'
 import { formatINR, sumPaise } from '../lib/money'
@@ -92,6 +93,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
           <NavLink to="/app/settings" className="flex items-center justify-center gap-1.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)]">
             <Settings size={13} /> Practice settings
+          </NavLink>
+          <NavLink to="/app" onClick={() => setUiVersion('v3')} className="block text-center text-[11px] text-[var(--color-ink-muted-48)] hover:text-[var(--color-ink)] mt-2">
+            Try the new Overview design
           </NavLink>
         </div>
       </aside>
