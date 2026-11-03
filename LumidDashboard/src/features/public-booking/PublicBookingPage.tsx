@@ -17,6 +17,13 @@ import { useNow } from '../../lib/useNow'
 import { createHold, getBookingStatus, getPublicProfile, getSlots, requestBooking, verifyPayment, type BookingRequestResult, type Hold, type PaymentProof, type PublicProfile } from './api'
 import { openCheckout } from './razorpay'
 
+/** 720 → "12 hours", 1440 → "1 day". */
+function noticeLabel(min: number): string {
+  if (min % 1440 === 0) return `${min / 1440} day${min === 1440 ? '' : 's'}`
+  const h = Math.round(min / 60)
+  return `${h} hour${h === 1 ? '' : 's'}`
+}
+
 type Phase = 'pick' | 'pay' | 'confirming' | 'done' | 'refund' | 'unsure' | 'requested'
 /** Without online payments the patient requests a slot and pays the psychologist directly. */
 const payAtSession = !isDemoMode && !env.onlinePayments
@@ -201,7 +208,7 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
             </fieldset>
 
             <div>
-              <p className="field-label">Choose a time <span className="font-normal text-[var(--stone)]">({tz.replace('_', ' ')})</span></p>
+              <p className="field-label">Choose a time <span className="font-normal text-[var(--stone)]">({tz.replace('_', ' ')}{profile.minNoticeMinutes >= 60 ? ` · book at least ${noticeLabel(profile.minNoticeMinutes)} ahead` : ''})</span></p>
               {slots.isLoading && <Skeleton className="h-24" />}
               {slots.error && <ErrorState compact error={slots.error} onRetry={() => void slots.refetch()} />}
               {!slots.isLoading && !slots.error && days.length === 0 && (
