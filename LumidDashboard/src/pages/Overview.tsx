@@ -16,6 +16,12 @@ const sessionRate: Record<string, number> = { 'Individual Session': 1500, 'Initi
  *  check in with the system's one press easing. Neutral, not green: green
  *  stays reserved for payment status, so a bulk-select toggle doesn't
  *  compete with it. */
+/** Time-of-day greeting in IST. */
+function greetingNow(): string {
+  const hour = Number(new Intl.DateTimeFormat("en-IN", { timeZone: "Asia/Kolkata", hour: "numeric", hour12: false }).format(new Date()))
+  return hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening"
+}
+
 function RowCheckbox({ checked, onChange, label }: { checked: boolean; onChange: () => void; label: string }) {
   return (
     <button type="button" role="checkbox" aria-checked={checked} aria-label={label} onClick={onChange}
@@ -95,7 +101,7 @@ export default function Overview() {
   }
   const insights = [
     { icon: TrendingUp, tone: insightTone.good, text: <>Sessions are up <span className="font-semibold text-[var(--color-ink)]">14%</span> vs last week — {weekTotal} booked so far.</>, href: '/app/earnings' },
-    { icon: CalendarOff, tone: insightTone.warn, text: <><span className="font-semibold text-[var(--color-ink)]">{noFuturePatients.length} patients</span> have no upcoming session booked.</>, href: '/app/patients' },
+    { icon: CalendarOff, tone: insightTone.warn, text: <><span className="font-semibold text-[var(--color-ink)]">{noFuturePatients.length} {noFuturePatients.length === 1 ? 'patient' : 'patients'}</span> {noFuturePatients.length === 1 ? 'has' : 'have'} no upcoming session booked.</>, href: '/app/patients' },
     { icon: CreditCard, tone: insightTone.warn, text: <><span className="font-semibold text-[var(--color-ink)]">₹{pendingAmount.toLocaleString('en-IN')}</span> in payments are still pending.</>, href: '/app/bookings' },
     { icon: BarChart3, tone: insightTone.neutral, text: <><span className="font-semibold text-[var(--color-ink)]">{busiestDay.label}</span> is your busiest day this week.</>, href: '/app/calendar' },
   ]
@@ -117,7 +123,7 @@ export default function Overview() {
       {/* Header — greeting + payment alert + primary actions, matches the Figma file's top bar */}
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 mb-5">
         <div>
-          <h1 className="text-[26px] font-bold tracking-tight text-[var(--color-ink)] leading-none">Good Morning, Dr. Anitha</h1>
+          <h1 className="text-[26px] font-bold tracking-tight text-[var(--color-ink)] leading-none">{greetingNow()}, Dr. Anitha</h1>
           <p className="text-[13px] text-[var(--color-ink-muted-48)] mt-1.5">Here's what needs your attention today.</p>
         </div>
         <div className="flex items-center gap-2">

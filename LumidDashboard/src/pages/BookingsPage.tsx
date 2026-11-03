@@ -146,7 +146,7 @@ export default function BookingsPage() {
         <div className="w-8 h-8 rounded-full bg-white border border-[var(--hairline)] flex items-center justify-center shrink-0"><Clock3 size={14} className="text-[var(--stone)]" /></div>
         <div>
           <p className="text-[13px] font-semibold">How confirmation works</p>
-          <p className="text-[12px] text-[var(--slate)] leading-relaxed mt-1">A slot is held for 10 minutes while the patient pays. It becomes confirmed only after Razorpay verifies the payment; unpaid holds are released automatically.</p>
+          <p className="text-[12px] text-[var(--slate)] leading-relaxed mt-1">A requested time is held for the patient until you mark it paid. If it isn’t marked paid within 3 days after the session, the hold is released and the booking shows as Hold expired.</p>
         </div>
       </div>
     </div>
