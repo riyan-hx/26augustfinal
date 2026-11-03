@@ -1,6 +1,6 @@
 -- Pay-at-session requests, marking paid, and manual bookings paid offline.
 begin;
-select plan(10);
+select plan(13);
 
 select tests.make_practice('anitha@test.lumid', 'anitha') as a \gset
 select id as st from public.session_types where psychologist_id = :'a' \gset
@@ -23,7 +23,7 @@ select throws_ok(
 
 select tests.as_service();
 select is(status::text, 'pending_payment', 'request waits for payment') from public.bookings where id = (:'req'::jsonb ->> 'booking_id')::uuid;
-select ok(hold_expires_at = lower(during), 'held until the session starts') from public.bookings where id = (:'req'::jsonb ->> 'booking_id')::uuid;
+select ok(hold_expires_at = upper(during) + interval '3 days', 'held until 3 days after the session') from public.bookings where id = (:'req'::jsonb ->> 'booking_id')::uuid;
 
 select tests.as_user(:'a');
 select is(public.mark_booking_paid((:'req'::jsonb ->> 'booking_id')::uuid, 'upi')::text, 'confirmed', 'psychologist marks it paid');
@@ -34,6 +34,21 @@ select id as pid from public.patients where psychologist_id = :'a' limit 1 \gset
 select public.create_manual_booking(:'pid', :'st', tests.ist(5, '11:00'), true) as mb \gset
 select is(status::text, 'confirmed', 'manual paid booking confirms') from public.bookings where id = :'mb';
 select is((select count(*) from public.payments where booking_id = :'mb')::int, 1, 'manual paid booking records a payment');
+
+-- A lapsed hold reads as expired and frees its slot before any job runs.
+select tests.as_service();
+select public.request_booking('anitha', :'st', tests.ist(6, '10:00'), 'Late', 'late@example.com', null, null,
+  encode(extensions.digest('late', 'sha256'), 'hex')) ->> 'booking_id' as late \gset
+update public.bookings set hold_expires_at = now() - interval '1 minute' where id = :'late';
+select tests.as_user(:'a');
+select is(status::text, 'expired', 'lapsed hold reads as expired') from public.booking_list where id = :'late';
+select tests.as_anon();
+select ok(exists (select 1 from public.public_available_slots('anitha', :'st', (tests.ist(6, '10:00') at time zone 'Asia/Kolkata')::date, (tests.ist(6, '10:00') at time zone 'Asia/Kolkata')::date)
+  where starts_at = tests.ist(6, '10:00')), 'lapsed hold does not block its slot');
+select lives_ok(
+  format($$select public.request_booking('anitha', %L, %L, 'Next', 'next@example.com', null, null, %L)$$,
+    :'st', tests.ist(6, '10:00'), encode(extensions.digest('next', 'sha256'), 'hex')),
+  'the slot can be booked again');
 
 select * from finish();
 rollback;
