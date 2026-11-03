@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { localDayBounds } from '../../lib/dates'
-import { cancelBooking, createBooking, listBookings, markOutcome, markPaid, type BookingRange, type NewBookingInput, type PaymentMethod } from './api'
+import { cancelBooking, createBooking, listBookings, markOutcome, markPaid, rescheduleBooking, type BookingRange, type NewBookingInput, type PaymentMethod } from './api'
 
 export const bookingKeys = {
   all: ['bookings'] as const,
@@ -54,4 +54,9 @@ export function useCreateBooking() {
     mutationFn: (input: NewBookingInput) => createBooking(input),
     onSettled: () => Promise.all([invalidate(), qc.invalidateQueries({ queryKey: ['earnings'] })]),
   })
+}
+
+export function useReschedule() {
+  const invalidate = useInvalidateCare()
+  return useMutation({ mutationFn: ({ id, startsAt }: { id: string; startsAt: Date }) => rescheduleBooking(id, startsAt), onSettled: invalidate })
 }

@@ -7,6 +7,8 @@ import { isDemoMode } from '../lib/env'
 import { useNow } from '../lib/useNow'
 import { toApiError } from '../lib/errors'
 import { usePatient } from '../features/patients/hooks'
+import { NotesPanel } from '../features/care/NotesPanel'
+import { PatientFollowUps } from '../features/care/FollowUps'
 import { useBookings } from '../features/bookings/hooks'
 import { Avatar } from '../components/ui/Avatar'
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/StateViews'
@@ -101,6 +103,8 @@ export default function PatientProfile() {
               </div>
             </section>
 
+            <NotesPanel patientId={p.id} />
+
             <Link to="/app/insights" className="flex items-center gap-3 bg-[var(--surface-warm)] border border-dashed border-[var(--hairline-strong)] rounded-[16px] px-4 py-3.5 hover:bg-[var(--surface-soft)] transition">
               <Sparkles size={15} className="text-[var(--green-700)] shrink-0" />
               <p className="text-[12px] text-[var(--slate)]"><span className="font-medium text-[var(--ink)]">Coming next:</span> patterns across this patient's sessions, shown with evidence and confidence — only with their consent.</p>
@@ -114,12 +118,14 @@ export default function PatientProfile() {
               {next ? (
                 <>
                   <p className="text-[14px] font-semibold mt-1">{relativeDateTime(next.startsAt)}</p>
-                  <p className="text-[12px] text-[var(--stone)]">{next.sessionTypeName} • {formatINR(next.pricePaise)} • {next.status === 'confirmed' ? 'Paid' : 'Awaiting payment'}</p>
+                  <p className="text-[12px] text-[var(--stone)]">{next.sessionTypeName} • {formatINR(next.pricePaise)} • {next.status === 'pending_payment' ? 'Awaiting payment' : next.paymentStatus === 'captured' ? 'Paid' : 'Confirmed'}</p>
                 </>
               ) : (
                 <p className="text-[13px] text-[var(--stone)] mt-1">Not scheduled</p>
               )}
             </div>
+
+            <PatientFollowUps patientId={p.id} />
 
             <div className="rounded-[12px] border border-[var(--hairline)] p-4">
               <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] flex items-center gap-1.5"><ShieldCheck size={12} /> CONSENT & PRIVACY</p>

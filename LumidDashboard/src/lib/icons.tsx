@@ -23,7 +23,7 @@ import {
   NotebookIcon, PlusSignIcon, RefreshIcon, Search01Icon, Settings01Icon,
   Shield01Icon, ShieldCheckIcon, PreferenceHorizontalIcon, SparklesIcon,
   StethoscopeIcon, TrendingUpIcon, Delete02Icon, UserAdd01Icon,
-  UserMultipleIcon, Video01Icon, Wallet01Icon, Cancel01Icon, CancelCircleIcon,
+  UserMultipleIcon, Video01Icon, Wallet01Icon, Cancel01Icon, CancelCircleIcon, LockIcon,
 } from '@hugeicons/core-free-icons'
 
 type IconProps = Omit<ComponentProps<typeof HugeiconsIcon>, 'icon'>
@@ -66,6 +66,7 @@ export const Menu = make(Menu01Icon)
 export const MoreHorizontal = make(MoreHorizontalIcon)
 export const MoreVertical = make(MoreVerticalIcon)
 export const NotebookText = make(NotebookIcon)
+export const Lock = make(LockIcon)
 export const Plus = make(PlusSignIcon)
 export const Repeat2 = make(RefreshIcon)
 export const Search = make(Search01Icon)
