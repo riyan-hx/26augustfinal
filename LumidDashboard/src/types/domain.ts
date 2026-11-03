@@ -27,6 +27,7 @@ export interface BookingSummary {
   pricePaise: number
   patientId: string
   patientName: string
+  patientEmail?: string | null
   sessionTypeName: string
   meetUrl: string | null
   holdExpiresAt: Date | null
