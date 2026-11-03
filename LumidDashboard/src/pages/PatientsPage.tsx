@@ -47,7 +47,7 @@ export default function PatientsPage() {
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
           <h1 className="font-serif text-[26px] font-semibold tracking-tight flex items-center gap-2"><Users size={20} className="text-[var(--green-700)]" /> Patients</h1>
-          <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> patients • No mental health scores — only meaningful context</p>
+          <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> {filtered.length === 1 ? 'patient' : 'patients'} • No mental health scores — only meaningful context</p>
         </div>
         <div className="flex items-center gap-2">
           <label className="flex-1 lg:w-[280px] flex items-center gap-2 bg-white border border-[var(--hairline)] rounded-full px-3.5 py-2.5">
@@ -110,7 +110,7 @@ export default function PatientsPage() {
               <div className="lg:hidden p-4 flex gap-3">
                 <Avatar name={p.name} size={40} />
                 <div className="flex-1 min-w-0">
-                  <p className="text-[14px] font-semibold leading-none">{p.name} <span className="text-[11px] font-normal text-[var(--stone)]">• {p.sessionsCompleted} sessions</span></p>
+                  <p className="text-[14px] font-semibold leading-none">{p.name} <span className="text-[11px] font-normal text-[var(--stone)]">• {p.sessionsCompleted} {p.sessionsCompleted === 1 ? 'session' : 'sessions'}</span></p>
                   <p className="text-[11px] text-[var(--stone)] mt-1">{p.focus ?? 'No focus recorded yet'}</p>
                   <p className="text-[11px] text-[var(--slate)] mt-1">Last: {lastLabel(p)} {p.nextSessionAt ? `• Next: ${relativeDateTime(p.nextSessionAt)}` : '• No upcoming'}</p>
                 </div>

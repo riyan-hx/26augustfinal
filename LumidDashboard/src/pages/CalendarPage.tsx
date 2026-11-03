@@ -359,7 +359,7 @@ export default function CalendarPage() {
                       <button key={ev.id} onClick={() => selectEvent(ev.id)} className={`w-full text-left rounded-[12px] p-3 border flex gap-3 ${selectedId === ev.id ? 'bg-[var(--green-50)] border-[var(--green-700)]/30' : 'bg-white border-[var(--hairline)]'}`}>
                         <div className="w-8 h-8 rounded-full bg-[var(--green-50)] flex items-center justify-center text-[11px] font-semibold text-[var(--green-700)] shrink-0">{ev.initials}</div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-[13px] font-semibold">{ev.patient} <span className="text-[11px] font-normal text-[var(--stone)]">{ev.start}:00</span></p>
+                          <p className="text-[13px] font-semibold">{ev.patient} <span className="text-[11px] font-normal text-[var(--stone)]">{formatHour(ev.start)}</span></p>
                           <p className="text-[11px] text-[var(--stone)]">{ev.type} • {ev.fee || ''} {ev.status === 'paid' ? '• Paid' : ev.status === 'awaiting' ? '• Awaiting' : ''}</p>
                         </div>
                         <span className={`w-2 h-2 rounded-full mt-2 shrink-0 ${ev.status === 'paid' ? 'bg-[var(--badge-green-fg)]' : ev.status === 'awaiting' ? 'bg-[var(--badge-amber-fg)]' : 'bg-[var(--stone)]'}`} />
@@ -465,7 +465,7 @@ export default function CalendarPage() {
             <div className="w-8 h-8 rounded-full bg-[var(--color-neutral-strong)]/10 flex items-center justify-center text-xs font-semibold text-[var(--color-neutral-strong)]">{selected.initials}</div>
             <div className="flex-1">
               <p className="text-sm font-semibold">{selected.patient} • {selected.type}</p>
-              <p className="text-xs text-muted inline-flex items-center gap-1">Tue 26 Aug • {selected.start}:00 • {selected.fee} • {selected.status === 'paid' && <Check size={11} className="text-[var(--badge-green-fg)]" />}{selected.status === 'paid' ? 'Paid' : 'Awaiting'}</p>
+              <p className="text-xs text-muted inline-flex items-center gap-1">Tue 26 Aug • {formatHour(selected.start)} • {selected.fee} • {selected.status === 'paid' && <Check size={11} className="text-[var(--badge-green-fg)]" />}{selected.status === 'paid' ? 'Paid' : 'Awaiting'}</p>
             </div>
             <Button size="sm" variant="secondary">Open</Button>
           </div>

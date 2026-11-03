@@ -31,6 +31,7 @@ const DemoInsights = lazy(() => import('./pages/OtherPages').then((m) => ({ defa
 const DemoYourPage = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.YourPage })))
 
 const Overview = isDemoMode ? DemoOverview : LiveOverview
+const NotFound = lazy(() => import('./pages/NotFound'))
 const Earnings = isDemoMode ? DemoEarnings : LiveEarnings
 const CalendarPage = isDemoMode ? DemoCalendar : LiveCalendar
 const SessionsPage = isDemoMode ? DemoSessions : LiveSessions
@@ -82,7 +83,8 @@ export default function App() {
               <Route path="/app/your-page" element={<App_><YourPage /></App_>} />
               <Route path="/app/insights" element={<App_><InsightsPage /></App_>} />
               <Route path="/app/settings" element={<App_><PracticeSettings /></App_>} />
-              <Route path="*" element={<Navigate to="/app" replace />} />
+              <Route path="/app/*" element={<App_><NotFound /></App_>} />
+              <Route path="*" element={<NotFound standalone />} />
             </Routes>
           </Suspense>
         </BrowserRouter>

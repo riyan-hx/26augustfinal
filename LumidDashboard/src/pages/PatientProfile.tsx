@@ -49,7 +49,8 @@ export default function PatientProfile() {
   const p = patient.data!
   const bookings = history.data ?? []
   const next = bookings.find((b) => b.startsAt.getTime() > now && (b.status === 'confirmed' || b.status === 'pending_payment'))
-  const past = [...bookings].filter((b) => b.startsAt.getTime() <= now || b.status === 'cancelled').reverse()
+  const upcoming = bookings.filter((b) => b.startsAt.getTime() > now && b.status !== 'cancelled' && b.status !== 'expired')
+  const past = [...bookings].filter((b) => !upcoming.includes(b)).reverse()
 
   return (
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
@@ -62,7 +63,7 @@ export default function PatientProfile() {
             <div>
               <h1 className="text-[20px] font-semibold tracking-tight leading-none">{p.name}</h1>
               <p className="text-[12px] text-[var(--stone)] mt-1">
-                {p.sessionsCompleted} sessions • Last session: {p.lastSessionAt ? relativeDaysAgo(p.lastSessionAt) : '—'} • Next: {p.nextSessionAt ? relativeDateTime(p.nextSessionAt) : 'Not scheduled'}
+                {p.sessionsCompleted} {p.sessionsCompleted === 1 ? 'session' : 'sessions'} • Last session: {p.lastSessionAt ? relativeDaysAgo(p.lastSessionAt) : '—'} • Next: {p.nextSessionAt ? relativeDateTime(p.nextSessionAt) : 'Not scheduled'}
               </p>
               <p className="text-[12px] text-[var(--stone)] mt-1">{p.email}{p.phone ? ` • ${p.phone}` : ''}</p>
               {p.focus && <p className="text-[12px] mt-1"><span className="px-2 py-0.5 rounded-full bg-[var(--sage-50)] border border-[var(--hairline)]">{p.focus}</span></p>}
@@ -81,6 +82,14 @@ export default function PatientProfile() {
             {isDemoMode && <DemoBetweenSessions />}
 
             <section className="rounded-[12px] border border-[var(--hairline)] p-4" aria-labelledby="timeline-h">
+              {upcoming.length > 0 && (
+                <>
+                  <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)]">UPCOMING</p>
+                  <div className="mt-3 mb-5 space-y-3">
+                    {upcoming.map((b) => <TimelineItem key={b.id} booking={b} active={false} />)}
+                  </div>
+                </>
+              )}
               <p id="timeline-h" className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)]">HISTORY</p>
               {history.isLoading && <div className="mt-3 space-y-3"><Skeleton className="h-4 w-1/2" /><Skeleton className="h-4 w-2/3" /></div>}
               {history.error && <ErrorState compact error={history.error} onRetry={() => void history.refetch()} />}
