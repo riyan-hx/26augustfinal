@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom'
-import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, Download, Menu, X, Bell, Search } from '../lib/icons'
+import { LayoutDashboard, CalendarDays, ClipboardList, Wallet, Globe, Users, Video, Repeat2, Settings, Menu, X, Bell, Search } from '../lib/icons'
 import { useState } from 'react'
 import { LumidLogo } from './LumidLogo'
 import { Avatar } from './ui/Avatar'
@@ -90,14 +90,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             </div>
             <span className={`w-2 h-2 rounded-full shrink-0 ring-2 ${profile?.published ? 'bg-[var(--badge-green-fg)] ring-[var(--badge-green-bg)]' : 'bg-[var(--color-ink-muted-48)] ring-[var(--color-hairline)]'}`} />
           </div>
-          <div className="grid grid-cols-2 gap-2">
-            <NavLink to="/app/settings" className="flex items-center justify-center gap-1.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)]">
-              <Settings size={13} /> Settings
-            </NavLink>
-            <button className="flex items-center justify-center gap-1.5 py-2 rounded-full bg-[var(--color-ink)] text-white text-[12px] font-medium hover:opacity-90">
-              <Download size={13} /> Export
-            </button>
-          </div>
+          <NavLink to="/app/settings" className="flex items-center justify-center gap-1.5 py-2 rounded-full border border-[var(--color-hairline)] text-[12px] font-medium text-[var(--color-ink-muted-48)] hover:bg-[var(--color-canvas-parchment)]">
+            <Settings size={13} /> Practice settings
+          </NavLink>
         </div>
       </aside>
 
