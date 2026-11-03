@@ -150,3 +150,15 @@ export async function createBooking(input: NewBookingInput): Promise<string> {
     p_patient_id: patientId, p_session_type_id: input.sessionTypeId, p_start: input.startsAt.toISOString(), p_paid_offline: input.paid,
   })) as string
 }
+
+/** Moves a confirmed session to a new time. The slot must be free. */
+export async function rescheduleBooking(id: string, startsAt: Date): Promise<void> {
+  if (Number.isNaN(startsAt.getTime())) throw new ApiError('VALIDATION_FAILED', { detail: 'Choose a date and time.' })
+  if (startsAt.getTime() < Date.now()) throw new ApiError('VALIDATION_FAILED', { detail: 'Pick a time in the future.' })
+  if (isDemoMode) {
+    const b = demoBookings.find((x) => x.id === id)
+    if (b) { const len = b.endsAt.getTime() - b.startsAt.getTime(); b.startsAt = startsAt; b.endsAt = new Date(startsAt.getTime() + len) }
+    return demoDelay(undefined)
+  }
+  unwrap(await db().rpc('reschedule_booking', { p_booking_id: id, p_new_start: startsAt.toISOString() }))
+}
