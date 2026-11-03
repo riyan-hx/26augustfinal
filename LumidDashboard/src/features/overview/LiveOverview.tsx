@@ -66,6 +66,7 @@ export default function LiveOverview() {
       </div>
 
       <div className="mt-6 grid lg:grid-cols-[1.6fr_1fr] gap-6 items-start">
+        <div className="space-y-6">
         <section className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden" aria-labelledby="today-h">
           <header className="flex items-center justify-between px-5 py-4 border-b border-[var(--hairline)]">
             <h2 id="today-h" className="text-[16px] font-semibold">Today’s schedule</h2>
@@ -82,6 +83,8 @@ export default function LiveOverview() {
             {live.map((b) => <ScheduleRow key={b.id} booking={b} now={now} />)}
           </ul>
         </section>
+        <WeekStrip bookings={week.data ?? []} start={start} loading={week.isLoading} />
+        </div>
 
         <div className="space-y-6">
         <section className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden" aria-labelledby="attention-h">
@@ -102,7 +105,7 @@ export default function LiveOverview() {
             {awaiting.map((b) => (
               <li key={b.id}>
                 <Link to="/app/bookings" className="flex items-center gap-3 px-5 py-3.5 hover:bg-[var(--color-canvas-parchment)]">
-                  <span className="w-9 h-9 rounded-full bg-[var(--badge-rose-bg)] text-[var(--badge-rose-fg)] flex items-center justify-center shrink-0"><CreditCard size={15} /></span>
+                  <span className="w-9 h-9 rounded-full bg-[var(--badge-amber-bg)] text-[var(--badge-amber-fg)] flex items-center justify-center shrink-0"><CreditCard size={15} /></span>
                   <div className="min-w-0">
                     <p className="text-[13px] font-semibold truncate">{b.patientName} — {b.startsAt.getTime() < now ? 'session done, mark paid' : 'payment pending'}</p>
                     <p className="text-[12px] text-[var(--stone)] truncate">{formatINR(b.pricePaise)} · {relativeDateTime(b.startsAt)}</p>
@@ -118,7 +121,6 @@ export default function LiveOverview() {
             </ul>
           )}
         </section>
-        <WeekStrip bookings={week.data ?? []} start={start} loading={week.isLoading} />
         </div>
       </div>
     </div>
