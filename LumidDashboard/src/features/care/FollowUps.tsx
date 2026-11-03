@@ -1,6 +1,6 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router-dom'
-import { Check, Plus, Repeat2, X } from '../../lib/icons'
+import { Check, Clock, Plus, Repeat2, X } from '../../lib/icons'
 import { formatDay, localDateKey } from '../../lib/dates'
 import { toApiError } from '../../lib/errors'
 import { relativeDateTime } from '../../lib/format'
@@ -69,7 +69,8 @@ export function FollowUpRow({ f, overdue = false, compact = false }: { f: Follow
   const act = (status: 'sent' | 'cancelled' | 'scheduled') => { setError(null); set.mutate({ id: f.id, status }, { onError: (e) => setError(toApiError(e).userMessage) }) }
   const isDone = f.status === 'sent'
   return (
-    <li className={`flex items-start gap-3 ${compact ? 'py-3' : 'px-5 py-4'}`}>
+    <li className={`flex items-start gap-3 ${compact ? 'py-3' : 'px-5 py-3.5'}`}>
+      {!compact && <span className="w-9 h-9 rounded-full bg-[var(--color-canvas-parchment)] text-[var(--slate)] flex items-center justify-center shrink-0"><Clock size={15} /></span>}
       <div className="flex-1 min-w-0">
         {!compact && <Link to={`/app/patients/${f.patientId}`} className="text-[13px] font-semibold hover:underline">{f.patientName}</Link>}
         <p className={`text-[13px] ${compact ? '' : 'mt-0.5 text-[var(--slate)]'} ${isDone ? 'line-through text-[var(--stone)]' : ''}`}>{f.message}</p>
@@ -77,10 +78,10 @@ export function FollowUpRow({ f, overdue = false, compact = false }: { f: Follow
         {error && <p role="alert" className="text-[12px] text-[var(--badge-rose-fg)] mt-1">{error}</p>}
       </div>
       {isDone ? (
-        <button className="btn-secondary !py-1.5" disabled={set.isPending} onClick={() => act('scheduled')}>Undo</button>
+        <button className="btn-quiet" disabled={set.isPending} onClick={() => act('scheduled')}>Undo</button>
       ) : (
         <div className="flex gap-1.5 shrink-0">
-          <button className="btn-secondary !py-1.5" disabled={set.isPending} onClick={() => act('sent')}><Check size={13} />Done</button>
+          <button className="btn-quiet btn-quiet--next" disabled={set.isPending} onClick={() => act('sent')}><Check size={13} />Done</button>
           <button aria-label="Remove follow-up" className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[var(--color-canvas-parchment)] text-[var(--stone)]" disabled={set.isPending} onClick={() => act('cancelled')}><X size={13} /></button>
         </div>
       )}
