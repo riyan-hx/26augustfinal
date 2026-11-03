@@ -75,7 +75,7 @@ export default function PatientProfile() {
             {next?.meetUrl && (
               <a href={next.meetUrl} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[var(--green-700)] text-white text-[12px] font-medium inline-flex items-center gap-1.5"><Video size={14} /> Join next session</a>
             )}
-            <Link to="/app/sessions" className="px-4 py-2 rounded-full bg-white border border-[var(--hairline)] text-[12px] font-medium inline-flex items-center gap-1.5"><FileText size={14} /> Add note</Link>
+            <a href="#notes-h" className="px-4 py-2 rounded-full bg-white border border-[var(--hairline)] text-[12px] font-medium inline-flex items-center gap-1.5"><FileText size={14} /> Notes</a>
           </div>
         </div>
 

@@ -68,7 +68,7 @@ export default function BookingsPage() {
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
       <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
         <div>
-          <h1 className="font-serif text-[26px] font-semibold tracking-tight">Bookings</h1>
+          <h1 className="text-[26px] font-semibold tracking-tight">Bookings</h1>
           <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> {filter === 'All' ? 'total' : filter.toLowerCase()} • Confirmed once paid</p>
         </div>
         <div className="flex items-center gap-2">
