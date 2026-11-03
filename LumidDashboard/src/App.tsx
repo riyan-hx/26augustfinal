@@ -22,6 +22,7 @@ const PatientsPage = lazy(() => import('./pages/PatientsPage'))
 const PatientProfile = lazy(() => import('./pages/PatientProfile'))
 const PracticeSettings = lazy(() => import('./features/practice/PracticeSettings'))
 const PublicBooking = lazy(() => import('./features/public-booking/PublicBookingPage'))
+const ManageBooking = lazy(() => import('./features/public-booking/ManageBookingPage'))
 const LoginPage = lazy(() => import('./features/auth/LoginPage'))
 const DemoSessions = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.SessionsPage })))
 const DemoFollowUps = lazy(() => import('./pages/OtherPages').then((m) => ({ default: m.FollowUpsPage })))
@@ -71,6 +72,7 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/book" element={<PublicBooking />} />
               <Route path="/p/:slug" element={<PublicBooking />} />
+              <Route path="/m/:bookingId" element={<ManageBooking />} />
               <Route path="/app" element={<App_><Overview /></App_>} />
               <Route path="/app/calendar" element={<App_><CalendarPage /></App_>} />
               <Route path="/app/bookings" element={<App_><BookingsPage /></App_>} />
