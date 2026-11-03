@@ -58,7 +58,7 @@ export default function LiveCalendar() {
   const nowClock = localClock(new Date(now))
   const todayIndex = offset === 0 ? nowClock.weekday : -1
   const range = `${formatDay(days[0]!)} – ${formatDay(days[6]!)}`
-  const paid = events.filter((b) => b.status !== 'pending_payment')
+  const paid = events.filter((b) => b.paymentStatus === 'captured' || b.paymentStatus === 'partially_refunded')
 
   return (
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
@@ -142,7 +142,7 @@ export default function LiveCalendar() {
               <dl className="mt-4 grid grid-cols-3 gap-3">
                 <Stat label="Sessions" value={String(events.length)} />
                 <Stat label="Paid" value={formatINR(paid.reduce((s, b) => s + b.pricePaise, 0))} />
-                <Stat label="Awaiting" value={String(events.length - paid.length)} />
+                <Stat label="Awaiting" value={String(events.filter((b) => b.status === 'pending_payment').length)} />
               </dl>
               <p className="text-[12px] text-[var(--stone)] mt-4">Select a session to see details, join the call or mark the outcome.</p>
             </section>
