@@ -14,7 +14,7 @@ import { formatINR } from '../../lib/money'
 import { bookingRequestSchema, fieldErrors } from '../../lib/schemas'
 import { groupSlotsByDay } from '../../lib/slots'
 import { useNow } from '../../lib/useNow'
-import { createHold, getBookingStatus, getPublicProfile, getSlots, requestBooking, verifyPayment, type BookingRequestResult, type Hold, type PaymentProof, type PublicProfile } from './api'
+import { createHold, getBookingStatus, getPublicProfile, getSlots, requestBooking, verifyPayment, manageUrl, type BookingRequestResult, type Hold, type PaymentProof, type PublicProfile } from './api'
 import { openCheckout } from './razorpay'
 
 /** 720 → "12 hours", 1440 → "1 day". */
@@ -68,7 +68,7 @@ async function confirmPayment(h: Hold, proof: PaymentProof): Promise<Phase> {
   return 'unsure'
 }
 
-function Shell({ children, slug }: { children: ReactNode; slug?: string }) {
+export function Shell({ children, slug }: { children: ReactNode; slug?: string }) {
   return (
     <div className="min-h-screen bg-[var(--canvas)]">
       <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-[20px] border-b border-[var(--hairline)]">
@@ -166,6 +166,7 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
   if (phase === 'requested' && requested) return (
     <Panel tone="success" icon={<CheckCircle2 size={20} />} title="Your time is reserved"
       body={`${sessionType?.name ?? 'Session'} with ${profile.displayName} · ${formatDateTime(requested.startsAt, tz)}. ${profile.displayName} will confirm and share how to pay (${formatINR(requested.pricePaise)}) and the call link with you at ${form.email}.`}
+      action={<ManageLink url={manageUrl(requested.bookingId, requested.manageToken)} />}
       footer={<span className="font-mono text-[12px]">Booking ID {requested.code}</span>} />
   )
   if (phase === 'confirming') return <Panel tone="info" title="Confirming your payment…" body="This usually takes a few seconds. Please don’t close this page or pay again." spinner />
@@ -293,7 +294,7 @@ function PracticeCard({ profile }: { profile: PublicProfile }) {
       {profile.bio && <p className="text-[13px] leading-relaxed text-[var(--slate)] mt-4 whitespace-pre-line">{profile.bio}</p>}
       <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
         <Chip icon={<Shield size={12} />}>Private &amp; consent-first</Chip>
-        <Chip icon={<Video size={12} />}>Google Meet link after payment</Chip>
+        <Chip icon={<Video size={12} />}>{payAtSession ? 'Online session link shared before you meet' : 'Google Meet link after payment'}</Chip>
         <Chip icon={<Clock size={12} />}>Free cancellation up to {profile.cancellationCutoffHours}h before</Chip>
       </div>
     </div>
@@ -308,7 +309,7 @@ function Field({ label, error, children }: { label: string; error?: string; chil
   return <div><label className="block"><span className="field-label">{label}</span>{children}</label>{error && <p role="alert" className="form-error">{error}</p>}</div>
 }
 
-function Panel({ tone, title, body, icon, spinner, action, footer }: {
+export function Panel({ tone, title, body, icon, spinner, action, footer }: {
   tone: 'success' | 'warn' | 'info'; title: string; body: string; icon?: ReactNode; spinner?: boolean; action?: ReactNode; footer?: ReactNode
 }) {
   const color = tone === 'success' ? 'bg-[var(--badge-green-bg)] text-[var(--badge-green-fg)]' : tone === 'warn' ? 'bg-[var(--badge-amber-bg)] text-[var(--badge-amber-fg)]' : 'bg-[var(--color-canvas-parchment)] text-[var(--ink)]'
@@ -322,6 +323,24 @@ function Panel({ tone, title, body, icon, spinner, action, footer }: {
       {action && <div className="mt-4">{action}</div>}
       {footer && <div className="mt-4 text-[var(--stone)]">{footer}</div>}
       {tone === 'success' && <Link to="/" className="sr-only">Home</Link>}
+    </div>
+  )
+}
+
+/** The patient's private link to move or cancel. Shown once; there is no other way to recover it yet. */
+function ManageLink({ url }: { url: string }) {
+  const [copied, setCopied] = useState(false)
+  async function copy() {
+    try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000) } catch { window.prompt('Copy your booking link', url) }
+  }
+  return (
+    <div className="text-left rounded-[14px] border border-[var(--hairline)] bg-[var(--color-canvas-parchment)] p-4">
+      <p className="text-[13px] font-semibold">Save your booking link</p>
+      <p className="text-[12px] text-[var(--stone)] mt-1">Use it to change the time or cancel. Keep it private: anyone with the link can manage this booking.</p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button type="button" className="btn-primary" onClick={() => void copy()} aria-live="polite">{copied ? 'Link copied' : 'Copy link'}</button>
+        <a className="btn-secondary" href={url}>Open</a>
+      </div>
     </div>
   )
 }
