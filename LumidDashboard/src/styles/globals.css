@@ -39,7 +39,7 @@
   --color-body-on-dark: #ffffff;
   --color-body-muted: #cccccc;
   --color-ink-muted-80: #333333;
-  --color-ink-muted-48: #8b8f97;
+  --color-ink-muted-48: #666b74; /* 5.3:1 on white, WCAG AA for small text */
 
   /* ---- Colors: Hairlines & Borders ---- */
   --color-divider-soft: rgba(0, 0, 0, 0.04);
