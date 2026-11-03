@@ -8,6 +8,8 @@ import { useBookings } from '../bookings/hooks'
 import { useSetupStatus } from '../practice/hooks'
 import { CopyBookingLinkButton } from '../practice/CopyBookingLinkButton'
 import { NewBookingButton } from '../bookings/NewBookingDialog'
+import { useFollowUps } from '../care/hooks'
+import { FollowUpRow } from '../care/FollowUps'
 import { Avatar } from '../../components/ui/Avatar'
 import { EmptyState, ErrorState, Skeleton, SkeletonRows } from '../../components/ui/StateViews'
 import type { BookingSummary, SetupStatus } from '../../types/domain'
@@ -25,11 +27,16 @@ export default function LiveOverview() {
   const now = useNow()
   const { start } = localDayBounds(new Date(now))
   const week = useBookings({ from: start, to: new Date(start.getTime() + 7 * DAY) })
+  // Unpaid sessions from the last two weeks still need settling, not just this week's.
+  const unpaid = useBookings({ from: new Date(start.getTime() - 14 * DAY), to: new Date(start.getTime() + 7 * DAY) })
+  const followUps = useFollowUps()
 
   const firstName = setup.profile?.displayName.replace(/^Dr\.?\s+/i, '').split(' ')[0]
   const today = (week.data ?? []).filter((b) => b.startsAt.getTime() < start.getTime() + DAY)
   const live = today.filter((b) => b.status === 'confirmed' || b.status === 'pending_payment' || b.status === 'completed')
-  const awaiting = (week.data ?? []).filter((b) => b.status === 'pending_payment')
+  const awaiting = (unpaid.data ?? []).filter((b) => b.status === 'pending_payment')
+  const dueFollowUps = (followUps.data ?? []).filter((f) => f.status === 'scheduled' && f.dueAt.getTime() <= now)
+  const attentionCount = awaiting.length + dueFollowUps.length
   const upcomingWeek = (week.data ?? []).filter((b) => b.status === 'confirmed' && b.startsAt.getTime() > now)
 
   return (
@@ -80,10 +87,11 @@ export default function LiveOverview() {
         <section className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden" aria-labelledby="attention-h">
           <header className="px-5 py-4 border-b border-[var(--hairline)] flex items-center gap-2">
             <h2 id="attention-h" className="text-[16px] font-semibold">Needs attention</h2>
-            {!week.isLoading && <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--color-canvas-parchment)] border border-[var(--hairline)] tabular-nums">{awaiting.length}</span>}
+            {!unpaid.isLoading && <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--color-canvas-parchment)] border border-[var(--hairline)] tabular-nums">{attentionCount}</span>}
           </header>
-          {week.isLoading && <div className="p-5 space-y-3"><Skeleton className="h-10" /><Skeleton className="h-10" /></div>}
-          {!week.isLoading && !week.error && awaiting.length === 0 && (
+          {unpaid.isLoading && <div className="p-5 space-y-3"><Skeleton className="h-10" /><Skeleton className="h-10" /></div>}
+          {unpaid.error && <ErrorState compact error={unpaid.error} onRetry={() => void unpaid.refetch()} />}
+          {!unpaid.isLoading && !unpaid.error && attentionCount === 0 && (
             <div className="px-5 py-8 text-center">
               <CheckCircle2 size={18} className="mx-auto text-[var(--badge-green-fg)]" />
               <p className="text-[13px] font-semibold mt-2">You’re all caught up</p>
@@ -96,7 +104,7 @@ export default function LiveOverview() {
                 <Link to="/app/bookings" className="flex items-center gap-3 px-5 py-3.5 hover:bg-[var(--color-canvas-parchment)]">
                   <span className="w-9 h-9 rounded-full bg-[var(--badge-rose-bg)] text-[var(--badge-rose-fg)] flex items-center justify-center shrink-0"><CreditCard size={15} /></span>
                   <div className="min-w-0">
-                    <p className="text-[13px] font-semibold truncate">{b.patientName} — payment pending</p>
+                    <p className="text-[13px] font-semibold truncate">{b.patientName} — {b.startsAt.getTime() < now ? 'session done, mark paid' : 'payment pending'}</p>
                     <p className="text-[12px] text-[var(--stone)] truncate">{formatINR(b.pricePaise)} · {relativeDateTime(b.startsAt)}</p>
                   </div>
                   <ArrowRight size={14} className="ml-auto text-[var(--stone)] shrink-0" />
@@ -104,6 +112,11 @@ export default function LiveOverview() {
               </li>
             ))}
           </ul>
+          {dueFollowUps.length > 0 && (
+            <ul className="divide-y divide-[var(--hairline)] border-t border-[var(--hairline)]">
+              {dueFollowUps.map((f) => <FollowUpRow key={f.id} f={f} overdue />)}
+            </ul>
+          )}
         </section>
         <WeekStrip bookings={week.data ?? []} start={start} loading={week.isLoading} />
         </div>
