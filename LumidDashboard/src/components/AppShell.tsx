@@ -14,7 +14,7 @@ function TodaySummary() {
   const { data } = useTodayBookings()
   const day = new Intl.DateTimeFormat('en-IN', { timeZone: 'Asia/Kolkata', weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())
   const active = (data ?? []).filter((b) => b.status === 'confirmed' || b.status === 'completed' || b.status === 'pending_payment')
-  const paid = sumPaise(active.filter((b) => b.status !== 'pending_payment').map((b) => b.pricePaise))
+  const paid = sumPaise(active.filter((b) => b.paymentStatus === 'captured' || b.paymentStatus === 'partially_refunded').map((b) => b.pricePaise))
   return (
     <span className="text-[11px] text-[var(--color-ink-muted-48)]">
       {day}{data ? ` • ${active.length} ${active.length === 1 ? 'session' : 'sessions'} • ${formatINR(paid)} paid` : ''}
@@ -104,23 +104,23 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Minimal top bar — premium Lumid */}
         <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-[12px] border-b border-[var(--color-hairline)] h-[52px] flex items-center gap-3 px-4 lg:px-6">
-          <button onClick={() => setMobileOpen(!mobileOpen)} className="lg:hidden p-2 -ml-2 text-[var(--color-ink-muted-48)]">
+          <button onClick={() => setMobileOpen(!mobileOpen)} aria-label={mobileOpen ? 'Close menu' : 'Open menu'} aria-expanded={mobileOpen} className="lg:hidden p-2 -ml-2 text-[var(--color-ink-muted-48)]">
             {mobileOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
 
           <div className="hidden lg:flex items-center flex-1 max-w-[520px]">
             <div className="flex items-center gap-2.5 w-full bg-[var(--color-canvas-parchment)] border border-[var(--color-hairline)] rounded-full px-3.5 py-2 focus-within:border-[var(--color-neutral-strong)] focus-within:ring-2 focus-within:ring-[var(--color-neutral-strong-soft)] transition">
               <Search size={14} className="text-[var(--color-ink-muted-48)] shrink-0" />
-              <input placeholder="Search patients, sessions, bookings..." className="bg-transparent outline-none text-[13px] w-full placeholder:text-[var(--color-ink-muted-48)] text-[var(--color-ink)]" />
+              <input aria-label="Search" placeholder="Search patients, sessions, bookings..." className="bg-transparent outline-none text-[13px] w-full placeholder:text-[var(--color-ink-muted-48)] text-[var(--color-ink)]" />
               <span className="hidden xl:inline-flex text-[10px] font-medium px-1.5 py-0.5 rounded bg-white border border-[var(--color-hairline)] text-[var(--color-ink-muted-48)]">⌘K</span>
             </div>
           </div>
           <div className="lg:hidden flex-1"><LumidLogo className="h-[17px]" /></div>
 
           <div className="ml-auto flex items-center gap-1.5">
-            <button className="relative w-8 h-8 rounded-full hover:bg-[var(--color-canvas-parchment)] flex items-center justify-center text-[var(--color-ink-muted-48)]">
+            <button aria-label="Notifications" className="relative w-8 h-8 rounded-full hover:bg-[var(--color-canvas-parchment)] flex items-center justify-center text-[var(--color-ink-muted-48)]">
               <Bell size={16} />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-neutral-strong)] rounded-full border-2 border-white" />
+              {isDemoMode && <span className="absolute top-1 right-1 w-2 h-2 bg-[var(--color-neutral-strong)] rounded-full border-2 border-white" />}
             </button>
             {isDemoMode && <span className="hidden sm:inline-flex text-[11px] font-semibold px-2.5 py-1 rounded-full bg-[var(--badge-amber-bg)] text-[var(--badge-amber-fg)]">Demo data</span>}
             <span className="hidden sm:block"><Avatar name={name} size={32} /></span>
