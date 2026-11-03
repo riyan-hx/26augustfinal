@@ -81,7 +81,7 @@ export default function OverviewV3() {
       {/* Greeting */}
       <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
         <div className="flex flex-col gap-[6px] min-w-0">
-          <h1 className="font-['General_Sans','Manrope',sans-serif] font-medium text-[28px] lg:text-[32px] leading-[1.15] tracking-[-0.48px]">
+          <h1 className="font-['General_Sans','Manrope',sans-serif] font-medium text-[26px] lg:text-[28px] leading-[1.15] tracking-[-0.48px]">
             {greeting(now)}{profile ? `, ${profile.displayName.split(' ').slice(0, 2).join(' ')}` : ''}
           </h1>
           <p className="text-[14px] leading-[1.5] text-[var(--v3-ink-3)]">
@@ -184,8 +184,8 @@ function NextSession({ bookings, patients, now, loading }: { bookings: BookingSu
           <img src={paid ? dotMint : dotSun} alt="" width={6} height={6} />{formatINR(next.pricePaise)} · {paid ? 'Paid' : 'Awaiting'}</span>} />
       <div className="flex flex-col gap-2">
         <Link to={`/app/patients/${next.patientId}`} className="flex gap-3 items-center min-w-0 hover:opacity-80">
-          <V3Avatar name={next.patientName} size={44} />
-          <span className="font-bold text-[30px] leading-[1.1] tracking-[-0.45px] truncate">{next.patientName}</span>
+          <V3Avatar name={next.patientName} size={36} />
+          <span className="font-bold text-[22px] leading-[1.2] tracking-[-0.3px] truncate">{next.patientName}</span>
         </Link>
         <div className="flex gap-2 items-center">
           <span className="v3-chip bg-[var(--v3-lime-soft)] text-[var(--v3-mint)]">Session {(patient?.sessionsCompleted ?? 0) + 1}</span>
@@ -198,17 +198,16 @@ function NextSession({ bookings, patients, now, loading }: { bookings: BookingSu
           : <button type="button" disabled className="v3-pill-lg flex-1 min-w-0"><img src={btnVideo} alt="" width={18} height={18} />No meeting link</button>}
         <Link to={`/app/patients/${next.patientId}#notes-h`} className="v3-pill-lg v3-pill-lg--soft flex-1 min-w-0"><img src={btnNotes} alt="" width={18} height={18} />Session notes</Link>
       </div>
-      <div className="bg-[var(--v3-subtle)] rounded-[18px] p-3 flex flex-col gap-[10px]">
+      <div className="bg-[var(--v3-subtle)] rounded-[16px] p-[10px] flex flex-col gap-2">
         <p className="px-1 flex gap-2 items-baseline">
           <span className="v3-label">Ready for {formatTime(next.startsAt)}</span>
           <span className="v3-caption">{checks.filter((c) => c.ok).length} of {checks.length} done</span>
         </p>
         <div className="grid grid-cols-3 gap-2">
           {checks.map((c) => (
-            <div key={c.label} className="bg-white rounded-[14px] p-3 flex flex-col gap-1 min-w-0">
+            <div key={c.label} className="bg-white rounded-[12px] px-3 py-[9px] flex flex-col gap-[2px] min-w-0" title={`${c.label}: ${c.value} · ${c.sub}`}>
               <span className="flex gap-[5px] items-center"><img src={checkCircle} alt="" width={14} height={14} className={c.ok ? '' : 'opacity-30 grayscale'} /><span className="v3-caption truncate">{c.label}</span></span>
-              <span className="text-[14px] font-semibold leading-[1.3] truncate">{c.value}</span>
-              <span className={`text-[11px] leading-[1.4] truncate ${c.ok ? 'text-[var(--v3-mint)]' : 'text-[var(--v3-sun)]'}`}>{c.sub}</span>
+              <span className="text-[13px] font-semibold leading-[1.3] truncate">{c.value} <span className={`hidden 2xl:inline text-[11px] font-normal ${c.ok ? 'text-[var(--v3-mint)]' : 'text-[var(--v3-sun)]'}`}>· {c.sub}</span></span>
             </div>
           ))}
         </div>
@@ -253,7 +252,7 @@ function Kpis({ bookings, followUps, period, now, today, loading }: {
 
   return (
     <section className="v3-card !p-[10px]" aria-label="Practice numbers">
-      <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-[10px] min-h-[365px]">
+      <div className="flex-1 grid grid-cols-2 grid-rows-2 gap-[10px]">
       <Kpi className="v3-earnings" label={label} icon={kWallet} iconBg="v3-glass" value={loading ? null : formatINR(cur)}
         chip={change !== null ? <span className="v3-chip v3-glass">{change >= 0 ? '+' : '−'}{Math.abs(change)}%</span> : null}
         caption={change !== null ? vs : `Paid sessions ${period === 'today' ? 'today' : period === 'week' ? 'this week' : 'this month'}`} dark />
@@ -278,7 +277,7 @@ function Kpi({ label, icon, value, chip, caption, className = 'bg-[var(--v3-subt
   label: string; icon: string; value: string | null; chip: React.ReactNode; caption: string; className?: string; iconBg?: string; dark?: boolean
 }) {
   return (
-    <div className={`${className} rounded-[18px] p-4 flex flex-col justify-between gap-3 min-w-0 min-h-[160px]`}>
+    <div className={`${className} rounded-[18px] p-[14px] flex flex-col justify-between gap-2 min-w-0 min-h-[112px]`}>
       <div className="flex items-center justify-between gap-2">
         <span className={`v3-label truncate ${dark ? 'text-white' : 'text-[var(--v3-ink-2)]'}`}>{label}</span>
         <span className={`${iconBg} w-[34px] h-[34px] rounded-full flex items-center justify-center shrink-0`}><img src={icon} alt="" width={16} height={16} /></span>
@@ -294,6 +293,8 @@ function Kpi({ label, icon, value, chip, caption, className = 'bg-[var(--v3-subt
 
 /* ---------------- Sessions by month ---------------- */
 
+const BAR_H = 118
+
 function SessionsByMonth({ now }: { now: number }) {
   const today = dayStart(new Date(now))
   const from = monthStart(today, -7), to = monthStart(today, 1)
@@ -306,14 +307,14 @@ function SessionsByMonth({ now }: { now: number }) {
   })
   const top = Math.max(10, Math.ceil(Math.max(...months.map((m) => m.n + m.r)) / 10) * 10)
   const ticks = Array.from({ length: 6 }, (_, i) => Math.round(top - (top / 5) * i))
-  const scale = 170 / top
+  const scale = BAR_H / top
   const active = hover ?? 7
   const sub = fmt(from, { year: 'numeric' }) === fmt(today, { year: 'numeric' }) ? `New and returning patients, ${fmt(today, { year: 'numeric' })}` : 'New and returning patients, last 8 months'
 
   return (
     <section className="v3-card flex-1 min-w-0" aria-labelledby="months-h">
       <CardHeader id="months-h" title="Sessions by month" sub={sub} />
-      <div className="flex-1 bg-[var(--v3-subtle)] rounded-[18px] p-[14px] flex flex-col gap-3 min-h-[285px]">
+      <div className="flex-1 bg-[var(--v3-subtle)] rounded-[18px] p-[14px] flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <span className="v3-label">Booked sessions</span>
           <span className="flex gap-3">
@@ -323,22 +324,22 @@ function SessionsByMonth({ now }: { now: number }) {
         </div>
         {q.isLoading ? <Skeleton className="h-[200px] rounded-[12px]" /> : (
           <div className="flex gap-[10px]">
-            <div className="flex flex-col justify-between h-[185px] w-5 text-[11px] leading-[1.4] text-[var(--v3-ink-3)]" aria-hidden="true">
+            <div className="flex flex-col justify-between w-5 text-[11px] leading-[1.4] text-[var(--v3-ink-3)]" style={{ height: BAR_H + 15 }} aria-hidden="true">
               {ticks.map((t) => <span key={t}>{t}</span>)}
             </div>
             <div className="relative flex-1 flex justify-between pt-[7px] min-w-0" role="img"
               aria-label={months.map((m) => `${m.label}: ${m.n} new, ${m.r} returning`).join('; ')}>
-              {ticks.map((_, i) => <span key={i} className="absolute left-0 right-[-14px] h-px bg-[var(--v3-hairline)]" style={{ top: 7 + i * 34 }} />)}
+              {ticks.map((_, i) => <span key={i} className="absolute left-0 right-[-14px] h-px bg-[var(--v3-hairline)]" style={{ top: 7 + (i * BAR_H) / 5 }} />)}
               {months.map((m, i) => (
                 <div key={m.label + i} className="relative flex flex-col gap-2 items-center" onMouseEnter={() => setHover(i)} onMouseLeave={() => setHover(null)}>
-                  <div className="flex flex-col gap-[3px] h-[170px] justify-end w-[26px]">
+                  <div className="flex flex-col gap-[3px] justify-end w-[22px]" style={{ height: BAR_H }}>
                     {m.n > 0 && <span className="rounded-[7px] bg-[var(--v3-lime)]" style={{ height: m.n * scale }} />}
                     {m.r > 0 && <span className="rounded-[7px] bg-[var(--v3-ink)]" style={{ height: m.r * scale }} />}
                   </div>
                   <span className={`text-[11px] leading-[1.4] ${i === active ? 'text-[var(--v3-ink)]' : 'text-[var(--v3-ink-3)]'}`}>{m.label}</span>
                   {i === active && (
                     <span className="absolute right-0 whitespace-nowrap rounded-full bg-[var(--v3-ink)] text-white px-[10px] py-[5px] text-[12px] font-medium leading-[1.3] pointer-events-none"
-                      style={{ top: Math.max(0, 170 - (m.n + m.r) * scale - 30), right: i > 3 ? 0 : undefined, left: i > 3 ? undefined : 0 }}>
+                      style={{ top: Math.max(0, BAR_H - (m.n + m.r) * scale - 30), right: i > 3 ? 0 : undefined, left: i > 3 ? undefined : 0 }}>
                       {m.n + m.r} {m.n + m.r === 1 ? 'session' : 'sessions'}
                     </span>
                   )}
@@ -404,7 +405,7 @@ function BookingPage() {
         right={url ? <button type="button" className="v3-pill" onClick={copy} aria-live="polite"><img src={btnCopy} alt="" width={16} height={16} />{copied ? 'Copied' : 'Copy link'}</button>
           : <Link to="/app/settings#profile" className="v3-pill">Set up</Link>} />
       <a href={url ?? '/app/settings#profile'} target={url ? '_blank' : undefined} rel="noreferrer"
-        className="v3-linkcard flex-1 min-h-[132px] rounded-[18px] p-4 flex flex-col justify-between gap-4 min-w-0 transition-[filter] duration-200 hover:brightness-110">
+        className="v3-linkcard flex-1 min-h-[96px] rounded-[18px] p-[14px] flex flex-col justify-between gap-3 min-w-0 transition-[filter] duration-200 hover:brightness-110">
         <span className="flex items-center justify-between">
           <span className={`v3-chip ${profile?.published ? 'bg-[var(--v3-lime)] text-[var(--v3-ink)]' : 'v3-glass'}`}>{profile?.published ? 'Live' : 'Draft'}</span>
           <img src={iGlobe} alt="" width={20} height={20} />
@@ -618,12 +619,13 @@ function Attention({ items, practice, loading }: { items: AttentionItem[]; pract
         right={items.length > 0 ? <span className="v3-badge bg-[var(--v3-sunken)] text-[var(--v3-ink-2)]">{items.length}</span> : undefined} />
       {loading && <Skeleton className="h-[200px] rounded-[18px]" />}
       {!loading && items.length === 0 && (
-        <div className="flex-1 rounded-[18px] bg-[var(--v3-subtle)] p-6 flex flex-col items-center justify-center text-center gap-2 min-h-[160px]">
+        <div className="flex-1 rounded-[18px] bg-[var(--v3-subtle)] p-5 flex flex-col items-center justify-center text-center gap-2 min-h-[120px]">
           <img src={checkCircle} alt="" width={18} height={18} />
           <p className="text-[14px] font-semibold">Nothing needs you</p>
           <p className="v3-sub max-w-[320px]">Unpaid sessions, due follow-ups and sessions to mark show up here.</p>
         </div>
       )}
+      <div className="grid gap-x-8 gap-y-3 2xl:grid-cols-2">
       {shown.map((it) => {
         const [bg, icon] = TILE[it.tone]
         const mail = it.booking ? reminderMailto([it.booking], practice) : null
@@ -641,6 +643,7 @@ function Attention({ items, practice, loading }: { items: AttentionItem[]; pract
           </div>
         )
       })}
+      </div>
       {items.length > 4 && <Link to="/app/bookings" className="v3-caption hover:underline">+{items.length - 4} more</Link>}
     </section>
   )
@@ -687,7 +690,7 @@ function Waitlist({ bookings, now }: { bookings: BookingSummary[]; now: number }
       {adding && <WaitlistForm onDone={() => setAdding(false)} />}
       {list.isLoading && <Skeleton className="h-[120px] rounded-[16px]" />}
       {!list.isLoading && waiting.length === 0 && !adding && (
-        <div className="flex-1 rounded-[18px] bg-[var(--v3-subtle)] p-6 flex flex-col items-center justify-center text-center gap-2 min-h-[160px]">
+        <div className="flex-1 rounded-[18px] bg-[var(--v3-subtle)] p-5 flex flex-col items-center justify-center text-center gap-2 min-h-[120px]">
           <img src={btnCalendar} alt="" width={18} height={18} className="opacity-70" />
           <p className="text-[14px] font-semibold">No one waiting</p>
           <p className="v3-sub max-w-[320px]">Add people who asked for a slot. When a session is cancelled, you can offer them the time in one tap.</p>
