@@ -35,7 +35,6 @@ import kRepeat from '../../assets/v3/kpi-repeat.svg'
 import kTrending from '../../assets/v3/kpi-trending.svg'
 import btnCopy from '../../assets/v3/btn-copy.svg'
 import iGlobe from '../../assets/v3/icon-globe.svg'
-import iSparkles from '../../assets/v3/icon-sparkles.svg'
 import iSearchSm from '../../assets/v3/icon-search-sm.svg'
 import iFilter from '../../assets/v3/icon-filter.svg'
 import dotPaid from '../../assets/v3/dot-paid.svg'
@@ -48,7 +47,6 @@ import tCard from '../../assets/v3/tile-card.svg'
 import tRepeat from '../../assets/v3/tile-repeat.svg'
 import tCalendar from '../../assets/v3/tile-calendar.svg'
 import tIntake from '../../assets/v3/tile-intake.svg'
-import iShield from '../../assets/v3/icon-shield.svg'
 import iClockSky from '../../assets/v3/icon-clock-sky.svg'
 import btnCalendar from '../../assets/v3/btn-calendar.svg'
 
@@ -81,7 +79,7 @@ export default function OverviewV3() {
   return (
     <V3Shell alerts={attention.length > 0}>
       {/* Greeting */}
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+      <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4">
         <div className="flex flex-col gap-[6px] min-w-0">
           <h1 className="font-['General_Sans','Manrope',sans-serif] font-medium text-[28px] lg:text-[32px] leading-[1.15] tracking-[-0.48px]">
             {greeting(now)}{profile ? `, ${profile.displayName.split(' ').slice(0, 2).join(' ')}` : ''}
@@ -95,7 +93,7 @@ export default function OverviewV3() {
         <div className="flex gap-[10px] items-center flex-wrap">
           <div className="bg-white rounded-full p-1 flex gap-[2px]" role="group" aria-label="Earnings period">
             {(['today', 'week', 'month'] as const).map((p) => (
-              <button key={p} type="button" className="v3-nav" aria-pressed={period === p} onClick={() => setPeriod(p)}>
+              <button key={p} type="button" className="v3-nav v3-seg" aria-pressed={period === p} onClick={() => setPeriod(p)}>
                 {p === 'today' ? 'Today' : p === 'week' ? 'This week' : 'This month'}
               </button>
             ))}
@@ -106,15 +104,15 @@ export default function OverviewV3() {
       {booking && <NewBookingDialog onClose={() => setBooking(false)} />}
 
       {/* Row 1 */}
-      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,480fr)_minmax(0,560fr)_minmax(0,484fr)]">
+      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-[minmax(0,480fr)_minmax(0,560fr)_minmax(0,484fr)]">
         <NextSession bookings={all} patients={byPatient} now={now} loading={bookings.isLoading} />
         <Kpis bookings={all} followUps={followUps.data ?? []} period={period} now={now} today={today} loading={bookings.isLoading} />
-        <SessionsByMonth now={now} />
+        <div className="lg:col-span-2 xl:col-span-1 min-w-0 flex"><SessionsByMonth now={now} /></div>
       </div>
 
       {/* Row 2 */}
-      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,480fr)_minmax(0,1064fr)]">
-        <div className="flex flex-col gap-5 min-w-0">
+      <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-[minmax(0,480fr)_minmax(0,1064fr)]">
+        <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-1 xl:grid-rows-[auto_1fr] min-w-0">
           <Collected bookings={all} now={now} />
           <BookingPage />
         </div>
@@ -122,9 +120,8 @@ export default function OverviewV3() {
       </div>
 
       {/* Row 3 */}
-      <div className="mt-5 grid gap-5 xl:grid-cols-[minmax(0,480fr)_minmax(0,560fr)_minmax(0,484fr)]">
-        <Attention items={attention} practice={practice} loading={bookings.isLoading || followUps.isLoading} />
-        <BetweenSessions />
+      <div className="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-[minmax(0,480fr)_minmax(0,560fr)_minmax(0,484fr)]">
+        <div className="xl:col-span-2 min-w-0 flex"><Attention items={attention} practice={practice} loading={bookings.isLoading || followUps.isLoading} /></div>
         <Waitlist bookings={all} now={now} />
       </div>
       {bookings.error && <p role="alert" className="mt-4 v3-sub">{toApiError(bookings.error).userMessage}</p>}
@@ -176,9 +173,9 @@ function NextSession({ bookings, patients, now, loading }: { bookings: BookingSu
   const patient = patients.get(next.patientId)
   const latest = notes.data?.[0]
   const checks = [
-    { label: 'Payment', value: paid ? formatINR(next.pricePaise) : 'Awaiting', sub: paid ? 'Received' : 'Collect at session', ok: paid },
-    { label: 'Notes', value: latest ? `${notes.data!.length} on file` : 'None yet', sub: latest ? `Updated ${fmt(latest.updatedAt, { day: 'numeric', month: 'short' })}` : 'First session notes', ok: !!latest },
-    { label: 'Meet link', value: next.meetUrl ? 'Added' : 'Not added', sub: next.meetUrl ? 'Shown to the patient' : 'Add one in settings', ok: !!next.meetUrl },
+    { label: 'Payment', value: paid ? formatINR(next.pricePaise) : 'Awaiting', sub: paid ? 'Received' : 'Due at session', ok: paid },
+    { label: 'Notes', value: latest ? `${notes.data!.length} on file` : 'None yet', sub: latest ? `Updated ${fmt(latest.updatedAt, { day: 'numeric', month: 'short' })}` : 'After session', ok: !!latest },
+    { label: 'Meet link', value: next.meetUrl ? 'Added' : 'Not added', sub: next.meetUrl ? 'Shared' : 'Add in settings', ok: !!next.meetUrl },
   ]
   return (
     <section className="v3-card" aria-labelledby="next-h">
@@ -268,7 +265,7 @@ function Kpis({ bookings, followUps, period, now, today, loading }: {
           : <span className="v3-chip bg-[var(--v3-mint-soft)] text-[var(--v3-mint)]">On track</span>}
         caption={oldest ? `${shortName(oldest.patientName)}, ${Math.max(1, Math.round((t - dayStart(oldest.dueAt).getTime()) / DAY))} days` : due.length ? 'Due today' : 'Nothing due today'} />
       <Kpi label="No-show rate" icon={kTrending} value={loading ? null : noShow === null ? '—' : pct(noShow)}
-        chip={delta !== null ? <span className={`v3-chip ${delta <= 0 ? 'bg-[var(--v3-mint-soft)] text-[var(--v3-mint)]' : 'bg-[var(--v3-rose-soft)] text-[var(--v3-rose)]'}`}>{delta <= 0 ? '−' : '+'}{pct(Math.abs(delta))}</span> : null}
+        chip={delta !== null ? <span className={`v3-chip ${delta <= 0 ? 'bg-[var(--v3-mint-soft)] text-[var(--v3-mint)]' : 'bg-[var(--v3-rose-soft)] text-[var(--v3-rose)]'}`}>{delta <= 0 ? '−' : '+'}{Math.round(Math.abs(delta) * 10) / 10} pts</span> : null}
         caption={delta !== null ? 'vs last month' : noShow === null ? 'No sessions marked this month' : 'This month'} />
       </div>
     </section>
@@ -314,7 +311,7 @@ function SessionsByMonth({ now }: { now: number }) {
   const sub = fmt(from, { year: 'numeric' }) === fmt(today, { year: 'numeric' }) ? `New and returning patients, ${fmt(today, { year: 'numeric' })}` : 'New and returning patients, last 8 months'
 
   return (
-    <section className="v3-card" aria-labelledby="months-h">
+    <section className="v3-card flex-1 min-w-0" aria-labelledby="months-h">
       <CardHeader id="months-h" title="Sessions by month" sub={sub} />
       <div className="flex-1 bg-[var(--v3-subtle)] rounded-[18px] p-[14px] flex flex-col gap-3 min-h-[285px]">
         <div className="flex items-center justify-between">
@@ -384,7 +381,6 @@ function Collected({ bookings, now }: { bookings: BookingSummary[]; now: number 
 function BookingPage() {
   const { data: profile } = useProfile()
   const types = useSessionTypes()
-  const waitlist = useWaitlist()
   const [copied, setCopied] = useState(false)
   const slug = profile?.slug
   const type = types.data?.find((t) => t.isActive)
@@ -398,65 +394,51 @@ function BookingPage() {
     if (!url) return
     try { await navigator.clipboard.writeText(url); setCopied(true); setTimeout(() => setCopied(false), 2000) } catch { window.prompt('Copy your booking link', url) }
   }
-  const waiting = waitlist.data ?? []
-  const first = waiting[0]
+  const slotText = !profile?.published ? 'Publish your page to take bookings'
+    : slot.data ? `Next free slot · ${fmt(slot.data, { weekday: 'short', day: 'numeric', month: 'short' })}, ${formatTime(slot.data)}`
+      : slot.isLoading ? 'Checking slots…' : 'No free slots in the next 2 weeks'
 
   return (
-    <section className="v3-card flex-1" aria-labelledby="page-h">
+    <section className="v3-card" aria-labelledby="page-h">
       <CardHeader id="page-h" title="Your booking page"
         right={url ? <button type="button" className="v3-pill" onClick={copy} aria-live="polite"><img src={btnCopy} alt="" width={16} height={16} />{copied ? 'Copied' : 'Copy link'}</button>
           : <Link to="/app/settings#profile" className="v3-pill">Set up</Link>} />
-      <div className="grid grid-cols-2 gap-3">
-        <a href={url ?? '/app/settings#profile'} target={url ? '_blank' : undefined} rel="noreferrer" className="v3-linkcard h-[150px] rounded-[18px] p-4 flex flex-col justify-between min-w-0">
-          <span className="flex items-center justify-between">
-            <span className={`v3-chip ${profile?.published ? 'bg-[var(--v3-lime)] text-[var(--v3-ink)]' : 'v3-glass'}`}>{profile?.published ? 'Live' : 'Draft'}</span>
-            <img src={iGlobe} alt="" width={20} height={20} />
-          </span>
-          <span className="flex flex-col gap-1 min-w-0">
-            <span className="text-[14px] font-semibold leading-[1.3] truncate">{slug ? bookingUrlLabel(slug) : 'No link yet'}</span>
-            <span className="text-[11px] leading-[1.4] truncate">
-              {!profile?.published ? 'Publish to take bookings' : slot.data ? `Next free slot · ${fmt(slot.data, { weekday: 'short' })} ${formatTime(slot.data)}` : slot.isLoading ? 'Checking slots…' : 'No free slots in 2 weeks'}
-            </span>
-          </span>
-        </a>
-        <a href="#waitlist-h" className="v3-waitcard h-[150px] rounded-[18px] p-4 flex flex-col justify-between min-w-0">
-          <span className="flex items-center justify-between">
-            <span className="v3-chip v3-glass">Waitlist</span>
-            <img src={iSparkles} alt="" width={20} height={20} />
-          </span>
-          <span className="flex flex-col gap-1 min-w-0">
-            <span className="text-[14px] font-semibold leading-[1.3]">{waiting.length} waiting</span>
-            <span className="text-[11px] leading-[1.4] truncate">{first ? `${firstName(first.fullName)}${first.preference ? ` · ${first.preference}` : ''}` : 'No one waiting yet'}</span>
-          </span>
-        </a>
-      </div>
+      <a href={url ?? '/app/settings#profile'} target={url ? '_blank' : undefined} rel="noreferrer"
+        className="v3-linkcard flex-1 min-h-[132px] rounded-[18px] p-4 flex flex-col justify-between gap-4 min-w-0 transition-[filter] duration-200 hover:brightness-110">
+        <span className="flex items-center justify-between">
+          <span className={`v3-chip ${profile?.published ? 'bg-[var(--v3-lime)] text-[var(--v3-ink)]' : 'v3-glass'}`}>{profile?.published ? 'Live' : 'Draft'}</span>
+          <img src={iGlobe} alt="" width={20} height={20} />
+        </span>
+        <span className="flex flex-col gap-1 min-w-0">
+          <span className="text-[15px] font-semibold leading-[1.3] truncate">{slug ? bookingUrlLabel(slug) : 'No link yet'}</span>
+          <span className="text-[12px] leading-[1.4] text-white/80 truncate">{slotText}</span>
+        </span>
+      </a>
     </section>
   )
 }
 
 /* ---------------- Today's schedule ---------------- */
 
-type PayFilter = 'all' | 'awaiting' | 'paid'
 
 function Schedule({ bookings, patients, now, today, practice, loading }: {
   bookings: BookingSummary[]; patients: Map<string, PatientSummary>; now: number; today: Date; practice: string; loading: boolean
 }) {
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<PayFilter>('all')
+  const [unpaidOnly, setUnpaidOnly] = useState(false)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [open, setOpen] = useState<string | null>(null)
   const end = today.getTime() + 4 * DAY
   const upcoming = bookings.filter((b) => (b.status === 'confirmed' || b.status === 'pending_payment' || b.status === 'completed') && b.startsAt >= today && b.startsAt.getTime() < end)
   const rows = upcoming
     .filter((b) => b.patientName.toLowerCase().includes(query.trim().toLowerCase()))
-    .filter((b) => filter === 'all' || (filter === 'paid') === isPaid(b))
+    .filter((b) => !unpaidOnly || !isPaid(b))
   const picked = upcoming.filter((b) => selected.has(b.id))
   const unpaidPicked = picked.filter((b) => !isPaid(b))
   const mail = reminderMailto(unpaidPicked, practice)
   const movable = picked.length === 1 && picked[0]!.status === 'confirmed' && picked[0]!.startsAt.getTime() > now
   const toggle = (id: string) => setSelected((s) => { const n = new Set(s); if (n.has(id)) n.delete(id); else n.add(id); return n })
   const allOn = rows.length > 0 && rows.every((b) => selected.has(b.id))
-  const nextFilter: Record<PayFilter, PayFilter> = { all: 'awaiting', awaiting: 'paid', paid: 'all' }
 
   return (
     <section className="v3-card" aria-labelledby="schedule-h">
@@ -472,22 +454,22 @@ function Schedule({ bookings, patients, now, today, practice, loading }: {
             <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search patients"
               className="flex-1 min-w-0 bg-transparent outline-none text-[13px] leading-[1.45] placeholder:text-[var(--v3-ink-3)]" />
           </label>
-          <button type="button" className="v3-pill" onClick={() => setFilter(nextFilter[filter])} aria-label={`Payment filter: ${filter}`}>
-            <img src={iFilter} alt="" width={16} height={16} />{filter === 'all' ? 'Filter' : filter === 'paid' ? 'Paid' : 'Awaiting'}
+          <button type="button" className={`v3-pill shrink-0 ${unpaidOnly ? '!bg-[var(--v3-sun-soft)] !border-transparent' : ''}`} aria-pressed={unpaidOnly} onClick={() => setUnpaidOnly((u) => !u)}>
+            <img src={iFilter} alt="" width={16} height={16} />Unpaid only
           </button>
         </div>
       </div>
 
-      <div className="border border-[var(--v3-hairline)] rounded-[18px] overflow-x-auto">
-        <table className="w-full min-w-[760px] text-left border-collapse">
+      <div className="relative border border-[var(--v3-hairline)] rounded-[18px] overflow-x-auto">
+        <table className="w-full min-w-[720px] table-fixed text-left border-collapse">
           <thead>
             <tr className="bg-[var(--v3-subtle)] text-[12px] font-medium leading-[1.3] text-[var(--v3-ink-3)]">
               <th className="pl-4 py-[11px] w-[32px]"><Check on={allOn} label="Select all" onClick={() => setSelected(allOn ? new Set() : new Set(rows.map((b) => b.id)))} /></th>
-              <th className="px-3 font-medium w-[124px]">Time</th>
-              <th className="px-3 font-medium w-[264px]">Patient</th>
+              <th className="px-3 font-medium w-[112px]">Time</th>
+              <th className="px-3 font-medium w-[30%]">Patient</th>
               <th className="px-3 font-medium">Session</th>
-              <th className="px-3 font-medium w-[92px]">Fee</th>
-              <th className="px-3 font-medium w-[122px]">Payment</th>
+              <th className="px-3 font-medium w-[88px]">Fee</th>
+              <th className="px-3 font-medium w-[112px]">Payment</th>
               <th className="pr-4 w-[40px]"><span className="sr-only">Actions</span></th>
             </tr>
           </thead>
@@ -512,9 +494,10 @@ function Schedule({ bookings, patients, now, today, practice, loading }: {
         </table>
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <p className="v3-caption">{picked.length ? `${picked.length} selected · ${picked.map((b) => b.patientName).join(', ')}` : 'Select sessions to reschedule or remind'}</p>
-        <div className="flex gap-2">
+      {picked.length > 0 && <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <p className="v3-caption truncate">{picked.length} selected · {picked.map((b) => b.patientName).join(', ')}</p>
+        <div className="flex gap-2 shrink-0">
+          <button type="button" className="v3-pill v3-pill--soft" onClick={() => setSelected(new Set())}>Clear</button>
           <button type="button" className="v3-pill v3-pill--soft" disabled={!movable} onClick={() => setOpen(picked[0]!.id)}>
             <img src={btnReschedule} alt="" width={16} height={16} />Reschedule
           </button>
@@ -523,7 +506,8 @@ function Schedule({ bookings, patients, now, today, practice, loading }: {
             : <button type="button" disabled className="v3-pill v3-pill--dark" title={unpaidPicked.length ? 'No email on file' : 'Select an unpaid session'}>
                 <img src={btnMail} alt="" width={16} height={16} />Send payment reminder</button>}
         </div>
-      </div>
+      </div>}
+      {picked.length === 0 && <Link to="/app/calendar" className="mt-auto self-start v3-caption hover:text-[var(--v3-ink)]">Open full calendar →</Link>}
     </section>
   )
 }
@@ -556,7 +540,10 @@ function ScheduleRow({ b, on, paid, open, now, sub, onToggle, onMore }: {
             </span>
           </Link>
         </td>
-        <td className="px-3 text-[13px] leading-[1.45] text-[var(--v3-ink-2)]">{b.sessionTypeName} · {durationMin(b)} min</td>
+        <td className="px-3 min-w-0">
+          <span className="block text-[13px] leading-[1.45] text-[var(--v3-ink-2)] truncate">{b.sessionTypeName}</span>
+          <span className="block v3-caption">{durationMin(b)} min</span>
+        </td>
         <td className="px-3 text-[12px] font-medium leading-[1.3]">{formatINR(b.pricePaise)}</td>
         <td className="px-3">
           <span className="flex gap-[7px] items-center text-[13px] leading-[1.45]"><img src={paid ? dotPaid : dotAwaiting} alt="" width={7} height={7} />{paid ? 'Paid' : 'Awaiting'}</span>
@@ -586,6 +573,11 @@ function RowActions({ b }: { b: BookingSummary }) {
 
 /* ---------------- Needs your attention ---------------- */
 
+function possessiveDay(d: Date, now: number): string {
+  const l = dayLabel(d, now)
+  return l === 'Today' ? 'today’s' : l === 'Yesterday' ? 'yesterday’s' : `the ${l}`
+}
+
 interface AttentionItem { key: string; tone: 'sun' | 'rose' | 'sky' | 'lavender'; name: string; text: string; booking?: BookingSummary; followUp?: FollowUp; href?: string }
 const TILE: Record<AttentionItem['tone'], [string, string]> = {
   sun: ['bg-[var(--v3-sun-soft)]', tCard], rose: ['bg-[var(--v3-rose-soft)]', tRepeat], sky: ['bg-[var(--v3-sky-soft)]', tCalendar], lavender: ['bg-[var(--v3-lavender-soft)]', tIntake],
@@ -610,7 +602,7 @@ function buildAttention(bookings: BookingSummary[], followUps: FollowUp[], now: 
       items.push({ key: b.id, tone: 'sky', name: b.patientName, text: `${dayLabel(b.startsAt, now) === 'Tomorrow' ? 'Tomorrow’s' : `${fmt(b.startsAt, { weekday: 'long' })}’s`} booking not paid yet`, booking: b })
     }
     if (b.status === 'confirmed' && b.endsAt.getTime() < now) {
-      items.push({ key: `${b.id}-o`, tone: 'lavender', name: b.patientName, text: `Mark how the ${dayLabel(b.startsAt, now).toLowerCase()} ${formatTime(b.startsAt)} session went`, href: '/app/bookings' })
+      items.push({ key: `${b.id}-o`, tone: 'lavender', name: b.patientName, text: `Mark how ${possessiveDay(b.startsAt, now)} ${formatTime(b.startsAt)} session went`, href: '/app/bookings' })
     }
   }
   return items
@@ -621,11 +613,17 @@ function Attention({ items, practice, loading }: { items: AttentionItem[]; pract
   const shown = items.slice(0, 4)
   const summary = items.length ? `${items.length} ${items.length === 1 ? 'thing' : 'things'} need you` : 'You’re all caught up'
   return (
-    <section className="v3-card" aria-labelledby="attention-h">
+    <section className="v3-card flex-1 min-w-0" aria-labelledby="attention-h">
       <CardHeader id="attention-h" title="Needs your attention" sub={loading ? ' ' : summary}
-        right={<span className="v3-badge bg-[var(--v3-sunken)] text-[var(--v3-ink-2)]">{items.length}</span>} />
+        right={items.length > 0 ? <span className="v3-badge bg-[var(--v3-sunken)] text-[var(--v3-ink-2)]">{items.length}</span> : undefined} />
       {loading && <Skeleton className="h-[200px] rounded-[18px]" />}
-      {!loading && items.length === 0 && <p className="v3-sub py-6 text-center">Unpaid sessions, due follow-ups and sessions to mark show up here.</p>}
+      {!loading && items.length === 0 && (
+        <div className="flex-1 rounded-[18px] bg-[var(--v3-subtle)] p-6 flex flex-col items-center justify-center text-center gap-2 min-h-[160px]">
+          <img src={checkCircle} alt="" width={18} height={18} />
+          <p className="text-[14px] font-semibold">Nothing needs you</p>
+          <p className="v3-sub max-w-[320px]">Unpaid sessions, due follow-ups and sessions to mark show up here.</p>
+        </div>
+      )}
       {shown.map((it) => {
         const [bg, icon] = TILE[it.tone]
         const mail = it.booking ? reminderMailto([it.booking], practice) : null
@@ -639,27 +637,11 @@ function Attention({ items, practice, loading }: { items: AttentionItem[]; pract
             {it.followUp ? <button type="button" className="v3-pill" disabled={setStatus.isPending} onClick={() => setStatus.mutate({ id: it.followUp!.id, status: 'sent' })}>Check in</button>
               : it.href ? <Link to={it.href} className="v3-pill">Review</Link>
                 : mail ? <a href={mail} className="v3-pill">Remind</a>
-                  : <Link to="/app/bookings" className="v3-pill">Open</Link>}
+                  : <Link to="/app/bookings" className="v3-pill">View</Link>}
           </div>
         )
       })}
       {items.length > 4 && <Link to="/app/bookings" className="v3-caption hover:underline">+{items.length - 4} more</Link>}
-    </section>
-  )
-}
-
-/* ---------------- Between sessions ---------------- */
-
-function BetweenSessions() {
-  return (
-    <section className="v3-card" aria-labelledby="between-h">
-      <CardHeader id="between-h" title="Between sessions" sub="Check-ins from Lumid, shared with consent"
-        right={<span className="v3-chip bg-[var(--v3-sunken)] text-[var(--v3-ink-2)]">Not connected</span>} />
-      <div className="flex-1 rounded-[18px] bg-[var(--v3-subtle)] p-6 flex flex-col justify-center gap-2 min-h-[200px]">
-        <p className="text-[14px] font-semibold">No check-ins yet</p>
-        <p className="v3-sub">When a patient uses the Lumid app and chooses to share, their check-ins and progress appear here.</p>
-      </div>
-      <p className="flex gap-[6px] items-center"><img src={iShield} alt="" width={14} height={14} /><span className="v3-caption">Patients choose what to share. Chats are never shared.</span></p>
     </section>
   )
 }
@@ -691,11 +673,8 @@ function Waitlist({ bookings, now }: { bookings: BookingSummary[]; now: number }
 
   return (
     <section className="v3-card" aria-labelledby="waitlist-h">
-      <CardHeader id="waitlist-h" title="Waitlist" sub={`${waiting.length} ${waiting.length === 1 ? 'patient' : 'patients'} waiting for a slot`}
-        right={<span className="flex gap-2 items-center">
-          <span className="v3-badge bg-[var(--v3-sunken)] text-[var(--v3-ink-2)]">{waiting.length}</span>
-          <button type="button" className="v3-pill !px-3 !py-1" onClick={() => setAdding((a) => !a)} aria-expanded={adding}>{adding ? 'Close' : 'Add'}</button>
-        </span>} />
+      <CardHeader id="waitlist-h" title="Waitlist" sub={waiting.length ? `${waiting.length} ${waiting.length === 1 ? 'patient' : 'patients'} waiting for a slot` : 'People waiting for an opening'}
+        right={<button type="button" className="v3-pill" onClick={() => setAdding((a) => !a)} aria-expanded={adding}>{adding ? 'Cancel' : 'Add person'}</button>} />
       {opened && (
         <div className="bg-[var(--v3-sky-soft)] rounded-[16px] p-3 flex gap-[10px] items-center text-[var(--v3-sky)]">
           <img src={iClockSky} alt="" width={18} height={18} />
@@ -707,7 +686,13 @@ function Waitlist({ bookings, now }: { bookings: BookingSummary[]; now: number }
       )}
       {adding && <WaitlistForm onDone={() => setAdding(false)} />}
       {list.isLoading && <Skeleton className="h-[120px] rounded-[16px]" />}
-      {!list.isLoading && waiting.length === 0 && !adding && <p className="v3-sub py-4">No one waiting. Add people who asked for a slot so you can offer one when it opens.</p>}
+      {!list.isLoading && waiting.length === 0 && !adding && (
+        <div className="flex-1 rounded-[18px] bg-[var(--v3-subtle)] p-6 flex flex-col items-center justify-center text-center gap-2 min-h-[160px]">
+          <img src={btnCalendar} alt="" width={18} height={18} className="opacity-70" />
+          <p className="text-[14px] font-semibold">No one waiting</p>
+          <p className="v3-sub max-w-[320px]">Add people who asked for a slot. When a session is cancelled, you can offer them the time in one tap.</p>
+        </div>
+      )}
       {waiting.slice(0, 3).map((w) => (
         <div key={w.id} className="flex gap-[10px] items-center group">
           <V3Avatar name={w.fullName} size={32} />
@@ -715,7 +700,7 @@ function Waitlist({ bookings, now }: { bookings: BookingSummary[]; now: number }
             <span className="text-[12px] font-medium leading-[1.3] truncate">{w.fullName}{w.status === 'offered' ? ' · offered' : ''}</span>
             <span className="v3-caption truncate">{w.preference || 'Any time'} · {Math.max(0, Math.floor((now - w.createdAt.getTime()) / DAY))} days</span>
           </span>
-          <button type="button" className="v3-caption hover:text-[var(--v3-ink)] px-2" onClick={() => setStatus.mutate({ id: w.id, status: 'removed' })} aria-label={`Remove ${w.fullName}`}>Remove</button>
+          <button type="button" className="w-7 h-7 rounded-full flex items-center justify-center text-[var(--v3-ink-3)] hover:bg-[var(--v3-subtle)] hover:text-[var(--v3-ink)] text-[16px] leading-none" onClick={() => setStatus.mutate({ id: w.id, status: 'removed' })} aria-label={`Remove ${w.fullName}`} title="Remove">×</button>
         </div>
       ))}
       {note && <p role="status" className="v3-caption">{note}</p>}

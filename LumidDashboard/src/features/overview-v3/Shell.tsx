@@ -41,7 +41,7 @@ export function V3Shell({ alerts, children }: { alerts: boolean; children: React
 
   return (
     <div className="v3">
-      <div className="mx-auto max-w-[1728px] p-4 lg:p-[44px]">
+      <div className="mx-auto max-w-[2048px] px-4 py-4 sm:px-6 lg:px-8 lg:py-6 2xl:px-10">
         <header className="flex items-center justify-between gap-3 flex-wrap">
           <Link to="/app" className="bg-white rounded-full px-6 py-[18px]" aria-label="Lumid home"><img src={logo} alt="Lumid AI" width={105} height={16} /></Link>
           <nav aria-label="Main" className="bg-white rounded-full p-[5px] flex gap-1 overflow-x-auto max-w-full order-3 xl:order-none">
@@ -66,7 +66,7 @@ export function V3Shell({ alerts, children }: { alerts: boolean; children: React
           </div>
         </header>
 
-        <div className="mt-6 flex gap-5">
+        <div className="mt-5 flex gap-5">
           <aside aria-label="Workspace" className="hidden md:flex flex-col justify-between w-14 shrink-0">
             <div className="flex flex-col gap-4 items-center">
               <div className="bg-white rounded-full p-[6px]">
