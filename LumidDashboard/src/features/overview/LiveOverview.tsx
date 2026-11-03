@@ -55,7 +55,7 @@ export default function LiveOverview() {
         <Kpi label="TODAY’S EARNINGS" loading={week.isLoading}
           value={formatINR(sumPaise(live.filter((b) => b.status !== 'pending_payment').map((b) => b.pricePaise)))} sub="Collected via Razorpay" />
         <Kpi label="AWAITING PAYMENT" loading={week.isLoading} value={String(awaiting.length)} sub={awaiting.length ? formatINR(sumPaise(awaiting.map((b) => b.pricePaise))) : 'Nothing pending'} />
-        <Kpi label="NEXT 7 DAYS" loading={week.isLoading} value={String(upcomingWeek.length)} sub="Confirmed sessions" />
+        <Kpi label="NEXT 7 DAYS" loading={week.isLoading} value={String(upcomingWeek.length)} sub={upcomingWeek.length === 1 ? 'Confirmed session' : 'Confirmed sessions'} />
       </div>
 
       <div className="mt-6 grid lg:grid-cols-[1.6fr_1fr] gap-6 items-start">
