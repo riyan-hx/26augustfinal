@@ -87,6 +87,7 @@ export function BookingActions({ booking: b, inline = false }: { booking: Bookin
           <div className="flex-1">
             <label className="sr-only" htmlFor={`reason-${b.id}`}>Reason for the patient</label>
             <input id={`reason-${b.id}`} className="field" autoFocus placeholder="Reason the patient will see" value={reason} maxLength={500} onChange={(e) => setReason(e.target.value)} />
+            {b.paymentStatus === 'captured' && <p className="text-[11px] text-[var(--stone)] mt-1">This session was paid. Cancelling records the payment as refunded; return the money to the patient yourself if they paid directly.</p>}
             {error && <p role="alert" className="form-error">{error}</p>}
           </div>
           <button className="btn-primary" disabled={busy}>{cancel.isPending ? 'Cancelling…' : 'Confirm cancel'}</button>

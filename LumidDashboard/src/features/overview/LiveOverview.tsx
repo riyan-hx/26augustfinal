@@ -58,9 +58,9 @@ export default function LiveOverview() {
       {/* KPI row */}
       <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 bg-white border border-[var(--hairline)] rounded-[16px] divide-x divide-y lg:divide-y-0 divide-[var(--hairline)] overflow-hidden">
         <Kpi label="SESSIONS TODAY" loading={week.isLoading} value={String(live.length)}
-          sub={`${live.filter((b) => b.status !== 'pending_payment').length} paid · ${live.filter((b) => b.status === 'pending_payment').length} awaiting`} />
+          sub={`${live.filter((b) => b.paymentStatus === 'captured').length} paid · ${live.filter((b) => b.status === 'pending_payment').length} awaiting`} />
         <Kpi label="TODAY’S EARNINGS" loading={week.isLoading}
-          value={formatINR(sumPaise(live.filter((b) => b.status !== 'pending_payment').map((b) => b.pricePaise)))} sub="Collected via Razorpay" />
+          value={formatINR(sumPaise(live.filter((b) => b.paymentStatus === 'captured').map((b) => b.pricePaise)))} sub="Collected for today’s sessions" />
         <Kpi label="AWAITING PAYMENT" loading={week.isLoading} value={String(awaiting.length)} sub={awaiting.length ? formatINR(sumPaise(awaiting.map((b) => b.pricePaise))) : 'Nothing pending'} />
         <Kpi label="NEXT 7 DAYS" loading={week.isLoading} value={String(upcomingWeek.length)} sub={upcomingWeek.length === 1 ? 'Confirmed session' : 'Confirmed sessions'} />
       </div>
@@ -164,7 +164,7 @@ function Kpi({ label, value, sub, loading }: { label: string; value: string; sub
 }
 
 function ScheduleRow({ booking: b, now }: { booking: BookingSummary; now: number }) {
-  const paid = b.status !== 'pending_payment'
+  const paid = b.paymentStatus === 'captured'
   const startsSoon = b.startsAt.getTime() - now < 10 * 60_000 && b.endsAt.getTime() > now
   return (
     <li className="flex items-center gap-4 px-5 py-4">

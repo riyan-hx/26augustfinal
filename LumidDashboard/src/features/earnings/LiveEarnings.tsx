@@ -6,6 +6,8 @@ import { formatDay, localDayBounds } from '../../lib/dates'
 import { formatINR } from '../../lib/money'
 import { useNow } from '../../lib/useNow'
 import { CopyBookingLinkButton } from '../practice/CopyBookingLinkButton'
+import { useBookings } from '../bookings/hooks'
+import { sumPaise } from '../../lib/money'
 import { getSummary, listPayments } from './api'
 
 const DAY = 86_400_000
@@ -24,7 +26,10 @@ export default function LiveEarnings() {
   const today = useQuery({ queryKey: ['earnings', 'today', day], queryFn: () => getSummary(new Date(day), new Date(day + DAY)) })
   const week = useQuery({ queryKey: ['earnings', 'week', day], queryFn: () => getSummary(new Date(day - 6 * DAY), new Date(day + DAY)) })
   const month = useQuery({ queryKey: ['earnings', 'month', day], queryFn: () => getSummary(new Date(day - 29 * DAY), new Date(day + DAY)) })
-  const payments = useQuery({ queryKey: ['payments'], queryFn: () => listPayments() })
+  const payments = useQuery({ queryKey: ['earnings', 'payments'], queryFn: () => listPayments() })
+  // Unpaid sessions from two weeks back onwards, including upcoming ones.
+  const recent = useBookings({ from: new Date(day - 14 * DAY) })
+  const unpaid = (recent.data ?? []).filter((b) => b.status === 'pending_payment')
 
   const cards = [
     { label: 'Today', q: today, sub: (n: number) => `${n} paid session${n === 1 ? '' : 's'}` },
@@ -35,7 +40,7 @@ export default function LiveEarnings() {
   return (
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
       <h1 className="font-serif text-[26px] font-semibold tracking-tight">Earnings</h1>
-      <p className="text-[12px] text-[var(--stone)] mt-1">Paid sessions after Razorpay fees and GST. Not accounting software.</p>
+      <p className="text-[12px] text-[var(--stone)] mt-1">Money collected for sessions, after any Razorpay fees and refunds. Not accounting software.</p>
 
       <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map(({ label, q, sub }) => (
@@ -51,20 +56,19 @@ export default function LiveEarnings() {
         ))}
         <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-5">
           <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] uppercase">Awaiting payment</p>
-          {week.isLoading ? <Skeleton className="h-7 w-24 mt-2" /> : <p className="text-[22px] font-semibold mt-1 tabular-nums">{formatINR(week.data?.pendingPaise ?? 0)}</p>}
-          <p className="text-[11px] text-[var(--stone)]">Held slots, last 7 days</p>
+          {recent.isLoading ? <Skeleton className="h-7 w-24 mt-2" /> : <p className="text-[22px] font-semibold mt-1 tabular-nums">{formatINR(sumPaise(unpaid.map((b) => b.pricePaise)))}</p>}
+          <p className="text-[11px] text-[var(--stone)]">{unpaid.length} unpaid session{unpaid.length === 1 ? '' : 's'}</p>
         </div>
       </div>
 
       <div className="mt-6 bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden">
         <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--hairline)]">
           <h2 className="text-[13px] font-semibold">Transaction history</h2>
-          <span className="text-[11px] px-2.5 py-1 rounded-full bg-[var(--green-50)] border border-[var(--green-200)] text-[var(--green-700)] font-medium flex items-center gap-1"><CreditCard size={12} /> Razorpay</span>
         </div>
         {payments.isLoading && <SkeletonRows rows={5} />}
         {payments.error && <ErrorState error={payments.error} onRetry={() => void payments.refetch()} />}
         {!payments.isLoading && !payments.error && payments.data?.length === 0 && (
-          <EmptyState icon={<CreditCard size={18} />} title="No payments yet" description="Paid sessions and refunds appear here once patients book through your page." action={<CopyBookingLinkButton />} />
+          <EmptyState icon={<CreditCard size={18} />} title="No payments yet" description="Payments appear here when you mark a session paid or a patient pays online." action={<CopyBookingLinkButton />} />
         )}
         <ul className="divide-y divide-[var(--hairline)]">
           {payments.data?.map((p) => (
@@ -72,7 +76,7 @@ export default function LiveEarnings() {
               <Avatar name={p.patientName} size={32} />
               <div className="min-w-0 flex-1">
                 <p className="font-semibold truncate">{p.patientName}</p>
-                <p className="text-[var(--stone)] font-mono text-[11px]">{p.code}{p.capturedAt ? ` · ${formatDay(p.capturedAt)}` : ''}</p>
+                <p className="text-[var(--stone)] text-[11px]"><span className="font-mono">{p.code}</span>{p.capturedAt ? ` · ${formatDay(p.capturedAt)}` : ''} · {p.method}</p>
               </div>
               <span className="hidden sm:block text-[var(--stone)] tabular-nums">{p.feesPaise ? `Fee ${formatINR(p.feesPaise)}` : '—'}</span>
               <span className="font-semibold tabular-nums w-[84px] text-right">{formatINR(p.amountPaise - p.refundedPaise)}</span>
