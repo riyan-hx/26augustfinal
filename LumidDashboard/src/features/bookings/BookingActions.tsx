@@ -52,7 +52,7 @@ export function BookingActions({ booking: b, inline = false }: { booking: Bookin
   }
 
   return (
-    <div className={inline ? '' : 'px-4 lg:px-6 pb-4 -mt-1'}>
+    <div className={inline ? '' : 'px-4 lg:px-6 pb-3.5 -mt-1.5'}>
       {moving ? (
         <form onSubmit={confirmMove} className={`flex flex-wrap items-center gap-2 ${pad}`}>
           <label className="sr-only" htmlFor={`move-date-${b.id}`}>New date</label>
@@ -75,11 +75,11 @@ export function BookingActions({ booking: b, inline = false }: { booking: Bookin
         </div>
       ) : !cancelling ? (
         <div className={`flex flex-wrap items-center gap-2 ${pad}`}>
-          {canPay && <button className="btn-primary" disabled={busy} onClick={() => setPaying(true)}>Mark as paid</button>}
-          {canMove && <button className="btn-secondary" disabled={busy} onClick={() => setMoving(true)}>Reschedule</button>}
-          {canMark && <button className="btn-secondary" disabled={busy} onClick={() => mark('completed')}>Mark completed</button>}
-          {canMark && <button className="btn-secondary" disabled={busy} onClick={() => mark('no_show')}>No-show</button>}
-          {canCancel && <button className="btn-secondary" disabled={busy} onClick={() => setCancelling(true)}>{b.status === 'pending_payment' ? 'Cancel request' : 'Cancel session'}</button>}
+          {canPay && <button className="btn-quiet btn-quiet--next" disabled={busy} onClick={() => setPaying(true)}>Mark as paid</button>}
+          {canMark && <button className="btn-quiet btn-quiet--next" disabled={busy} onClick={() => mark('completed')}>Mark completed</button>}
+          {canMark && <button className="btn-quiet" disabled={busy} onClick={() => mark('no_show')}>No-show</button>}
+          {canMove && <button className="btn-quiet" disabled={busy} onClick={() => setMoving(true)}>Reschedule</button>}
+          {canCancel && <button className="btn-link" disabled={busy} onClick={() => setCancelling(true)}>{b.status === 'pending_payment' ? 'Cancel request' : 'Cancel'}</button>}
           {error && <span role="alert" className="text-[12px] text-[var(--badge-rose-fg)]">{error}</span>}
         </div>
       ) : (
