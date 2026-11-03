@@ -1,5 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
-import { Calendar, Check, Globe, Settings, Shield, Trash2, Plus, Clock } from '../../lib/icons'
+import { Calendar, Check, Globe, Shield, Trash2, Plus, Clock } from '../../lib/icons'
 import { formatINR, parseRupeesToPaise } from '../../lib/money'
 import { toApiError } from '../../lib/errors'
 import { isDemoMode } from '../../lib/env'
@@ -24,7 +24,7 @@ const card = 'bg-white border border-[var(--hairline)] rounded-[16px] p-5 scroll
 export default function PracticeSettings() {
   return (
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6 max-w-[1040px]">
-      <h1 className="font-serif text-[26px] font-semibold tracking-tight flex items-center gap-2"><Settings size={20} className="text-[var(--green-700)]" /> Practice settings</h1>
+      <h1 className="text-[26px] font-semibold tracking-tight">Practice settings</h1>
       <p className="text-[12px] text-[var(--stone)] mt-1">Everything your public booking page uses. Changes save per section.</p>
 
       <div className="mt-6 grid lg:grid-cols-[220px_1fr] gap-6">

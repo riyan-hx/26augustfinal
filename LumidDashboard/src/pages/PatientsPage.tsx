@@ -46,7 +46,7 @@ export default function PatientsPage() {
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4">
         <div>
-          <h1 className="font-serif text-[26px] font-semibold tracking-tight flex items-center gap-2"><Users size={20} className="text-[var(--green-700)]" /> Patients</h1>
+          <h1 className="text-[26px] font-semibold tracking-tight">Patients</h1>
           <p className="text-[12px] text-[var(--stone)] mt-1"><AnimatedNumber value={filtered.length} /> {filtered.length === 1 ? 'patient' : 'patients'} • No mental health scores — only meaningful context</p>
         </div>
         <div className="flex items-center gap-2">

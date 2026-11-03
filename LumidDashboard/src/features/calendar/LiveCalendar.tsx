@@ -21,10 +21,10 @@ const HOURS = Array.from({ length: LAST_HOUR - FIRST_HOUR }, (_, i) => FIRST_HOU
 const SHOWN: BookingStatus[] = ['confirmed', 'pending_payment', 'completed', 'no_show']
 
 const tone: Record<BookingStatus, string> = {
-  confirmed: 'bg-[var(--color-primary-soft)] border-[var(--color-primary)] text-[var(--ink)]',
-  pending_payment: 'bg-amber-50 border-amber-400 text-amber-900',
-  completed: 'bg-[var(--color-canvas-parchment)] border-[var(--hairline)] text-[var(--stone)]',
-  no_show: 'bg-zinc-100 border-zinc-300 text-zinc-500',
+  confirmed: 'bg-[#EAF5E3] border-l-[#3F8F22] text-[var(--ink)]',
+  pending_payment: 'bg-[#FBF3E1] border-l-[#C98A12] text-[#5E4108]',
+  completed: 'bg-[var(--color-canvas-parchment)] border-l-[#9AA0A6] text-[var(--stone)]',
+  no_show: 'bg-zinc-100 border-l-zinc-400 text-zinc-500',
   cancelled: '', expired: '',
 }
 
@@ -171,7 +171,7 @@ function EventBlock({ booking: b, selected, onSelect }: { booking: BookingSummar
   const h = Math.max(24, top(Math.min(end, LAST_HOUR * 60)) - y - 2)
   return (
     <button type="button" onClick={onSelect} aria-pressed={selected}
-      className={`absolute left-1 right-1 z-[5] rounded-[8px] border-l-[3px] border px-2 py-1 text-left overflow-hidden transition-shadow ${tone[b.status]} ${selected ? 'ring-2 ring-[var(--color-neutral-strong)] shadow-md' : 'hover:shadow-sm'}`}
+      className={`absolute left-1 right-1 z-[5] rounded-[6px] border-l-[3px] px-2 py-1 text-left overflow-hidden transition-shadow ${tone[b.status]} ${selected ? 'shadow-[0_4px_14px_rgba(0,0,0,0.12)] outline outline-1 outline-[var(--color-neutral-strong)]/40' : 'hover:shadow-sm'}`}
       style={{ top: y + 1, height: h }}>
       <p className="text-[12px] font-semibold truncate">{b.patientName}</p>
       {h > 36 && <p className="text-[11px] opacity-80 truncate">{formatTime(b.startsAt)} · {b.sessionTypeName}</p>}

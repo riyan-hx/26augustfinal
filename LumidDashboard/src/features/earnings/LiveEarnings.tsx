@@ -39,7 +39,7 @@ export default function LiveEarnings() {
 
   return (
     <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
-      <h1 className="font-serif text-[26px] font-semibold tracking-tight">Earnings</h1>
+      <h1 className="text-[26px] font-semibold tracking-tight">Earnings</h1>
       <p className="text-[12px] text-[var(--stone)] mt-1">Money collected for sessions, after any Razorpay fees and refunds. Not accounting software.</p>
 
       <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
