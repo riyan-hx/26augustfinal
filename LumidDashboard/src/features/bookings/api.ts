@@ -15,6 +15,7 @@ interface BookingListRow {
   price_paise: number
   patient_id: string
   patient_name: string
+  patient_email: string | null
   session_type_name: string
   meet_url: string | null
   hold_expires_at: string | null
@@ -22,7 +23,7 @@ interface BookingListRow {
 }
 
 const COLUMNS =
-  'id, code, status, starts_at, ends_at, price_paise, patient_id, patient_name, session_type_name, meet_url, hold_expires_at, payment_status'
+  'id, code, status, starts_at, ends_at, price_paise, patient_id, patient_name, patient_email, session_type_name, meet_url, hold_expires_at, payment_status'
 
 function toBooking(r: BookingListRow): BookingSummary {
   return {
@@ -34,6 +35,7 @@ function toBooking(r: BookingListRow): BookingSummary {
     pricePaise: r.price_paise,
     patientId: r.patient_id,
     patientName: r.patient_name,
+    patientEmail: r.patient_email,
     sessionTypeName: r.session_type_name,
     meetUrl: r.meet_url,
     holdExpiresAt: r.hold_expires_at ? new Date(r.hold_expires_at) : null,

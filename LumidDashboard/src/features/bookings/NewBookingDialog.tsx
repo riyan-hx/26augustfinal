@@ -18,7 +18,7 @@ export function NewBookingButton({ className = 'btn-primary' }: { className?: st
   )
 }
 
-function NewBookingDialog({ onClose }: { onClose: () => void }) {
+export function NewBookingDialog({ onClose }: { onClose: () => void }) {
   const patients = usePatients()
   const types = useSessionTypes()
   const create = useCreateBooking()
