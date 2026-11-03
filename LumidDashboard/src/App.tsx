@@ -7,10 +7,12 @@ import { AuthProvider } from './features/auth/AuthProvider'
 import { RequireAuth } from './features/auth/RequireAuth'
 import { AppShell } from './components/AppShell'
 import { Skeleton } from './components/ui/StateViews'
+import { useUiVersion } from './lib/uiVersion'
 
 // Route-level code splitting: each screen loads on first visit.
 const DemoOverview = lazy(() => import('./pages/Overview'))
 const LiveOverview = lazy(() => import('./features/overview/LiveOverview'))
+const OverviewV3 = lazy(() => import('./features/overview-v3/OverviewV3'))
 const DemoCalendar = lazy(() => import('./pages/CalendarPage'))
 const LiveCalendar = lazy(() => import('./features/calendar/LiveCalendar'))
 const LiveSessions = lazy(() => import('./features/sessions/LiveSessions'))
@@ -61,6 +63,13 @@ function App_({ children }: { children: ReactNode }) {
   )
 }
 
+/** Overview in the chosen design. v3 brings its own shell; classic uses the sidebar shell. */
+function OverviewRoute() {
+  const ui = useUiVersion()
+  if (ui === 'v3') return <RequireAuth><Suspense fallback={<PageFallback />}><OverviewV3 /></Suspense></RequireAuth>
+  return <App_><Overview /></App_>
+}
+
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -73,7 +82,7 @@ export default function App() {
               <Route path="/book" element={<PublicBooking />} />
               <Route path="/p/:slug" element={<PublicBooking />} />
               <Route path="/m/:bookingId" element={<ManageBooking />} />
-              <Route path="/app" element={<App_><Overview /></App_>} />
+              <Route path="/app" element={<OverviewRoute />} />
               <Route path="/app/calendar" element={<App_><CalendarPage /></App_>} />
               <Route path="/app/bookings" element={<App_><BookingsPage /></App_>} />
               <Route path="/app/patients" element={<App_><PatientsPage /></App_>} />
