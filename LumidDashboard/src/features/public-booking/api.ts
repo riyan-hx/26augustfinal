@@ -110,14 +110,14 @@ export async function getBookingStatus(bookingId: string, manageToken: string): 
   return j.status
 }
 
-export interface BookingRequestResult { bookingId: string; code: string; startsAt: Date; endsAt: Date; pricePaise: number }
+export interface BookingRequestResult { bookingId: string; code: string; startsAt: Date; endsAt: Date; pricePaise: number; manageToken: string }
 
 /** Pay-at-session request: reserves the slot; the psychologist collects payment and marks it paid. */
 export async function requestBooking(input: BookingRequest): Promise<BookingRequestResult> {
   if (isDemoMode) {
     await demoDelay(null, 500)
     const start = new Date(input.starts_at)
-    return { bookingId: crypto.randomUUID(), code: `B-${Math.random().toString(36).slice(2, 8).toUpperCase()}`, startsAt: start, endsAt: new Date(start.getTime() + 50 * 60_000), pricePaise: 0 }
+    return { bookingId: crypto.randomUUID(), code: `B-${Math.random().toString(36).slice(2, 8).toUpperCase()}`, startsAt: start, endsAt: new Date(start.getTime() + 50 * 60_000), pricePaise: 0, manageToken: 'demo' }
   }
   const token = crypto.randomUUID() + crypto.randomUUID()
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token))
@@ -127,5 +127,49 @@ export async function requestBooking(input: BookingRequest): Promise<BookingRequ
     p_full_name: input.full_name, p_email: input.email, p_phone: input.phone || null, p_note: input.note || null,
     p_manage_token_hash: hash,
   })) as { booking_id: string; code: string; starts_at: string; ends_at: string; price_paise: number }
-  return { bookingId: j.booking_id, code: j.code, startsAt: new Date(j.starts_at), endsAt: new Date(j.ends_at), pricePaise: j.price_paise }
+  return { bookingId: j.booking_id, code: j.code, startsAt: new Date(j.starts_at), endsAt: new Date(j.ends_at), pricePaise: j.price_paise, manageToken: token }
+}
+
+/** Private link a patient keeps to view, move or cancel their booking. The token stays in the URL fragment. */
+export const manageUrl = (bookingId: string, token: string) => `${window.location.origin}/m/${bookingId}#${token}`
+
+export interface ManagedBooking {
+  bookingId: string; code: string; status: BookingStatus; startsAt: Date; endsAt: Date; pricePaise: number; meetUrl: string | null
+  sessionTypeId: string; sessionTypeName: string; practiceName: string; practiceSlug: string; timezone: string
+  cancellationCutoffHours: number; changesAllowedUntil: Date
+}
+
+interface ManagedJson {
+  booking_id: string; code: string; status: BookingStatus; starts_at: string; ends_at: string; price_paise: number; meet_url: string | null
+  session_type_id: string; session_type_name: string; practice_name: string; practice_slug: string; timezone: string
+  cancellation_cutoff_hours: number; changes_allowed_until: string
+}
+
+const demoManaged = (): ManagedBooking => {
+  const start = new Date(Date.now() + 3 * 86_400_000); start.setUTCHours(4, 30, 0, 0)
+  return {
+    bookingId: 'demo', code: 'B-DEMO01', status: 'confirmed', startsAt: start, endsAt: new Date(start.getTime() + 50 * 60_000), pricePaise: 150000, meetUrl: null,
+    sessionTypeId: demoSessionTypes[0]!.id, sessionTypeName: demoSessionTypes[0]!.name, practiceName: demoProfile.displayName, practiceSlug: demoProfile.slug ?? 'demo',
+    timezone: 'Asia/Kolkata', cancellationCutoffHours: 24, changesAllowedUntil: new Date(start.getTime() - 24 * 3_600_000),
+  }
+}
+
+export async function getManagedBooking(bookingId: string, token: string): Promise<ManagedBooking> {
+  if (isDemoMode) return demoDelay(demoManaged())
+  const j = unwrap(await db().rpc('public_manage_booking', { p_booking_id: bookingId, p_token: token })) as ManagedJson
+  return {
+    bookingId: j.booking_id, code: j.code, status: j.status, startsAt: new Date(j.starts_at), endsAt: new Date(j.ends_at), pricePaise: j.price_paise,
+    meetUrl: j.meet_url, sessionTypeId: j.session_type_id, sessionTypeName: j.session_type_name, practiceName: j.practice_name,
+    practiceSlug: j.practice_slug, timezone: j.timezone, cancellationCutoffHours: j.cancellation_cutoff_hours, changesAllowedUntil: new Date(j.changes_allowed_until),
+  }
+}
+
+export async function patientCancel(bookingId: string, token: string, reason: string): Promise<void> {
+  if (isDemoMode) return demoDelay(undefined)
+  unwrap(await db().rpc('public_cancel_booking', { p_booking_id: bookingId, p_token: token, p_reason: reason || null }))
+}
+
+export async function patientReschedule(bookingId: string, token: string, startsAt: Date): Promise<void> {
+  if (isDemoMode) return demoDelay(undefined)
+  unwrap(await db().rpc('public_reschedule_booking', { p_booking_id: bookingId, p_token: token, p_new_start: startsAt.toISOString() }))
 }
