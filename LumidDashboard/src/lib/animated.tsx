@@ -11,6 +11,8 @@ export function AnimatedNumber({ value, format, duration = 450 }: { value: numbe
     const from = fromRef.current
     const to = value
     if (from === to) return
+    // Background tabs don't run animation frames; show the real value at once.
+    if (typeof document !== 'undefined' && document.hidden) { fromRef.current = to; setDisplay(to); return }
     const start = performance.now()
     let raf = 0
     const tick = (now: number) => {
