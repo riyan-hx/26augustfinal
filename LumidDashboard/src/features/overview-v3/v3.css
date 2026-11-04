@@ -1,0 +1,68 @@
+/* Tokens and text styles from the "Lumid v3 Compact GS" Figma library. Scoped to .v3. */
+.v3 {
+  --v3-ink: #151a13;
+  --v3-ink-2: #3a4440;
+  --v3-ink-3: #6b7571;
+  --v3-card: #fff;
+  --v3-subtle: #f4f6f5;
+  --v3-sunken: #eaeeeb;
+  --v3-hairline: rgba(36, 46, 33, 0.08);
+  --v3-lime: #88d95f;
+  --v3-lime-soft: #e4f7d6;
+  --v3-primary: #007950;
+  --v3-forest: #242e21;
+  --v3-mint-soft: #d9f5e6; --v3-mint: #0f7a4b;
+  --v3-sun-soft: #ffefc7; --v3-sun: #9a6a0b;
+  --v3-rose-soft: #ffe4ea; --v3-rose: #c2335a;
+  --v3-sky-soft: #dcebff; --v3-sky: #245db8;
+  --v3-lavender-soft: #e9e3ff; --v3-lavender: #5b3fc4;
+  --v3-peach-soft: #ffe4d6; --v3-peach: #b4532a;
+  font-family: "Manrope", system-ui, sans-serif;
+  color: var(--v3-ink);
+  background: var(--v3-sunken);
+  min-height: 100vh;
+}
+.v3 img { display: block; max-width: none; flex-shrink: 0; }
+.v3 button:disabled { opacity: .45; cursor: not-allowed; }
+.v3 :focus-visible { outline: 2px solid var(--v3-primary); outline-offset: 2px; }
+
+.v3-card { background: var(--v3-card); border-radius: 24px; padding: 20px; display: flex; flex-direction: column; gap: 16px; overflow: hidden; min-width: 0; }
+.v3-title { font-weight: 700; font-size: 17px; line-height: 1.3; letter-spacing: -0.085px; white-space: nowrap; }
+.v3-sub { font-size: 13px; line-height: 1.45; color: var(--v3-ink-3); }
+.v3-label { font-weight: 500; font-size: 12px; line-height: 1.3; }
+.v3-caption { font-size: 11px; line-height: 1.4; color: var(--v3-ink-3); }
+.v3-num { font-weight: 700; font-size: 30px; line-height: 1.1; letter-spacing: -0.45px; white-space: nowrap; }
+
+/* Pill buttons */
+.v3-pill { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 10px 16px; border-radius: 999px;
+  background: var(--v3-card); border: 1px solid var(--v3-hairline); font-weight: 500; font-size: 13px; line-height: 1.3; white-space: nowrap;
+  transition: background 180ms ease; }
+.v3-pill:hover:not(:disabled) { background: var(--v3-subtle); }
+.v3-pill--soft { background: var(--v3-subtle); border-color: transparent; }
+.v3-pill--soft:hover:not(:disabled) { background: var(--v3-sunken); }
+.v3-pill--dark { background: var(--v3-ink); color: #fff; border-color: transparent; }
+.v3-pill--dark:hover:not(:disabled) { background: #2b3328; }
+.v3-pill-lg { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 14px 24px; border-radius: 999px;
+  background: var(--v3-lime); font-weight: 500; font-size: 15px; line-height: 1.3; white-space: nowrap; transition: filter 180ms ease; }
+.v3-pill-lg:hover:not(:disabled) { filter: brightness(0.96); }
+.v3-pill-lg--soft { background: var(--v3-subtle); }
+
+/* Chips (999 radius) and status badges (10 radius) */
+.v3-chip { display: inline-flex; align-items: center; padding: 4px 10px; border-radius: 999px; font-weight: 500; font-size: 12px; line-height: 1.3; white-space: nowrap; }
+.v3-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 10px; font-weight: 500; font-size: 12px; line-height: 16px; white-space: nowrap; }
+
+.v3-nav { display: inline-flex; align-items: center; justify-content: center; padding: 12px 22px; border-radius: 999px; font-size: 15px; line-height: 1.5; color: var(--v3-ink-2); white-space: nowrap; transition: background 180ms ease; }
+.v3-nav:hover { background: var(--v3-subtle); }
+.v3-nav[aria-current="page"], .v3-nav[aria-pressed="true"] { background: var(--v3-ink); color: #fff; font-weight: 500; line-height: 1.3; }
+.v3-icon-btn { display: inline-flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 999px; position: relative; transition: background 180ms ease; }
+.v3-icon-btn:hover { background: var(--v3-subtle); }
+
+.v3-check { width: 18px; height: 18px; border-radius: 6px; border: 1.25px solid var(--v3-ink-3); opacity: .6; background: #fff; display: inline-flex; align-items: center; justify-content: center; }
+.v3-check[aria-checked="true"] { background: var(--v3-ink); border-color: var(--v3-ink); opacity: 1; }
+
+.v3-field { width: 100%; padding: 9px 12px; border-radius: 12px; border: 1px solid var(--v3-hairline); background: #fff; font-size: 13px; }
+
+.v3-earnings { background: radial-gradient(83.3% 83.3% at 100% 0%, rgba(136,217,95,.55), rgba(136,217,95,0) 100%), linear-gradient(146deg, #3a8f1c 0%, #165d00 50%, #0b3a08 100%); color: #fff; }
+.v3-waitcard { background: radial-gradient(83.3% 83.3% at 100% 0%, rgba(136,217,95,.55), rgba(136,217,95,0) 100%), linear-gradient(150deg, #3a8f1c 0%, #165d00 50%, #0b3a08 100%); color: #fff; }
+.v3-linkcard { background: radial-gradient(90.9% 90.9% at 100% 100%, rgba(0,121,80,.9), rgba(0,121,80,0) 100%), #242e21; color: #fff; }
+.v3-glass { background: rgba(255, 255, 255, 0.16); color: #fff; }

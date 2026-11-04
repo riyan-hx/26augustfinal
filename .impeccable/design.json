@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-12T00:00:00Z",
+  "title": "Design System: Lumid AI Dashboard",
+  "extensions": {
+    "colorMeta": {
+      "primary": { "role": "primary", "displayName": "Clinic Green", "canonical": "#2dc500", "tonalRamp": ["#0f4d00", "#155f00", "#1c7300", "#229a00", "#2dc500", "#5cd936", "#8fe770", "#c7f5b5"] },
+      "primary-deep": { "role": "primary", "displayName": "Clinic Green, gradient end", "canonical": "#56a835", "tonalRamp": ["#1f3d12", "#2c561a", "#3c7524", "#48922c", "#56a835", "#78c05a", "#a3d888", "#d2f0bf"] },
+      "ink": { "role": "neutral", "displayName": "Ink", "canonical": "#17181a", "tonalRamp": ["#000000", "#0e0f10", "#17181a", "#2c2d30", "#48494d", "#6a6c70", "#9a9ca0", "#d4d5d7"] },
+      "ink-muted": { "role": "neutral", "displayName": "Ink, Muted", "canonical": "#8b8f97", "tonalRamp": ["#3a3c40", "#54565b", "#6f7176", "#8b8f97", "#a6a9b0", "#c2c4c9", "#dddee1", "#f2f2f3"] },
+      "canvas-parchment": { "role": "neutral", "displayName": "Canvas, Parchment", "canonical": "#fafafa", "tonalRamp": ["#e0e0e0", "#e8e8e8", "#f0f0f0", "#f5f5f5", "#fafafa", "#fbfbfb", "#fdfdfd", "#ffffff"] },
+      "hairline": { "role": "neutral", "displayName": "Hairline", "canonical": "#e8e9eb", "tonalRamp": ["#c4c5c8", "#d0d1d4", "#dcdde0", "#e8e9eb", "#eeeff0", "#f2f3f4", "#f7f7f8", "#fbfbfc"] },
+      "amber-fg": { "role": "tertiary", "displayName": "Awaiting-Payment Olive", "canonical": "#7a9605", "tonalRamp": ["#3a4802", "#4e5f03", "#638104", "#7a9605", "#9ab607", "#b6d23a", "#d0e778", "#eaf5bd"] },
+      "rose-fg": { "role": "tertiary", "displayName": "Overdue Rose", "canonical": "#ef4d78", "tonalRamp": ["#7a0f2c", "#9c1739", "#c22b4f", "#df3c65", "#ef4d78", "#f47a9a", "#f8a8bd", "#fcd6e0"] }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display", "purpose": "Page greeting only, once per page (\"Good Morning, Dr. Anitha\")." },
+      "title": { "displayName": "Title", "purpose": "Card and section headers." },
+      "body": { "displayName": "Body", "purpose": "Default text — row content, descriptions." },
+      "label": { "displayName": "Label", "purpose": "Uppercase tracked metadata: KPI column headers, nav section eyebrows." }
+    },
+    "shadows": [],
+    "motion": [
+      { "name": "press", "value": "transform 120ms cubic-bezier(0.4,0,0.2,1); active: scale(0.97)", "purpose": "The one system-wide micro-interaction, on every button press." }
+    ],
+    "breakpoints": [
+      { "name": "lg", "value": "1024px" },
+      { "name": "sm", "value": "640px" }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The single most important action on a view — booking, confirming.",
+      "html": "<button class=\"ds-btn-primary\">+ Add New Booking</button>",
+      "css": ".ds-btn-primary { background: linear-gradient(135deg, #2dc500 0%, #56a835 100%); color: #ffffff; border: none; border-radius: 9999px; padding: 8px 16px; font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; transition: transform 120ms cubic-bezier(0.4,0,0.2,1); } .ds-btn-primary:hover { filter: brightness(0.96); } .ds-btn-primary:active { transform: scale(0.97); } .ds-btn-primary:focus-visible { outline: 2px solid #229a00; outline-offset: 2px; }"
+    },
+    {
+      "name": "Secondary Button",
+      "kind": "button",
+      "refersTo": "button-secondary",
+      "description": "Every action that isn't the primary commitment — Export, Open Calendar, View Profile.",
+      "html": "<button class=\"ds-btn-secondary\">Open Calendar</button>",
+      "css": ".ds-btn-secondary { background: #ffffff; color: #8b8f97; border: 1px solid #e8e9eb; border-radius: 9999px; padding: 6px 14px; font-family: Manrope, system-ui, sans-serif; font-size: 12px; font-weight: 500; transition: background 150ms; } .ds-btn-secondary:hover { background: #fafafa; color: #17181a; } .ds-btn-secondary:focus-visible { outline: 2px solid #229a00; outline-offset: 2px; }"
+    },
+    {
+      "name": "Paid Badge",
+      "kind": "chip",
+      "refersTo": "badge-paid",
+      "description": "Payment-confirmed status pill, used on schedule rows and bookings.",
+      "html": "<span class=\"ds-badge-paid\">Paid</span>",
+      "css": ".ds-badge-paid { background: #e8f7ec; color: #229a00; border-radius: 9999px; padding: 2px 10px; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 600; display: inline-block; }"
+    },
+    {
+      "name": "Pending Badge",
+      "kind": "chip",
+      "refersTo": "badge-pending",
+      "description": "Awaiting-payment status pill — the olive tone, deliberately close in hue to the brand green.",
+      "html": "<span class=\"ds-badge-pending\">Pending</span>",
+      "css": ".ds-badge-pending { background: #f7fadb; color: #7a9605; border-radius: 9999px; padding: 2px 10px; font-family: Manrope, system-ui, sans-serif; font-size: 11px; font-weight: 600; display: inline-block; }"
+    },
+    {
+      "name": "Content Card",
+      "kind": "card",
+      "refersTo": "card",
+      "description": "The system's only container type — flat, hairline-bordered, never shadowed.",
+      "html": "<div class=\"ds-card\"><h3 class=\"ds-card-title\">Today's Schedules</h3><p>Card content.</p></div>",
+      "css": ".ds-card { background: #ffffff; border: 1px solid #e8e9eb; border-radius: 16px; padding: 20px; } .ds-card-title { font-family: Manrope, system-ui, sans-serif; font-size: 17px; font-weight: 700; color: #17181a; margin: 0 0 12px; }"
+    },
+    {
+      "name": "Sidebar Nav Item",
+      "kind": "nav",
+      "refersTo": "nav-item",
+      "description": "Active state is a pale-green pill fill with green icon+text — the fill alone carries the state, no border or bold shift.",
+      "html": "<a class=\"ds-nav-item ds-nav-item--active\" href=\"#\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.75\"><rect x=\"3\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"></rect><rect x=\"14\" y=\"3\" width=\"7\" height=\"7\" rx=\"1\"></rect><rect x=\"3\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"></rect><rect x=\"14\" y=\"14\" width=\"7\" height=\"7\" rx=\"1\"></rect></svg>Overview</a>",
+      "css": ".ds-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px; font-family: Manrope, system-ui, sans-serif; font-size: 13px; font-weight: 500; color: #8b8f97; text-decoration: none; transition: background 150ms; } .ds-nav-item:hover { background: #fafafa; color: #17181a; } .ds-nav-item--active { background: #e8f7ec; color: #2dc500; } .ds-nav-item--active svg { color: #2dc500; }"
+    },
+    {
+      "name": "Filter Segment",
+      "kind": "chip",
+      "refersTo": "filter-pill",
+      "description": "The Today / This Week / This Month segmented control — a pill track with a white pill for the active segment.",
+      "html": "<div class=\"ds-filter-track\"><button class=\"ds-filter-pill ds-filter-pill--active\">Today</button><button class=\"ds-filter-pill\">This Week</button></div>",
+      "css": ".ds-filter-track { display: inline-flex; gap: 6px; background: #fafafa; border: 1px solid #e8e9eb; border-radius: 9999px; padding: 4px; } .ds-filter-pill { background: transparent; border: none; border-radius: 9999px; padding: 6px 16px; font-family: Manrope, system-ui, sans-serif; font-size: 12px; font-weight: 500; color: #8b8f97; } .ds-filter-pill--active { background: #ffffff; color: #17181a; box-shadow: 0 1px 2px rgba(0,0,0,0.06); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Clinic Whiteboard",
+    "overview": "Lumid reads like the whiteboard behind a good solo therapist's desk: plain, fast to scan between sessions, and completely unbothered with performing \"software.\" Every screen answers one question — what needs my attention right now — before it answers anything else. The system is deliberately quiet everywhere except the one green thread that runs through it: payment status, the primary action, the active nav item. That green is doing real work (it's the product's core promise, payment before confirmation), not decoration, so it stays rare and precise rather than washing the page. This is an Operate-mode dashboard, not a marketing surface. It rejects the two failure modes of clinical software: the sterile, gray enterprise-EHR look, and the over-designed SaaS-dashboard look (gradient hero tiles, icon-badge stat cards, drop shadows on everything). Instead: flat white cards, hairline dividers doing the separating work that shadows usually do, one confident sans-serif, and generous but not decorative whitespace.",
+    "keyCharacteristics": [
+      "Single-hue brand system: one green, no secondary/tertiary brand colors — only functional pastels for status.",
+      "Flat and bordered, never shadowed. Depth comes from hairlines and background-tint contrast.",
+      "Pill-shaped everything that's actionable or stateful.",
+      "Manrope throughout — one typeface, weight and size carry all the hierarchy.",
+      "Information density over decoration: a stat card is a number, not an illustration of a number."
+    ],
+    "rules": [
+      { "name": "The One Gradient Rule", "body": "The diagonal green gradient appears in exactly one place: the primary CTA. Every other green in the system is the flat start-color. A second gradient anywhere is a violation, not a variant.", "section": "colors" },
+      { "name": "The No-Serif Rule", "body": "Nothing in the product ever sets a serif face, including in marketing-adjacent surfaces like the public booking page.", "section": "typography" },
+      { "name": "The Flat-By-Default Rule", "body": "If an element needs a shadow to read as separate, it needs a hairline instead. box-shadow does not appear in this system outside of a browser-native focus ring.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do keep the gradient exclusive to the primary CTA (The One Gradient Rule).",
+      "Do use hairlines and background-tint, never shadows, for every card/section boundary.",
+      "Do use the pill radius for anything stateful or clickable, and 16px for everything else — no third radius.",
+      "Do pair every badge's saturated text with its matching pastel background, never a bare colored dot as the only status signal.",
+      "Do keep KPI/KPI-adjacent numbers as the one place font-size jumps above 17px outside the page greeting."
+    ],
+    "donts": [
+      "Don't add a second gradient, an icon-badge stat card, or a drop shadow anywhere.",
+      "Don't introduce a second brand hue. Status pastels stay functional-only.",
+      "Don't use emoji as icons or section markers; lucide-react only.",
+      "Don't set anything in a serif or monospace face."
+    ]
+  }
+}

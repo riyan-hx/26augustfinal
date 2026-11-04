@@ -1,0 +1,115 @@
+/*
+ * Lumid's brand layer on top of HeroUI (src/styles/globals.css, loaded first —
+ * see main.tsx). HeroUI owns the real system now: --background/--foreground/
+ * --surface/--border/--accent/--radius etc, themed to the exact token system
+ * pulled from the Lumid AI Dashboard Figma file (colors, spacing, radius,
+ * type scale, motion).
+ *
+ * Typeface: Manrope — the exact family used throughout the Figma file
+ * (loaded from Google Fonts in index.html), system-ui as the fallback stack.
+ *
+ * This file bridges the app's existing semantic names (--ink, --hairline,
+ * --green-700, …) onto the real HeroUI tokens, so pages that already use these
+ * names inherit the design system's values without a full class-name rewrite.
+ */
+
+:root {
+  /* Typeface — plain :root, not @theme: this file is a separate top-level
+     CSS entry point (imported directly in main.tsx), not chained from
+     "@import tailwindcss", so Tailwind never processes an @theme block
+     placed here. A plain custom-property override is what actually reaches
+     the page — the same pattern globals.css uses for --accent. */
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  /* Surfaces */
+  --canvas: var(--background);
+  --surface-warm: var(--surface-secondary, var(--background));
+  --surface-soft: color-mix(in oklch, var(--color-neutral-strong) 8%, var(--background));
+  --hairline: var(--border);
+  --hairline-strong: var(--separator, var(--border));
+  --lumid-border: var(--border);
+
+  /* Text */
+  --ink: var(--foreground);
+  --slate: color-mix(in oklch, var(--foreground) 78%, var(--background));
+  --stone: var(--muted);
+
+  /* Legacy "green" scale — these names predate the "one green thread" rule
+     (see DESIGN.md): green stays reserved for the primary CTA, the logo, and
+     payment-status signals. Every page still reaching for --green-700 etc.
+     for a non-primary button, ring, or highlight gets the neutral #383838
+     instead now, derived the same way the green ramp used to be. */
+  --green-900: color-mix(in oklch, var(--color-neutral-strong) 70%, black);
+  --green-800: color-mix(in oklch, var(--color-neutral-strong) 85%, black);
+  --green-700: var(--color-neutral-strong);
+  --green-300: color-mix(in oklch, var(--color-neutral-strong) 45%, white);
+  --green-200: color-mix(in oklch, var(--color-neutral-strong) 25%, white);
+  --green-50: color-mix(in oklch, var(--color-neutral-strong) 8%, white);
+  --sage-50: var(--surface-warm);
+}
+
+html,
+body,
+#root {
+  font-family: var(--font-body);
+  font-weight: 400;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Apple's ladder is 300 / 400 / 600 / 700 — 500 is deliberately absent.
+   Anything asking for medium (500) reads as the confident 600 instead. */
+h1, h2, h3, .font-semibold { font-weight: 600; letter-spacing: -0.02em; }
+
+* { font-family: inherit; }
+.font-serif { font-family: var(--font-body); }
+
+body { background: var(--canvas); color: var(--ink); -webkit-font-smoothing: antialiased; }
+
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 999px; }
+::-webkit-scrollbar-track { background: transparent; }
+
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}
+
+/* Shared buttons for new data-driven screens (match existing pill buttons). */
+.btn-primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+  padding: 9px 16px; border-radius: 999px; font-size: 13px; font-weight: 600;
+  background: var(--color-primary); color: #fff; transition: background 200ms ease, opacity 200ms ease;
+}
+.btn-primary:hover:not(:disabled) { background: var(--color-primary-focus); }
+.btn-primary:disabled { opacity: .55; cursor: not-allowed; }
+.btn-secondary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+  padding: 8px 14px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  background: var(--color-canvas); color: var(--ink); border: 1px solid var(--hairline); transition: background 200ms ease;
+}
+.btn-secondary:hover:not(:disabled) { background: var(--color-canvas-parchment); }
+.btn-quiet {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px; white-space: nowrap;
+  height: 30px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 500;
+  background: var(--color-canvas); color: var(--ink); border: 1px solid var(--hairline); transition: background 180ms ease, border-color 180ms ease;
+}
+.btn-quiet:hover:not(:disabled) { background: var(--color-canvas-parchment); }
+.btn-quiet--next { color: var(--badge-green-fg); border-color: color-mix(in oklch, var(--badge-green-fg) 35%, var(--hairline)); font-weight: 600; }
+.btn-quiet--next:hover:not(:disabled) { background: var(--badge-green-bg); }
+.btn-link { height: 30px; padding: 0 6px; font-size: 12px; font-weight: 500; color: var(--stone); border-radius: 6px; }
+.btn-link:hover:not(:disabled) { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.btn-quiet:disabled, .btn-link:disabled { opacity: .55; cursor: not-allowed; }
+.btn-primary:focus-visible, .btn-secondary:focus-visible, .btn-quiet:focus-visible, .btn-link:focus-visible { outline: 2px solid var(--color-neutral-strong); outline-offset: 2px; }
+.field {
+  width: 100%; padding: 10px 12px; border-radius: 10px; font-size: 13px;
+  background: var(--color-canvas); border: 1px solid var(--hairline); color: var(--ink); outline: none;
+  transition: border-color 200ms ease, box-shadow 200ms ease;
+}
+.field:focus { border-color: var(--color-neutral-strong); box-shadow: 0 0 0 3px var(--color-neutral-strong-soft); }
+.field[aria-invalid="true"] { border-color: var(--badge-rose-fg); }
+.form-error { margin-top: 4px; font-size: 12px; color: #c62f57; }
+.field-label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; color: var(--ink); }
