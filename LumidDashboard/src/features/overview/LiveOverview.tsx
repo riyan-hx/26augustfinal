@@ -16,7 +16,7 @@ import type { BookingSummary } from '../../types/domain'
 import { KpiRow, WeekStrip } from './Insights'
 import { Waitlist } from './Waitlist'
 import { SetupCard } from './SetupCard'
-import { setupDone, setupSkipped } from './setup'
+import { isBrandNew, setupSkipped } from './setup'
 import { DAY, dayLabel, firstName, fmt, isPaid } from './utils'
 
 function greeting(now: number): string {
@@ -42,7 +42,8 @@ export default function LiveOverview() {
 
   if (setup.isLoading) return <OverviewSkeleton />
   // A brand-new practice goes straight to the guided setup (unless they chose to skip it).
-  if (!skipped && setup.status && !setup.status.published && setupDone(setup.status) === 0) return <Navigate to="/app/setup" replace />
+  // (A name alone, filled in from Google at sign-up, still counts as brand-new.)
+  if (!skipped && setup.status && isBrandNew(setup.status)) return <Navigate to="/app/setup" replace />
 
   const doctor = setup.profile ? firstName(setup.profile.displayName) : undefined
   const practice = setup.profile?.displayName ?? 'Your psychologist'

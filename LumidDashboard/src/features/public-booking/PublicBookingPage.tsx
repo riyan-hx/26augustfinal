@@ -4,6 +4,7 @@ import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, ArrowLeft, CalendarDays, CheckCircle2, Clock, CreditCard, Shield, Video } from '../../lib/icons'
 import { LumidLogo } from '../../components/LumidLogo'
 import { Avatar } from '../../components/ui/Avatar'
+import { photoSrc } from '../../lib/photos'
 import { EmptyState, ErrorState, Skeleton } from '../../components/ui/StateViews'
 import { newIdempotencyKey } from '../../lib/api'
 import { formatCountdown, formatDateTime, localDateKey } from '../../lib/dates'
@@ -292,7 +293,7 @@ function PracticeCard({ profile }: { profile: PublicProfile }) {
   return (
     <div className="bg-white border border-[var(--hairline)] rounded-[20px] p-6 lg:p-8">
       <div className="flex gap-4">
-        <Avatar name={profile.displayName} size={80} />
+        <Avatar name={profile.displayName} src={photoSrc(profile.photoPath)} size={80} />
         <div>
           <h1 className="font-serif text-[24px] font-semibold leading-tight">{profile.displayName}</h1>
           <p className="text-[13px] text-[var(--stone)] mt-1">{[profile.title, profile.city, profile.yearsExperience ? `${profile.yearsExperience} years` : null, profile.languages.join(', ')].filter(Boolean).join(' • ')}</p>

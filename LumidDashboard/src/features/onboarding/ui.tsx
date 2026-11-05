@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import { Avatar } from '../../components/ui/Avatar'
 import { env } from '../../lib/env'
 import { bookingUrlLabel } from '../../lib/links'
+import { photoSrc } from '../../lib/photos'
 import { Check, Clock, Globe, MapPin } from '../../lib/icons'
 import { priceLabel, type AboutDraft, type SessionDraft } from './model'
 
@@ -26,8 +27,8 @@ export function FieldError({ id, children }: { id: string; children?: string }) 
 }
 
 /** A small, honest preview of the public booking page as it'll look to patients. */
-export function BookingPreview({ about, slug, sessions, compact }: {
-  about: AboutDraft; slug: string; sessions: SessionDraft[]; compact?: boolean
+export function BookingPreview({ about, slug, sessions }: {
+  about: AboutDraft; slug: string; sessions: SessionDraft[]
 }) {
   const name = about.displayName.trim() || 'Your name'
   const active = sessions.filter((s) => s.isActive && s.name.trim())
@@ -45,7 +46,7 @@ export function BookingPreview({ about, slug, sessions, compact }: {
       </div>
       <div className="p-5">
         <div className="flex items-center gap-3.5">
-          <Avatar name={name} size={52} />
+          <Avatar name={name} src={photoSrc(about.photoPath)} size={52} />
           <div className="min-w-0">
             <p className="text-[16px] font-semibold truncate">{name}</p>
             <p className="text-[13px] text-[var(--ob-muted)] truncate">{about.title.trim() || 'Psychologist'}</p>
@@ -57,23 +58,21 @@ export function BookingPreview({ about, slug, sessions, compact }: {
             <span className="truncate">{about.languages.length ? about.languages.join(', ') : 'Languages'}</span>
           </span>
         </div>
-        {!compact && about.bio.trim() && (
+        {about.bio.trim() && (
           <p className="mt-3.5 text-[13px] leading-relaxed text-[var(--ob-ink)]/80 line-clamp-3">{about.bio}</p>
         )}
-        {!compact && (
-          <div className="mt-4 space-y-2">
-            {(active.length ? active : [null]).slice(0, 3).map((s, i) => (
-              <div key={s?.key ?? i} className={`flex items-center justify-between gap-3 rounded-[12px] border px-3 py-2.5 ${s ? 'border-[var(--ob-line)]' : 'border-dashed border-[var(--ob-line-strong)]'}`}>
-                <div className="min-w-0">
-                  <p className={`text-[13px] font-semibold truncate ${s ? '' : 'text-[var(--ob-muted)]'}`}>{s?.name ?? 'Your sessions appear here'}</p>
-                  {s && <p className="text-[11px] text-[var(--ob-muted)] inline-flex items-center gap-1"><Clock size={11} aria-hidden="true" />{s.durationMinutes} min</p>}
-                </div>
-                {s && <span className="text-[13px] font-semibold shrink-0">{priceLabel(s.priceText)}</span>}
+        <div className="mt-4 space-y-2">
+          {(active.length ? active : [null]).slice(0, 3).map((s, i) => (
+            <div key={s?.key ?? i} className={`flex items-center justify-between gap-3 rounded-[12px] border px-3 py-2.5 ${s ? 'border-[var(--ob-line)]' : 'border-dashed border-[var(--ob-line-strong)]'}`}>
+              <div className="min-w-0">
+                <p className={`text-[13px] font-semibold truncate ${s ? '' : 'text-[var(--ob-muted)]'}`}>{s?.name ?? 'Your sessions appear here'}</p>
+                {s && <p className="text-[11px] text-[var(--ob-muted)] inline-flex items-center gap-1"><Clock size={11} aria-hidden="true" />{s.durationMinutes} min</p>}
               </div>
-            ))}
-          </div>
-        )}
-        <div className="mt-4 rounded-full bg-[var(--ob-forest)] text-white text-[13px] font-semibold text-center py-2.5" aria-hidden="true">
+              {s && <span className="text-[13px] font-semibold shrink-0">{priceLabel(s.priceText)}</span>}
+            </div>
+          ))}
+        </div>
+        <div className="mt-4 rounded-full bg-[#5fbf3a] text-white text-[13px] font-semibold text-center py-2.5" aria-hidden="true">
           Book a session
         </div>
         <p className="mt-2 text-center text-[11px] text-[var(--ob-muted)]">{env.onlinePayments ? 'Secure online payment' : 'Pay at the session'} · No account needed</p>

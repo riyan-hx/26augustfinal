@@ -22,6 +22,7 @@ export const demoProfile: PracticeProfile = {
   languages: ['English', 'Malayalam', 'Hindi'],
   photoPath: null,
   published: true,
+  termsAcceptedAt: new Date('2026-10-01T09:00:00+05:30'),
   timezone: 'Asia/Kolkata',
   cancellationCutoffHours: 24,
   minNoticeMinutes: 720,

@@ -1,19 +1,19 @@
 import { useEffect, useState } from 'react'
 import { bookingUrlParts } from '../../lib/links'
 import { AlertTriangle, CheckCircle2 } from '../../lib/icons'
-import { checkSlug, cleanSlugInput, slugSuggestions, type AboutDraft, type SessionDraft } from './model'
-import { BookingPreview, Chip } from './ui'
+import { checkSlug, cleanSlugInput, slugSuggestions, type AboutDraft } from './model'
+import { Chip } from './ui'
 
 interface Props {
   slug: string
   savedSlug: string | null
   onChange: (slug: string) => void
   about: AboutDraft
-  sessions: SessionDraft[]
   serverError?: string
 }
 
-export function StepLink({ slug, savedSlug, onChange, about, sessions, serverError }: Props) {
+/** Booking-link field with live checks and name-based ideas. */
+export function LinkField({ slug, savedSlug, onChange, about, serverError }: Props) {
   const { prefix, suffix } = bookingUrlParts()
   // Validate a beat after typing stops so the message doesn't flicker on every key.
   const [checked, setChecked] = useState(slug)
@@ -34,7 +34,7 @@ export function StepLink({ slug, savedSlug, onChange, about, sessions, serverErr
   else status = { tone: 'ok', text: 'Looks good. We’ll confirm it’s free when you continue.' }
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-3">
       <div>
         <label htmlFor="ob-slug" className="field-label">Your booking link</label>
         <div className={`flex items-stretch rounded-[12px] border bg-white overflow-hidden transition-[border-color,box-shadow] duration-200 focus-within:shadow-[0_0_0_3px_color-mix(in_oklch,var(--ob-lime)_30%,transparent)] ${status.tone === 'error' ? 'border-[#c62f57]' : 'border-[var(--ob-line-strong)] focus-within:border-[var(--ob-moss)]'}`}>
@@ -55,23 +55,11 @@ export function StepLink({ slug, savedSlug, onChange, about, sessions, serverErr
       </div>
 
       {ideas.length > 0 && (
-        <div>
-          <p className="field-label">A few ideas</p>
-          <div className="flex flex-wrap gap-2">
-            {ideas.map((s) => <Chip key={s} onClick={() => onChange(s)}>{s}</Chip>)}
-          </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[12px] text-[var(--ob-muted)]">Ideas:</span>
+          {ideas.slice(0, 3).map((s) => <Chip key={s} onClick={() => onChange(s)}>{s}</Chip>)}
         </div>
       )}
-
-      <div className="lg:hidden">
-        <p className="field-label">How patients will see it</p>
-        <BookingPreview about={about} slug={slug} sessions={sessions} compact />
-      </div>
-
-      <p className="text-[13px] leading-relaxed text-[var(--ob-muted)] rounded-[14px] bg-white/70 border border-[var(--ob-line)] p-4">
-        Share this link on WhatsApp, Instagram or your visiting card. Patients pick a time and book —
-        no app or account needed. Changing it later will break links you’ve already shared.
-      </p>
     </div>
   )
 }

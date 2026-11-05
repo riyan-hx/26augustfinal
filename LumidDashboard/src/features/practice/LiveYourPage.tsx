@@ -3,6 +3,7 @@ import { CheckCircle2, Clock, ExternalLink, Globe, Languages, MapPin } from '../
 import { bookingUrl } from '../../lib/links'
 import { formatINR } from '../../lib/money'
 import { Avatar } from '../../components/ui/Avatar'
+import { photoSrc } from '../../lib/photos'
 import { ErrorState, Skeleton } from '../../components/ui/StateViews'
 import { Badge, PageHeader } from '../../components/ui/PageHeader'
 import { CopyBookingLinkButton } from './CopyBookingLinkButton'
@@ -47,7 +48,7 @@ export default function LiveYourPage() {
             </div>
             {!profile ? <div className="p-8 space-y-3"><Skeleton className="h-14 w-14 rounded-full mx-auto" /><Skeleton className="h-4 w-40 mx-auto" /><Skeleton className="h-3 w-64 mx-auto" /></div> : (
               <div className="p-8 text-center">
-                <div className="flex justify-center"><Avatar name={profile.displayName || 'You'} size={64} /></div>
+                <div className="flex justify-center"><Avatar name={profile.displayName || 'You'} src={photoSrc(profile.photoPath)} size={64} /></div>
                 <p className="text-[20px] font-semibold mt-4">{profile.displayName || 'Your name'}</p>
                 <p className="text-[13px] text-[var(--stone)]">{profile.title || 'Add your professional title'}</p>
                 <div className="flex justify-center flex-wrap gap-x-4 gap-y-1 mt-3 text-[12px] text-[var(--stone)]">

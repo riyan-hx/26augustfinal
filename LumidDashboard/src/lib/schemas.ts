@@ -30,6 +30,8 @@ export const profileSchema = z.object({
   years_experience: z.number().int().min(0).max(70).nullable().default(null),
   rci_number: trimmed(40).nullable().default(null),
   slug: slugSchema.optional(),
+  // `preset:<id>` or a storage path `<folder>/<file>`; null shows initials.
+  photo_path: z.string().regex(/^(preset:[a-z0-9-]{2,24}|[\w-]{1,64}\/[\w.-]{1,80})$/, "That photo couldn’t be used.").nullable().optional(),
 });
 
 export const sessionTypeSchema = z.object({

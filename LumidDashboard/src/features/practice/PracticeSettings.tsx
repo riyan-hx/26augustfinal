@@ -97,7 +97,10 @@ function PublishCard() {
       ) : status.published ? (
         <button type="button" className="btn-secondary" onClick={() => setConfirming(true)}>Unpublish…</button>
       ) : (
-        <PrimaryButton disabled={!ready} loading={publish.isPending} onClick={() => publish.mutate(true)}>Publish page</PrimaryButton>
+        ready && !profile?.termsAcceptedAt
+          // First publish goes through the short agreement in setup.
+          ? <Link to="/app/setup?step=agreement" className="btn-primary">Review & publish</Link>
+          : <PrimaryButton disabled={!ready} loading={publish.isPending} onClick={() => publish.mutate(true)}>Publish page</PrimaryButton>
       )}
     </div>
   )

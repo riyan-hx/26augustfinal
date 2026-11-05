@@ -14,7 +14,7 @@ const hhmmToMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 
 export interface PublicSessionType { id: string; name: string; description: string; durationMinutes: number; pricePaise: number }
 export interface PublicProfile {
   slug: string; displayName: string; title: string; bio: string; city: string; languages: string[]
-  specialties: string[]; yearsExperience: number | null; timezone: string
+  specialties: string[]; yearsExperience: number | null; timezone: string; photoPath: string | null
   cancellationCutoffHours: number; bookingWindowDays: number; minNoticeMinutes: number; sessionTypes: PublicSessionType[]
 }
 export interface Hold {
@@ -26,14 +26,14 @@ export interface PaymentProof { orderId: string; paymentId: string; signature: s
 
 interface ProfileJson {
   slug: string; display_name: string; title: string; bio: string; city: string; languages: string[]
-  specialties?: string[]; years_experience?: number | null; timezone: string
+  specialties?: string[]; years_experience?: number | null; timezone: string; photo_path?: string | null
   cancellation_cutoff_hours: number; booking_window_days: number; min_notice_minutes?: number
   session_types: { id: string; name: string; description: string; duration_minutes: number; price_paise: number }[]
 }
 
 const toProfile = (j: ProfileJson): PublicProfile => ({
   slug: j.slug, displayName: j.display_name, title: j.title, bio: j.bio, city: j.city, languages: j.languages,
-  specialties: j.specialties ?? [], yearsExperience: j.years_experience ?? null, timezone: j.timezone,
+  specialties: j.specialties ?? [], yearsExperience: j.years_experience ?? null, timezone: j.timezone, photoPath: j.photo_path ?? null,
   cancellationCutoffHours: j.cancellation_cutoff_hours, bookingWindowDays: j.booking_window_days, minNoticeMinutes: j.min_notice_minutes ?? 0,
   sessionTypes: j.session_types.map((s) => ({ id: s.id, name: s.name, description: s.description, durationMinutes: s.duration_minutes, pricePaise: s.price_paise })),
 })
@@ -44,7 +44,7 @@ export async function getPublicProfile(slug: string): Promise<PublicProfile> {
   if (isDemoMode) {
     if (!DEMO_SLUGS.has(slug)) throw new ApiError('NOT_FOUND')
     return demoDelay({
-      slug: demoProfile.slug ?? 'demo', displayName: demoProfile.displayName, title: demoProfile.title, bio: demoProfile.bio,
+      slug: demoProfile.slug ?? 'demo', displayName: demoProfile.displayName, photoPath: demoProfile.photoPath, title: demoProfile.title, bio: demoProfile.bio,
       city: demoProfile.city, languages: demoProfile.languages, specialties: ['Anxiety & overwhelm', 'Avoidance & procrastination'],
       yearsExperience: 8, timezone: demoProfile.timezone, cancellationCutoffHours: demoProfile.cancellationCutoffHours,
       bookingWindowDays: demoProfile.bookingWindowDays, minNoticeMinutes: demoProfile.minNoticeMinutes,

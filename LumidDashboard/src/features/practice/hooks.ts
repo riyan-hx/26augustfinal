@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
-  archiveSessionType, computeSetup, getProfile, listAvailability, listSessionTypes,
+  acceptTerms, archiveSessionType, computeSetup, getProfile, listAvailability, listSessionTypes,
   saveSessionType, saveWeeklyHours, setPublished, updateProfile,
 } from './api'
 
@@ -36,3 +36,4 @@ export const useSaveSessionType = () => useSaver(saveSessionType, practiceKeys.s
 export const useArchiveSessionType = () => useSaver(archiveSessionType, practiceKeys.sessionTypes)
 export const useSaveWeeklyHours = () => useSaver(saveWeeklyHours, practiceKeys.availability)
 export const usePublish = () => useSaver(setPublished, practiceKeys.profile)
+export const useAcceptTerms = () => useSaver(acceptTerms, practiceKeys.profile)
