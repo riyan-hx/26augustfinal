@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { Check, Clock, Video, Shield, ArrowRight, CalendarDays, CreditCard, Sparkles, Copy } from '../lib/icons'
 import { LumidLogo } from '../components/LumidLogo'
+import { Avatar } from '../components/ui/Avatar'
 
 export default function PublicBooking() {
+  const { slug } = useParams<{ slug: string }>()
+  const displaySlug = slug ?? 'book'
   const [step, setStep] = useState(1)
   const [selectedDate, setSelectedDate] = useState('27')
   const [selectedTime, setSelectedTime] = useState('10:30 AM')
@@ -15,7 +18,7 @@ export default function PublicBooking() {
         <div className="max-w-[980px] mx-auto px-4 lg:px-6 h-[52px] flex items-center justify-between">
           <Link to="/app" className="flex items-center gap-2.5">
             <LumidLogo className="h-[15px] sm:h-[17px]" />
-            <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline border-l border-[var(--hairline)] pl-2.5">ANITHA.LUMIDAI.IN</span>
+            <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline border-l border-[var(--hairline)] pl-2.5">{`app.lumidai.in/${displaySlug}`}</span>
           </Link>
           <div className="flex items-center gap-2 text-[12px]">
             <span className="hidden sm:inline text-[var(--stone)]">Powered by Lumid • Secure • Private</span>
@@ -30,7 +33,7 @@ export default function PublicBooking() {
           <div>
             <div className="bg-white border border-[var(--hairline)] rounded-[20px] p-6 lg:p-8">
               <div className="flex gap-4">
-                <img src="https://i.pravatar.cc/200?img=5" alt="" className="w-20 h-20 rounded-2xl object-cover" />
+                <Avatar name="Anitha Raghavan" size={80} />
                 <div>
                   <h1 className="font-serif text-[24px] font-semibold leading-none">Dr. Anitha Raghavan</h1>
                   <p className="text-[13px] text-[var(--stone)] mt-1">Psychologist • Bengaluru • 8 years • English, Malayalam, Hindi</p>
@@ -165,7 +168,7 @@ export default function PublicBooking() {
       <footer className="mt-10 border-t border-[var(--hairline)] bg-white">
         <div className="max-w-[980px] mx-auto px-4 lg:px-6 py-6 flex flex-col sm:flex-row gap-2 text-[11px] text-[var(--stone)]">
           <span>© 2026 Lumid AI • Practice → Care → Intelligence</span>
-          <span className="sm:ml-auto">anitha.lumidai.in • Bengaluru • Privacy • Terms • Help</span>
+          <span className="sm:ml-auto">{`app.lumidai.in/${displaySlug}`} • Bengaluru • Privacy • Terms • Help</span>
         </div>
       </footer>
     </div>
