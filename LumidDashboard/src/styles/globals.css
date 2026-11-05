@@ -1,6 +1,9 @@
 @import "tailwindcss";
 @import "@heroui/styles";
 
+/* Never apply dark-mode utilities: the app is designed for light only. */
+@custom-variant dark (&:where(.lumid-dark-disabled, .lumid-dark-disabled *));
+
 /* ============================================================
    EXACT DESIGN SYSTEM — sourced from the Lumid AI Dashboard Figma
    file (untitled, node 0-1). Flat white cards, hairline dividers,
@@ -9,48 +12,64 @@
    ============================================================ */
 
 :root {
-  /* ---- Colors: Brand & Accent — Lumid green, exact values pulled from the
-     Figma file's node inspector ---- */
-  --color-primary: #2dc500;            /* Green — reserved for the primary CTA, the logo, and payment-status signals only */
-  --color-primary-focus: #229a00;
-  --color-primary-on-dark: #4ade80;
-  --color-primary-soft: #e8f7ec;       /* pale green — Paid pill bg only */
-  --gradient-primary: linear-gradient(135deg, #2dc500 0%, #56a835 100%); /* exact stops from the primary button fill */
+  /* ---- Colors: Brand & Accent — warm, green-led system (v4 warmth pass).
+     Brand anchors: lime #88D95F and forest #242E21. The action green is a
+     deeper leaf so white text on it passes WCAG AA (5.2:1); lime is used
+     only as an accent (dots, active rails, highlights), never under text. ---- */
+  --color-primary: #2f7a34;            /* primary actions — white text 5.2:1 */
+  --color-primary-focus: #256329;      /* hover / pressed */
+  --color-primary-on-dark: #88d95f;
+  --color-primary-soft: #ebf5e2;       /* soft green tint: active nav, icon tiles, Paid pill */
+  --color-primary-tint: #f4f9ef;       /* faintest green wash for highlighted rows/cards */
+  --color-lime: #88d95f;               /* brand lime — accent only */
+  --color-forest: #242e21;             /* brand forest — strongest ink-green */
+  --gradient-primary: linear-gradient(135deg, #8fdd66 0%, #80d257 100%);
 
-  /* Everything else that used to be green — nav states, secondary icons,
-     links, toggles, avatars, focus rings — uses this neutral instead, so
-     green stays a rare, meaningful signal rather than a decoration. */
-  --color-neutral-strong: #383838;
-  --color-neutral-strong-soft: #38383814; /* pale tint for active/selected backgrounds */
+  /* "Strong neutral" — nav states, secondary icons, links, toggles, focus
+     rings. Now a deep forest-tinted ink instead of flat grey, so the whole
+     UI reads warm and green-led without turning loud. */
+  --color-neutral-strong: #2b3a27;
+  --color-neutral-strong-soft: #2b3a2712; /* pale tint for active/selected backgrounds */
 
-  /* ---- Colors: Surface ---- */
+  /* ---- Colors: Surface — slightly warm neutrals ---- */
   --color-canvas: #ffffff;
-  --color-canvas-parchment: #fafafa;   /* page background — near-white, not tinted */
-  --color-surface-pearl: #fafafc;
+  --color-canvas-parchment: #fafafa;   /* page background — near-white */
+  --color-surface-panel: #f4f6f3;      /* inner panels and tiles on white cards */
+  --gradient-forest: linear-gradient(150deg, #3f8f22 0%, #1f6410 45%, #0c3a06 100%); /* hero KPI card */
+  --color-surface-pearl: #fbfaf7;
   --color-surface-tile-1: #272729;
   --color-surface-tile-2: #2a2a2c;
   --color-surface-tile-3: #252527;
   --color-surface-black: #000000;
-  --color-surface-chip-translucent: rgba(210, 210, 215, 0.64);
+  --color-surface-chip-translucent: rgba(210, 210, 205, 0.64);
 
   /* ---- Colors: Text ---- */
-  --color-ink: #17181a;                /* near-black charcoal, not tinted */
-  --color-body: #17181a;
+  --color-ink: #1b1f19;                /* warm near-black with a whisper of green */
+  --color-body: #1b1f19;
   --color-body-on-dark: #ffffff;
   --color-body-muted: #cccccc;
-  --color-ink-muted-80: #333333;
-  --color-ink-muted-48: #666b74; /* 5.3:1 on white, WCAG AA for small text */
+  --color-ink-muted-80: #343a31;
+  --color-ink-muted-48: #61665c;       /* 5.6:1 on white, 5.2:1 on canvas — AA for small text */
 
   /* ---- Colors: Hairlines & Borders ---- */
-  --color-divider-soft: rgba(0, 0, 0, 0.04);
-  --color-hairline: #e8e9eb;
+  --color-divider-soft: rgba(40, 36, 20, 0.05);
+  --color-hairline: #e7e5de;
+  --color-hairline-strong: #d8d5cb;
 
-  /* ---- Pastel icon badges (stat-card icon squares, status pills) ---- */
-  --badge-blue-bg: #e3edff;   --badge-blue-fg: #2f6fed;
-  --badge-rose-bg: #ffe4ea;   --badge-rose-fg: #ef4d78;
-  --badge-violet-bg: #ece7ff; --badge-violet-fg: #7c5cff;
-  --badge-amber-bg: #f7fadb;  --badge-amber-fg: #7a9605;  /* "Payment Awaiting" pill — olive-green, exact text fill #9abe05 from Figma, darkened for AA contrast on the pale bg */
-  --badge-green-bg: #e8f7ec;  --badge-green-fg: #229a00;  /* "Paid" pill — same hue as the brand green */
+  /* ---- Elevation: a whisper of lift for white cards on the warm canvas ---- */
+  --shadow-card: 0 1px 2px rgba(36, 46, 33, 0.04), 0 1px 3px rgba(36, 46, 33, 0.03);
+  --shadow-card-hover: 0 2px 6px rgba(36, 46, 33, 0.06), 0 8px 24px rgba(36, 46, 33, 0.05);
+  --shadow-pop: 0 10px 30px rgba(36, 46, 33, 0.12), 0 2px 6px rgba(36, 46, 33, 0.06);
+
+  /* ---- Status badges & icon tiles: green / amber / rose / sky (+ violet).
+     Each fg passes AA (>= 4.5:1) on its own bg. Functional only. ---- */
+  --badge-green-bg: #e6f3dc;  --badge-green-fg: #2a6a2e;  /* Paid / confirmed / active */
+  --badge-amber-bg: #fcf0d6;  --badge-amber-fg: #8a5300;  /* Awaiting payment / due / lapsed */
+  --badge-rose-bg: #fbe6e8;   --badge-rose-fg: #b3263f;   /* Cancelled / overdue / error */
+  --badge-sky-bg: #e2eff8;    --badge-sky-fg: #1f5f8b;    /* Informational / new */
+  --badge-blue-bg: var(--badge-sky-bg); --badge-blue-fg: var(--badge-sky-fg);
+  --badge-violet-bg: #eeeaf8; --badge-violet-fg: #5b45a8;
+  --badge-neutral-bg: #efeee8; --badge-neutral-fg: #4f544b; /* Completed / archived / no-show */
 
   /* ---- Spacing (8px base, exact scale) ---- */
   --spacing-xxs: 4px;
@@ -83,7 +102,9 @@
    component (Button, Card, Chip, Alert…) inherits the real hex values,
    not an approximation. */
 :root,
-[data-theme='light'] {
+[data-theme='light'],
+[data-theme='dark'],
+.dark {
   --accent: var(--color-primary);
   --accent-foreground: var(--color-canvas);
   --border: var(--color-hairline);
@@ -94,16 +115,10 @@
   --surface-secondary: var(--color-canvas-parchment);
 }
 
-[data-theme='dark'] {
-  --accent: var(--color-primary-on-dark);
-  --accent-foreground: var(--color-ink);
-  --border: rgba(255, 255, 255, 0.12);
-  --muted: var(--color-body-muted);
-  --foreground: var(--color-body-on-dark);
-  --background: var(--color-surface-tile-3);
-  --surface: var(--color-surface-tile-1);
-  --surface-secondary: var(--color-surface-tile-2);
-}
+/* Lumid is light-only. Hosts and OS settings can ask for dark (a data-theme
+   attribute, a .dark class or prefers-color-scheme), so the dark selectors
+   resolve to the same light palette and HeroUI's dark: variant never fires. */
+:root, :root[data-theme='dark'], :root.dark, [data-theme='dark'], .dark { color-scheme: light; }
 
 /* ---- Exact type scale — apply with class="type-*" ---- */
 .type-hero-display   { font-size: 56px; font-weight: 600; line-height: 1.07; letter-spacing: -0.28px; }
@@ -135,12 +150,13 @@
 .button--primary {
   background: var(--gradient-primary) !important;
   border-color: transparent !important;
+  color: var(--color-forest) !important;
 }
 
 .card {
   border-radius: 16px !important;
   border-color: var(--color-hairline) !important;
-  box-shadow: none !important; /* flat, hairline-bordered cards — matches the Figma file exactly */
+  box-shadow: var(--shadow-card) !important; /* hairline + a whisper of lift on the warm canvas */
 }
 .button { box-shadow: none !important; }
 
@@ -151,7 +167,7 @@
   transform: scale(0.95); /* the one system-wide micro-interaction */
 }
 
-/* ---- Exact focus ring: 2px solid Focus Blue ---- */
+/* ---- Focus ring: 2px solid action green ---- */
 .button:focus-visible,
 .chip:focus-visible,
 a:focus-visible,

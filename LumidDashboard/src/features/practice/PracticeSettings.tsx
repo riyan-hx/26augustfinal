@@ -1,9 +1,11 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { Calendar, Check, Globe, Shield, Trash2, Plus, Clock } from '../../lib/icons'
 import { formatINR, parseRupeesToPaise } from '../../lib/money'
 import { toApiError } from '../../lib/errors'
-import { isDemoMode } from '../../lib/env'
+import { env, isDemoMode } from '../../lib/env'
 import { ErrorState, PrimaryButton, Skeleton } from '../../components/ui/StateViews'
+import { PageHeader } from '../../components/ui/PageHeader'
 import { useAuth } from '../auth/AuthProvider'
 import { bookingUrl, bookingUrlParts } from '../../lib/links'
 import {
@@ -19,21 +21,33 @@ const sections = [
   { id: 'privacy', label: 'Privacy & account', icon: Shield },
 ] as const
 
-const card = 'bg-white border border-[var(--hairline)] rounded-[16px] p-5 scroll-mt-20'
+const card = 'bg-white border border-[var(--hairline)] rounded-[16px] p-5 lg:p-6 scroll-mt-[120px]'
 
 export default function PracticeSettings() {
-  return (
-    <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6 max-w-[1040px]">
-      <h1 className="text-[26px] font-semibold tracking-tight">Practice settings</h1>
-      <p className="text-[12px] text-[var(--stone)] mt-1">Everything your public booking page uses. Changes save per section.</p>
+  // Sections are addressable: /app/settings#hours scrolls to and highlights "Weekly hours".
+  const { hash } = useLocation()
+  const current = hash.slice(1)
+  useEffect(() => {
+    if (!current) return
+    const id = requestAnimationFrame(() => document.getElementById(current)?.scrollIntoView({ behavior: 'smooth', block: 'start' }))
+    return () => cancelAnimationFrame(id)
+  }, [current])
 
-      <div className="mt-6 grid lg:grid-cols-[220px_1fr] gap-6">
-        <nav aria-label="Settings sections" className="bg-white border border-[var(--hairline)] rounded-[16px] p-2 h-fit lg:sticky lg:top-[68px]">
-          {sections.map((s) => (
-            <a key={s.id} href={`#${s.id}`} className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-[13px] font-medium hover:bg-[var(--canvas)] text-[var(--slate)]">
-              <s.icon size={16} /> {s.label}
-            </a>
-          ))}
+  return (
+    <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8 max-w-[1080px]">
+      <PageHeader title="Practice settings" description="Everything your public booking page uses. Changes save per section." />
+
+      <div className="grid lg:grid-cols-[220px_1fr] gap-6">
+        <nav aria-label="Settings sections" className="bg-white border border-[var(--hairline)] rounded-[16px] p-1.5 h-fit lg:sticky lg:top-[112px] flex lg:block overflow-x-auto gap-1">
+          {sections.map((s) => {
+            const active = current === s.id
+            return (
+              <Link key={s.id} to={{ hash: `#${s.id}` }} replace aria-current={active ? 'location' : undefined}
+                className={`shrink-0 lg:w-full flex items-center gap-2.5 px-3 h-10 rounded-[10px] text-[13px] font-semibold whitespace-nowrap transition-colors ${active ? 'bg-[var(--color-primary-soft)] text-[var(--color-forest)] [&_svg]:text-[var(--color-primary)]' : 'text-[var(--color-ink-muted-80)] hover:bg-[var(--color-canvas-parchment)] [&_svg]:text-[var(--color-ink-muted-48)]'}`}>
+                <s.icon size={16} /> {s.label}
+              </Link>
+            )
+          })}
         </nav>
 
         <div className="space-y-4 min-w-0">
@@ -53,15 +67,17 @@ export default function PracticeSettings() {
 function PublishCard() {
   const { status, isLoading, profile } = useSetupStatus()
   const publish = usePublish()
+  // Unpublishing takes the page offline for patients, so it asks first.
+  const [confirming, setConfirming] = useState(false)
   if (isLoading || !status) return <Skeleton className="h-[88px] rounded-[16px]" />
 
   const ready = status.hasProfile && status.hasSlug && status.hasSessionTypes && status.hasAvailability
   const error = publish.error ? toApiError(publish.error) : null
 
   return (
-    <div className={`${card} flex flex-col sm:flex-row sm:items-center gap-4`}>
+    <div className={`${card} flex flex-col sm:flex-row sm:items-center gap-4 ${status.published ? '' : '!bg-[var(--color-primary-tint)] !border-[color-mix(in_oklch,var(--color-primary)_22%,var(--color-hairline))]'}`}>
       <div className="flex-1">
-        <p className="text-[13px] font-semibold">{status.published ? 'Your booking page is live' : 'Your booking page is not published'}</p>
+        <p className="text-[15px] font-semibold flex items-center gap-2"><span aria-hidden="true" className={`w-2 h-2 rounded-full ${status.published ? 'bg-[var(--color-lime)]' : 'bg-[var(--badge-amber-fg)]'}`} />{status.published ? 'Your booking page is live' : 'Your booking page is not published'}</p>
         <p className="text-[12px] text-[var(--stone)] mt-1">
           {status.published && profile?.slug
             ? bookingUrl(profile.slug)
@@ -69,8 +85,17 @@ function PublishCard() {
         </p>
         {error && <p className="form-error">{error.code === 'PUBLISH_REQUIREMENTS' ? 'Finish the sections below before publishing.' : error.userMessage}</p>}
       </div>
-      {status.published ? (
-        <button className="btn-secondary" disabled={publish.isPending} onClick={() => publish.mutate(false)}>Unpublish</button>
+      {status.published && confirming ? (
+        <div role="group" aria-labelledby="unpublish-q" className="flex flex-col gap-2 sm:items-end sm:max-w-[300px]">
+          <p id="unpublish-q" className="text-[12px] text-[var(--color-ink-muted-80)] sm:text-right">Take your page offline? Patients won’t be able to book you until you publish again. Existing bookings stay as they are.</p>
+          <div className="flex gap-2">
+            <button type="button" className="btn-secondary" autoFocus disabled={publish.isPending} onClick={() => setConfirming(false)}>Keep it live</button>
+            <button type="button" className="btn-primary" disabled={publish.isPending}
+              onClick={() => publish.mutate(false, { onSuccess: () => setConfirming(false) })}>{publish.isPending ? 'Unpublishing…' : 'Unpublish'}</button>
+          </div>
+        </div>
+      ) : status.published ? (
+        <button type="button" className="btn-secondary" onClick={() => setConfirming(true)}>Unpublish…</button>
       ) : (
         <PrimaryButton disabled={!ready} loading={publish.isPending} onClick={() => publish.mutate(true)}>Publish page</PrimaryButton>
       )}
@@ -84,7 +109,7 @@ function ProfileSection() {
   const { data, isLoading, error, refetch } = useProfile()
   return (
     <section id="profile" className={card} aria-labelledby="profile-h">
-      <h2 id="profile-h" className="text-[13px] font-semibold">Profile & link</h2>
+      <h2 id="profile-h" className="text-[16px] font-semibold">Profile & link</h2>
       <p className="text-[12px] text-[var(--stone)] mt-1">Shown to patients on your booking page.</p>
       {isLoading && <div className="mt-4 space-y-3"><Skeleton className="h-10" /><Skeleton className="h-10" /><Skeleton className="h-24" /></div>}
       {error && <ErrorState compact error={error} onRetry={() => void refetch()} />}
@@ -117,9 +142,6 @@ function ProfileForm({ profile }: { profile: PracticeProfile }) {
         city: form.city,
         bio: form.bio,
         languages: form.languages.split(',').map((l) => l.trim()).filter(Boolean),
-        specialties: [],
-        years_experience: null,
-        rci_number: null,
       },
       { onSuccess: () => setSaved(true) },
     )
@@ -159,7 +181,7 @@ function SessionTypesSection() {
     <section id="sessions" className={card} aria-labelledby="sessions-h">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <h2 id="sessions-h" className="text-[13px] font-semibold">Session types</h2>
+          <h2 id="sessions-h" className="text-[16px] font-semibold">Session types</h2>
           <p className="text-[12px] text-[var(--stone)] mt-1">What patients can book, how long it runs, and the price.</p>
         </div>
         {!adding && <button className="btn-secondary" onClick={() => setAdding(true)}><Plus size={13} /> Add</button>}
@@ -244,7 +266,7 @@ function WeeklyHoursSection() {
   const { data, isLoading, error, refetch } = useAvailability()
   return (
     <section id="hours" className={card} aria-labelledby="hours-h">
-      <h2 id="hours-h" className="text-[13px] font-semibold">Weekly hours</h2>
+      <h2 id="hours-h" className="text-[16px] font-semibold">Weekly hours</h2>
       <p className="text-[12px] text-[var(--stone)] mt-1">Patients can book inside these hours (India Standard Time). Sessions never cross midnight.</p>
       {isLoading && <div className="mt-4 space-y-2">{WEEKDAYS.map((d) => <Skeleton key={d} className="h-10" />)}</div>}
       {error && <ErrorState compact error={error} onRetry={() => void refetch()} />}
@@ -257,7 +279,9 @@ function WeeklyHoursForm({ rules }: { rules: AvailabilityRule[] }) {
   const save = useSaveWeeklyHours()
   const [days, setDays] = useState<DayHours[]>(() => toDays(rules))
   const [saved, setSaved] = useState(false)
-  useEffect(() => setDays(toDays(rules)), [rules])
+  // Reset the form when fresh rules arrive (after a save or refetch).
+  const [loadedRules, setLoadedRules] = useState(rules)
+  if (loadedRules !== rules) { setLoadedRules(rules); setDays(toDays(rules)) }
 
   const invalid = days.some((d) => d.on && d.end <= d.start)
   const update = (i: number, patch: Partial<DayHours>) => {
@@ -307,11 +331,11 @@ function PrivacySection() {
   const auth = useAuth()
   return (
     <section id="privacy" className={card} aria-labelledby="privacy-h">
-      <h2 id="privacy-h" className="text-[13px] font-semibold flex items-center gap-2"><Shield size={14} className="text-[var(--green-700)]" /> Privacy & account</h2>
+      <h2 id="privacy-h" className="text-[16px] font-semibold flex items-center gap-2"><Shield size={15} className="text-[var(--color-primary)]" /> Privacy & account</h2>
       <div className="mt-3 space-y-2 text-[12px]">
         <div className="flex items-center justify-between p-3 rounded-xl border border-[var(--hairline)]"><span>Private patient conversations</span><span className="text-[var(--stone)] font-medium">Never shared</span></div>
         <div className="flex items-center justify-between p-3 rounded-xl border border-[var(--hairline)]"><span>Session notes</span><span className="text-[var(--stone)] font-medium">Encrypted, visible only to you</span></div>
-        <div className="flex items-center justify-between p-3 rounded-xl border border-[var(--hairline)]"><span>Payments</span><span className="text-[var(--stone)] font-medium">Processed by Razorpay</span></div>
+        <div className="flex items-center justify-between p-3 rounded-xl border border-[var(--hairline)]"><span>Payments</span><span className="text-[var(--stone)] font-medium text-right">{env.onlinePayments ? 'Paid online, processed by Razorpay' : 'Patients pay you directly at the session'}</span></div>
       </div>
       <div className="mt-4 flex flex-wrap items-center gap-3">
         <p className="text-[12px] text-[var(--stone)] flex-1">Signed in as <span className="font-medium text-[var(--ink)]">{auth.email}</span>{isDemoMode && ' (demo)'}</p>

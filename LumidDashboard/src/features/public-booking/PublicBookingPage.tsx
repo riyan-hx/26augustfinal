@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle, ArrowLeft, CalendarDays, CheckCircle2, Clock, CreditCard, Shield, Video } from '../../lib/icons'
 import { LumidLogo } from '../../components/LumidLogo'
 import { Avatar } from '../../components/ui/Avatar'
@@ -25,8 +25,11 @@ function noticeLabel(min: number): string {
 }
 
 type Phase = 'pick' | 'pay' | 'confirming' | 'done' | 'refund' | 'unsure' | 'requested'
-/** Without online payments the patient requests a slot and pays the psychologist directly. */
-const payAtSession = !isDemoMode && !env.onlinePayments
+/**
+ * Without online payments (the default, demo included) the patient requests a
+ * slot and pays the psychologist directly; with them, Razorpay checkout.
+ */
+const payAtSession = !env.onlinePayments
 const POLL_MS = 3_000
 const POLL_MAX_MS = 60_000
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
@@ -75,7 +78,7 @@ export function Shell({ children, slug }: { children: ReactNode; slug?: string }
         <div className="max-w-[980px] mx-auto px-4 lg:px-6 h-[52px] flex items-center justify-between">
           <span className="flex items-center gap-2.5">
             <LumidLogo className="h-[15px] sm:h-[17px]" />
-            {slug && <span className="text-[10px] tracking-[0.12em] text-[var(--stone)] font-semibold hidden sm:inline border-l border-[var(--hairline)] pl-2.5 uppercase">{bookingUrlLabel(slug)}</span>}
+            {slug && <span className="text-[11px] text-[var(--stone)] font-medium hidden sm:inline border-l border-[var(--hairline)] pl-2.5">{bookingUrlLabel(slug)}</span>}
           </span>
           <span className="text-[12px] text-[var(--stone)]">Secure • Private</span>
         </div>
@@ -99,6 +102,7 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
   const [busy, setBusy] = useState(false)
   const attemptKey = useRef<string | null>(null)
   const now = useNow(1000)
+  const qc = useQueryClient()
 
   const sessionType = profile.sessionTypes.find((s) => s.id === sessionTypeId)
   const range = useMemo(() => {
@@ -136,7 +140,11 @@ function BookingFlow({ profile }: { profile: PublicProfile }) {
     setErrors({}); setNotice(null); setBusy(true)
     attemptKey.current ??= newIdempotencyKey()
     try {
-      if (payAtSession) { setRequested(await requestBooking(parsed.data)); setPhase('requested'); return }
+      if (payAtSession) {
+        setRequested(await requestBooking(parsed.data)); setPhase('requested')
+        void qc.invalidateQueries() // the taken slot (and, in demo, the dashboard) must not come from cache
+        return
+      }
       setHold(await createHold(parsed.data, attemptKey.current)); setPhase('pay')
     } catch (error) {
       const err = toApiError(error)
@@ -294,7 +302,7 @@ function PracticeCard({ profile }: { profile: PublicProfile }) {
       {profile.bio && <p className="text-[13px] leading-relaxed text-[var(--slate)] mt-4 whitespace-pre-line">{profile.bio}</p>}
       <div className="mt-4 flex flex-wrap gap-2 text-[11px]">
         <Chip icon={<Shield size={12} />}>Private &amp; consent-first</Chip>
-        <Chip icon={<Video size={12} />}>{payAtSession ? 'Online session link shared before you meet' : 'Google Meet link after payment'}</Chip>
+        <Chip icon={<Video size={12} />}>{payAtSession ? 'Pay at the session · call link shared before you meet' : 'Google Meet link after payment'}</Chip>
         <Chip icon={<Clock size={12} />}>Free cancellation up to {profile.cancellationCutoffHours}h before</Chip>
       </div>
     </div>

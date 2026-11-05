@@ -1,5 +1,8 @@
+import { isDemoMode } from '../../lib/env'
 import { unwrap } from '../../lib/query'
 import { db } from '../../lib/supabase'
+import { demoBookings, demoDelay } from '../demo/fixtures'
+import { demoPaymentInfo } from '../bookings/api'
 
 export interface EarningsSummary { collectedPaise: number; refundedPaise: number; feesPaise: number; netPaise: number; pendingPaise: number; paidSessions: number }
 export interface PaymentRow {
@@ -13,7 +16,38 @@ interface PaymentJoin {
   bookings: { code: string; patients: { full_name: string } | null } | null
 }
 
+// Demo: payments are derived from the demo bookings, so Earnings agrees with
+// Overview and Bookings. Demo patients pay directly (UPI) at the session, so
+// there are no gateway fees and the payment date is the session date — except
+// payments marked in this visit, which keep the method and time recorded.
+const PAID = new Set(['captured', 'partially_refunded', 'refunded'])
+
+function demoPayments(): PaymentRow[] {
+  return demoBookings
+    .filter((b) => b.paymentStatus && PAID.has(b.paymentStatus))
+    .map((b) => ({
+      id: `pay-${b.id}`, patientName: b.patientName, code: b.code, status: b.paymentStatus!,
+      amountPaise: b.pricePaise, feesPaise: 0, refundedPaise: b.paymentStatus === 'refunded' ? b.pricePaise : 0,
+      capturedAt: demoPaymentInfo.get(b.id)?.capturedAt ?? b.startsAt, method: methodLabel(demoPaymentInfo.get(b.id)?.method ?? 'upi'),
+    }))
+    .sort((a, b) => b.capturedAt!.getTime() - a.capturedAt!.getTime())
+}
+
+function demoSummary(from: Date, to: Date): EarningsSummary {
+  const inRange = demoPayments().filter((p) => p.capturedAt! >= from && p.capturedAt! < to)
+  const collected = inRange.reduce((s, p) => s + p.amountPaise, 0)
+  const refunded = inRange.reduce((s, p) => s + p.refundedPaise, 0)
+  const pending = demoBookings
+    .filter((b) => b.status === 'pending_payment' && b.startsAt >= from && b.startsAt < to)
+    .reduce((s, b) => s + b.pricePaise, 0)
+  return {
+    collectedPaise: collected, refundedPaise: refunded, feesPaise: 0, netPaise: collected - refunded, pendingPaise: pending,
+    paidSessions: inRange.filter((p) => p.status === 'captured' || p.status === 'partially_refunded').length,
+  }
+}
+
 export async function getSummary(from: Date, to: Date): Promise<EarningsSummary> {
+  if (isDemoMode) return demoDelay(demoSummary(from, to))
   const rows = unwrap(await db().rpc('earnings_summary', { p_from: from.toISOString(), p_to: to.toISOString() })) as SummaryRow[]
   const r = rows[0]
   return {
@@ -23,6 +57,7 @@ export async function getSummary(from: Date, to: Date): Promise<EarningsSummary>
 }
 
 export async function listPayments(limit = 50): Promise<PaymentRow[]> {
+  if (isDemoMode) return demoDelay(demoPayments().slice(0, limit))
   const rows = unwrap(
     await db().from('payments')
       .select('id, status, method, razorpay_order_id, amount_paise, fee_paise, tax_paise, refunded_paise, captured_at, bookings(code, patients(full_name))')

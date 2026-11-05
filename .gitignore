@@ -33,3 +33,8 @@ dist-ssr
 agentlab-clone/
 lead-queue.html
 openlist-clone/
+
+# Lead engine (local tooling, venv, campaign DBs, secrets)
+lead-engine/.venv/
+lead-engine/data/
+lead-engine/.env

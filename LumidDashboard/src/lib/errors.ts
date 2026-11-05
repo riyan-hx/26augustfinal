@@ -139,6 +139,13 @@ export function fromPostgrestError(error: PostgrestLikeError, status?: number): 
 export function toApiError(error: unknown): ApiError {
   if (error instanceof ApiError) return error;
   if (error instanceof TypeError) return new ApiError("NETWORK"); // fetch network failures
+  // supabase-js reports an unreachable server as a value, not a TypeError:
+  // auth as AuthRetryableFetchError (status 0), PostgREST as message "TypeError: Failed to fetch".
+  if (typeof error === "object" && error !== null) {
+    const e = error as { name?: unknown; status?: unknown; message?: unknown };
+    if (e.name === "AuthRetryableFetchError" && (e.status === 0 || e.status === undefined)) return new ApiError("NETWORK");
+    if (typeof e.message === "string" && /^(TypeError: )?(Failed to fetch|NetworkError|Load failed|fetch failed)/.test(e.message)) return new ApiError("NETWORK");
+  }
   if (typeof error === "object" && error !== null && "code" in error) {
     return fromPostgrestError(error as PostgrestLikeError);
   }

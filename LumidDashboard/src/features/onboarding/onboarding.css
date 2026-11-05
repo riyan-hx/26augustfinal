@@ -1,0 +1,151 @@
+/* Setup wizard — scoped to .ob. Brand greens live here as local tokens so the
+   wizard stays warm and green without touching the global token file. */
+
+.ob {
+  --ob-lime: #88d95f;
+  --ob-forest: #242e21;
+  --ob-mint: #f1f8ec;
+  --ob-mint-strong: #e2f1d8;
+  --ob-moss: #4a7a32;          /* green text on white / mint, AA */
+  --ob-ink: #1c2219;
+  --ob-muted: #5f6a5a;         /* 5.6:1 on white */
+  --ob-line: #e6e9e1;
+  --ob-line-strong: #d3d9cc;
+  --ob-warm: #fbfbf7;
+  --ob-ease: cubic-bezier(.2, .7, .2, 1);
+
+  min-height: 100dvh;
+  color: var(--ob-ink);
+  background:
+    radial-gradient(900px 420px at 12% -8%, color-mix(in oklch, var(--ob-lime) 18%, transparent), transparent 70%),
+    radial-gradient(700px 380px at 100% 0%, color-mix(in oklch, var(--ob-lime) 9%, transparent), transparent 70%),
+    var(--ob-warm);
+  overflow-x: clip;
+}
+
+.ob-card {
+  background: #fff;
+  border: 1px solid var(--ob-line);
+  border-radius: 20px;
+  box-shadow: 0 1px 2px rgba(36, 46, 33, .04), 0 12px 32px -18px rgba(36, 46, 33, .18);
+}
+
+/* ---------- Progress ---------- */
+.ob-steps { display: flex; align-items: center; gap: 6px; }
+.ob-step {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 10px 6px 6px; border-radius: 999px;
+  font-size: 12px; font-weight: 600; color: var(--ob-muted);
+  transition: background 200ms var(--ob-ease), color 200ms var(--ob-ease);
+}
+.ob-step:not(:disabled):hover { background: var(--ob-mint); color: var(--ob-ink); }
+.ob-step:disabled { cursor: default; opacity: .7; }
+.ob-step__dot {
+  width: 22px; height: 22px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 11px; border: 1px solid var(--ob-line-strong); background: #fff; color: var(--ob-muted);
+  transition: background 200ms var(--ob-ease), border-color 200ms var(--ob-ease);
+}
+.ob-step[data-state="done"] .ob-step__dot { background: var(--ob-mint-strong); border-color: transparent; color: var(--ob-moss); }
+.ob-step[aria-current="step"] { color: var(--ob-ink); background: #fff; box-shadow: 0 0 0 1px var(--ob-line); }
+.ob-step[aria-current="step"] .ob-step__dot { background: var(--ob-forest); border-color: var(--ob-forest); color: var(--ob-lime); }
+.ob-step__line { width: 14px; height: 1px; background: var(--ob-line-strong); }
+
+.ob-bar { height: 4px; border-radius: 999px; background: var(--ob-mint-strong); overflow: hidden; }
+.ob-bar > span { display: block; width: 100%; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #6fc147, var(--ob-lime)); transform-origin: left; transition: transform 320ms var(--ob-ease); }
+
+/* ---------- Chips ---------- */
+.ob-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 34px; padding: 6px 12px; border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: var(--ob-ink);
+  background: #fff; border: 1px solid var(--ob-line-strong);
+  transition: background 180ms var(--ob-ease), border-color 180ms var(--ob-ease), transform 180ms var(--ob-ease);
+}
+.ob-chip:hover { border-color: var(--ob-moss); }
+.ob-chip:active { transform: scale(.97); }
+.ob-chip[aria-pressed="true"] {
+  background: var(--ob-mint-strong); border-color: color-mix(in oklch, var(--ob-moss) 55%, transparent); color: var(--ob-forest); font-weight: 600;
+}
+.ob-chip--ghost { border-style: dashed; color: var(--ob-muted); }
+
+.ob-chip:focus-visible, .ob-toggle:focus-visible, .ob-step:focus-visible, .ob-day:focus-visible,
+.ob-preset:focus-visible, .ob-link:focus-visible, .ob-icon-btn:focus-visible {
+  outline: 2px solid var(--ob-forest); outline-offset: 2px;
+}
+
+/* Fields inside the wizard get a touch more room and a green focus ring. */
+.ob .field { font-size: 14px; padding: 11px 13px; border-radius: 12px; border-color: var(--ob-line-strong); }
+.ob .field:focus { border-color: var(--ob-moss); box-shadow: 0 0 0 3px color-mix(in oklch, var(--ob-lime) 30%, transparent); }
+.ob .field[aria-invalid="true"] { border-color: #c62f57; }
+.ob .field-label { font-size: 13px; }
+.ob-hint { font-size: 12px; color: var(--ob-muted); margin-top: 6px; }
+
+/* Bigger, calmer primary actions in this flow. */
+.ob .ob-cta { padding: 12px 22px; font-size: 14px; }
+.ob .ob-back { padding: 11px 18px; font-size: 13px; }
+
+/* ---------- Toggle switch ---------- */
+.ob-toggle {
+  position: relative; width: 40px; height: 24px; flex: none; border-radius: 999px;
+  background: var(--ob-line-strong); transition: background 200ms var(--ob-ease);
+}
+.ob-toggle::after {
+  content: ""; position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 999px;
+  background: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.2); transition: transform 200ms var(--ob-ease);
+}
+.ob-toggle[aria-checked="true"] { background: var(--ob-forest); }
+.ob-toggle[aria-checked="true"]::after { transform: translateX(16px); background: var(--ob-lime); }
+
+/* ---------- Session cards ---------- */
+.ob-session { border: 1px solid var(--ob-line); border-radius: 16px; background: #fff; transition: border-color 200ms var(--ob-ease), background 200ms var(--ob-ease); }
+.ob-session[data-on="true"] { border-color: color-mix(in oklch, var(--ob-moss) 40%, var(--ob-line)); box-shadow: 0 0 0 3px var(--ob-mint); }
+.ob-session[data-on="false"] { background: var(--ob-warm); }
+
+/* ---------- Hours ---------- */
+.ob-day {
+  width: 44px; height: 44px; border-radius: 999px; font-size: 12px; font-weight: 600;
+  border: 1px solid var(--ob-line-strong); background: #fff; color: var(--ob-muted);
+  transition: background 180ms var(--ob-ease), color 180ms var(--ob-ease), border-color 180ms var(--ob-ease);
+}
+.ob-day[aria-pressed="true"] { background: var(--ob-forest); border-color: var(--ob-forest); color: #fff; }
+.ob-preset {
+  text-align: left; padding: 12px 14px; border-radius: 14px; border: 1px solid var(--ob-line-strong); background: #fff;
+  transition: background 180ms var(--ob-ease), border-color 180ms var(--ob-ease);
+}
+.ob-preset:hover { border-color: var(--ob-moss); }
+.ob-preset[aria-pressed="true"] { background: var(--ob-mint); border-color: color-mix(in oklch, var(--ob-moss) 55%, transparent); }
+.ob-time { appearance: none; -webkit-appearance: none; padding: 8px 26px 8px 11px !important; width: auto !important; min-width: 100px;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ob-muted) 50%), linear-gradient(135deg, var(--ob-muted) 50%, transparent 50%);
+  background-position: calc(100% - 15px) 50%, calc(100% - 10px) 50%; background-size: 5px 5px; background-repeat: no-repeat; }
+
+.ob-icon-btn { width: 32px; height: 32px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; color: var(--ob-muted); }
+.ob-icon-btn:hover { background: var(--ob-mint); color: var(--ob-ink); }
+
+.ob-link { color: var(--ob-moss); font-weight: 600; font-size: 13px; text-underline-offset: 3px; }
+.ob-link:hover { text-decoration: underline; }
+
+.ob-badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; background: var(--ob-mint-strong); color: var(--ob-forest); }
+
+.ob-icon-tile { width: 40px; height: 40px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center; background: var(--ob-mint); color: var(--ob-moss); flex: none; }
+
+@media (min-width: 640px) { .ob-time { min-width: 112px; } }
+
+/* ---------- Motion ---------- */
+@keyframes ob-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes ob-pop { 0% { opacity: 0; transform: scale(.6); } 60% { opacity: 1; transform: scale(1.06); } 100% { transform: scale(1); } }
+@keyframes ob-ring { from { opacity: .55; transform: scale(.8); } to { opacity: 0; transform: scale(1.9); } }
+@keyframes ob-fade { from { opacity: 0; } to { opacity: 1; } }
+
+.ob-enter { animation: ob-enter 260ms var(--ob-ease) both; }
+.ob-fade { animation: ob-fade 200ms ease both; }
+.ob-done-mark { position: relative; animation: ob-pop 520ms var(--ob-ease) both; }
+.ob-done-mark::before, .ob-done-mark::after {
+  content: ""; position: absolute; inset: 0; border-radius: 999px; border: 2px solid var(--ob-lime); animation: ob-ring 1.4s var(--ob-ease) 200ms both;
+}
+.ob-done-mark::after { animation-delay: 500ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ob-enter, .ob-fade, .ob-done-mark { animation: none; }
+  .ob-done-mark::before, .ob-done-mark::after { display: none; }
+  .ob-bar > span, .ob-toggle, .ob-toggle::after { transition: none; }
+}

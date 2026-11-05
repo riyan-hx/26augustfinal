@@ -10,11 +10,15 @@ const draftKey = (patientId: string, noteId?: string) => `lumid:note-draft:${pat
 type Draft = { body: string; focus: string; nextSteps: string }
 const EMPTY: Draft = { body: '', focus: '', nextSteps: '' }
 
+// Unsaved drafts live in sessionStorage: they survive a reload but are gone
+// when the tab closes, so clinical text never lingers unencrypted on disk.
+// Older builds kept drafts in localStorage; those copies are removed on sight.
 function readDraft(key: string): Draft | null {
-  try { const raw = localStorage.getItem(key); return raw ? JSON.parse(raw) as Draft : null } catch { return null }
+  try { localStorage.removeItem(key) } catch { /* storage unavailable */ }
+  try { const raw = sessionStorage.getItem(key); return raw ? JSON.parse(raw) as Draft : null } catch { return null }
 }
 function writeDraft(key: string, d: Draft | null) {
-  try { if (d && (d.body || d.focus || d.nextSteps)) localStorage.setItem(key, JSON.stringify(d)); else localStorage.removeItem(key) } catch { /* storage unavailable */ }
+  try { if (d && (d.body || d.focus || d.nextSteps)) sessionStorage.setItem(key, JSON.stringify(d)); else sessionStorage.removeItem(key) } catch { /* storage unavailable */ }
 }
 
 /** Private session notes. Encrypted at rest; each body is decrypted only when opened. */
@@ -24,7 +28,7 @@ export function NotesPanel({ patientId }: { patientId: string }) {
   const [openId, setOpenId] = useState<string | null>(null)
 
   return (
-    <section className="rounded-[12px] border border-[var(--hairline)] p-4" aria-labelledby="notes-h">
+    <section className="rounded-[12px] border border-[var(--hairline)] p-4 scroll-mt-[72px] lg:scroll-mt-[110px]" aria-labelledby="notes-h">
       <div className="flex items-center justify-between gap-2">
         <p id="notes-h" className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] flex items-center gap-1.5"><FileText size={12} /> SESSION NOTES</p>
         {editing === null && <button className="btn-secondary !py-1.5" onClick={() => setEditing('new')}><Plus size={13} />New note</button>}
@@ -80,7 +84,7 @@ function NoteEditor({ patientId, note, onDone }: { patientId: string; note?: Not
   // Fill the body once the existing note is decrypted (unless a local draft was restored).
   if (!loaded && existing.data !== undefined) { setDraft((d) => ({ ...d, body: existing.data! })); setLoaded(true) }
 
-  // Keep an offline draft so nothing is lost if the tab closes.
+  // Keep a draft in this tab so a reload doesn't lose it.
   useEffect(() => { if (loaded) writeDraft(key, draft) }, [key, draft, loaded])
 
   function submit() {
@@ -115,7 +119,7 @@ function NoteEditor({ patientId, note, onDone }: { patientId: string; note?: Not
       <div className="flex items-center gap-2">
         <button className="btn-primary" disabled={save.isPending || !loaded} onClick={submit}>{save.isPending ? 'Saving…' : 'Save note'}</button>
         <button className="btn-secondary" disabled={save.isPending} onClick={discard}>Discard</button>
-        <span className="text-[11px] text-[var(--stone)] ml-auto">Draft saved on this device</span>
+        <span className="text-[11px] text-[var(--stone)] ml-auto">Draft kept in this tab</span>
       </div>
     </div>
   )

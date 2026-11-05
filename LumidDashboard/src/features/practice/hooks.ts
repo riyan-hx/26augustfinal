@@ -22,10 +22,11 @@ export function useSetupStatus() {
   const isLoading = profile.isLoading || types.isLoading || rules.isLoading
   const error = profile.error ?? types.error ?? rules.error
   const status = profile.data && types.data && rules.data ? computeSetup(profile.data, types.data, rules.data) : null
-  return { status, isLoading, error, profile: profile.data }
+  const refetch = () => Promise.all([profile.refetch(), types.refetch(), rules.refetch()])
+  return { status, isLoading, error, profile: profile.data, refetch }
 }
 
-function useSaver<TArgs>(fn: (args: TArgs) => Promise<void>, key: readonly unknown[]) {
+function useSaver<TArgs, TResult = void>(fn: (args: TArgs) => Promise<TResult>, key: readonly unknown[]) {
   const qc = useQueryClient()
   return useMutation({ mutationFn: fn, onSettled: () => qc.invalidateQueries({ queryKey: key }) })
 }
