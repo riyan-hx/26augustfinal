@@ -3,6 +3,7 @@ import { Menu, X, Bell, ChevronRight, CalendarPlus } from '../lib/icons'
 import { useRef, useState, type ComponentType } from 'react'
 import { LumidLogo } from './LumidLogo'
 import { Avatar } from './ui/Avatar'
+import { photoSrc } from '../lib/photos'
 import {
   NavOverview, NavCalendar, NavBookings, NavPatients, NavFollowUps, NavSessions,
   NavEarnings, NavYourPage, NavSettings, NavSignOut, NavSetup, NavMore,
@@ -150,8 +151,8 @@ function SignOutButton({ compact = false }: { compact?: boolean }) {
 }
 
 /** Mobile "More" menu: a modal sheet with the full navigation. */
-function MoreSheet({ onClose, onNewBooking, needsSetup, name, counts, returnTo }: {
-  onClose: () => void; onNewBooking: () => void; needsSetup: boolean; name: string
+function MoreSheet({ onClose, onNewBooking, needsSetup, name, photo, counts, returnTo }: {
+  onClose: () => void; onNewBooking: () => void; needsSetup: boolean; name: string; photo: string | null
   counts: ReturnType<typeof useNavCounts>; returnTo: HTMLElement | null
 }) {
   const panel = useRef<HTMLDivElement>(null)
@@ -171,7 +172,7 @@ function MoreSheet({ onClose, onNewBooking, needsSetup, name, counts, returnTo }
           </div>
         ))}
         <div className="flex items-center gap-2.5 pt-3 border-t border-[var(--hairline)]">
-          <Avatar name={name} size={32} />
+          <Avatar name={name} src={photo} size={32} />
           <p className="flex-1 min-w-0 text-[13px] font-semibold truncate">{name}</p>
           <div className="w-[120px]"><SignOutButton /></div>
         </div>
@@ -226,7 +227,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <div className="p-3 space-y-3 border-t border-[var(--hairline)]">
           {needsSetup && <FinishSetupCard />}
           <div className="flex items-center gap-2.5 px-1.5">
-            <Avatar name={name} size={34} />
+            <Avatar name={name} src={photoSrc(profile?.photoPath)} size={34} />
             <div className="flex-1 min-w-0">
               <p className="text-[13px] font-semibold leading-tight truncate text-[var(--color-ink)]">{name}</p>
               <p className="text-[11px] text-[var(--color-ink-muted-48)] truncate flex items-center gap-1.5 mt-0.5">
@@ -255,12 +256,12 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               <Bell size={17} />
               {counts.due > 0 && <span aria-hidden="true" className="absolute top-1.5 right-1.5 w-2 h-2 bg-[var(--badge-amber-fg)] rounded-full border-2 border-white" />}
             </Link>
-            <Link to="/app/settings" aria-label="Practice settings" className="hidden sm:block rounded-full"><Avatar name={name} size={32} /></Link>
+            <Link to="/app/settings" aria-label="Practice settings" className="hidden sm:block rounded-full"><Avatar name={name} src={photoSrc(profile?.photoPath)} size={32} /></Link>
           </div>
         </header>
 
         {mobileOpen && (
-          <MoreSheet onClose={close} onNewBooking={openBookingFromSheet} needsSetup={needsSetup} name={name} counts={counts} returnTo={sheetOpener} />
+          <MoreSheet onClose={close} onNewBooking={openBookingFromSheet} needsSetup={needsSetup} name={name} photo={photoSrc(profile?.photoPath)} counts={counts} returnTo={sheetOpener} />
         )}
         {booking && <NewBookingDialog onClose={() => setBooking(false)} returnFocusTo={sheetOpener} />}
 

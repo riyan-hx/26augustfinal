@@ -60,6 +60,7 @@ insert into public.session_types (psychologist_id, name, duration_minutes, price
 values (:'n', 'Intro', 30, 100000);
 insert into public.availability_rules (psychologist_id, weekday, start_time, end_time)
 values (:'n', 1, '10:00', '13:00');
+select public.accept_practice_terms('2026-11');
 select ok(public.publish_practice(true), 'publishes when complete');
 select throws_ok(
   $$update public.psychologists set slug = 'admin'$$,

@@ -11,7 +11,7 @@ import { demoAvailability, demoDelay, demoProfile, demoSessionTypes } from '../d
 
 interface ProfileRow {
   id: string; slug: string | null; display_name: string; title: string; bio: string; city: string
-  languages: string[]; photo_path: string | null; published: boolean; timezone: string
+  languages: string[]; photo_path: string | null; published: boolean; terms_accepted_at: string | null; timezone: string
   cancellation_cutoff_hours: number; min_notice_minutes: number; booking_window_days: number
 }
 interface SessionTypeRow {
@@ -22,7 +22,8 @@ interface RuleRow { id: string; weekday: number; start_time: string; end_time: s
 
 const toProfile = (r: ProfileRow): PracticeProfile => ({
   id: r.id, slug: r.slug, displayName: r.display_name, title: r.title, bio: r.bio, city: r.city,
-  languages: r.languages, photoPath: r.photo_path, published: r.published, timezone: r.timezone,
+  languages: r.languages, photoPath: r.photo_path, published: r.published,
+  termsAcceptedAt: r.terms_accepted_at ? new Date(r.terms_accepted_at) : null, timezone: r.timezone,
   cancellationCutoffHours: r.cancellation_cutoff_hours, minNoticeMinutes: r.min_notice_minutes,
   bookingWindowDays: r.booking_window_days,
 })
@@ -44,7 +45,7 @@ export async function getProfile(): Promise<PracticeProfile> {
   if (isDemoMode) return demoDelay(demoProfile)
   const row = unwrap(
     await db().from('psychologists').select(
-      'id, slug, display_name, title, bio, city, languages, photo_path, published, timezone, cancellation_cutoff_hours, min_notice_minutes, booking_window_days',
+      'id, slug, display_name, title, bio, city, languages, photo_path, published, terms_accepted_at, timezone, cancellation_cutoff_hours, min_notice_minutes, booking_window_days',
     ).single(),
   ) as ProfileRow
   return toProfile(row)
@@ -52,11 +53,11 @@ export async function getProfile(): Promise<PracticeProfile> {
 
 export async function updateProfile(input: ProfileInput): Promise<void> {
   const data = validate(profileSchema, input)
-  if (isDemoMode) { Object.assign(demoProfile, { slug: data.slug ?? demoProfile.slug, displayName: data.display_name, bio: data.bio, city: data.city, title: data.title, languages: data.languages }); return }
+  if (isDemoMode) { Object.assign(demoProfile, { slug: data.slug ?? demoProfile.slug, displayName: data.display_name, bio: data.bio, city: data.city, title: data.title, languages: data.languages, ...(data.photo_path !== undefined ? { photoPath: data.photo_path } : {}) }); return }
   // Only write the optional profile extras when the caller sent them, so a
   // partial form (setup wizard, settings) never wipes stored values.
   const patch: Record<string, unknown> = { ...data }
-  for (const key of ['specialties', 'years_experience', 'rci_number', 'slug'] as const) if (!(key in input) || patch[key] === undefined) delete patch[key]
+  for (const key of ['specialties', 'years_experience', 'rci_number', 'slug', 'photo_path'] as const) if (!(key in input) || patch[key] === undefined) delete patch[key]
   const { data: auth } = await db().auth.getUser()
   const result = await db().from('psychologists').update(patch).eq('id', auth.user?.id ?? '')
   if (result.error?.code === '23505') {
@@ -119,6 +120,12 @@ export async function saveWeeklyHours(rules: AvailabilityRuleInput[]): Promise<v
     return
   }
   unwrap(await db().rpc('replace_availability', { p_rules: valid }))
+}
+
+/** Records that the practitioner confirmed Lumid's terms (server sets the time). */
+export async function acceptTerms(version: string): Promise<void> {
+  if (isDemoMode) { demoProfile.termsAcceptedAt = new Date(); return }
+  unwrap(await db().rpc('accept_practice_terms', { p_version: version }))
 }
 
 export async function setPublished(publish: boolean): Promise<void> {

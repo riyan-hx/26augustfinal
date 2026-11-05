@@ -17,7 +17,7 @@ export function SetupCard({ status }: { status: SetupStatus }) {
             {done} of {setupSteps.length} done · {nextStep ? `next: ${nextStep.label.toLowerCase()}` : 'all set — publish your booking page to start taking bookings'}
           </p>
         </div>
-        <Link to={`/app/setup?step=${nextStep?.step ?? 'review'}`} className="btn-primary self-start sm:self-auto">{nextStep ? 'Finish setting up' : 'Publish your page'} <ArrowRight size={13} /></Link>
+        <Link to={`/app/setup?step=${nextStep?.step ?? 'agreement'}`} className="btn-primary self-start sm:self-auto">{nextStep ? 'Finish setting up' : 'Publish your page'} <ArrowRight size={13} /></Link>
       </div>
       <div className="mt-4 h-1.5 rounded-full bg-white overflow-hidden" role="progressbar" aria-label="Setup progress" aria-valuemin={0} aria-valuemax={setupSteps.length} aria-valuenow={done}>
         <div className="h-full rounded-full bg-[var(--color-primary)] transition-[width] duration-300" style={{ width: `${(done / setupSteps.length) * 100}%` }} />

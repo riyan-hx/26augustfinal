@@ -6,12 +6,12 @@ import { slugSchema } from '../../lib/schemas'
 import { formatINR, parseRupeesToPaise } from '../../lib/money'
 import type { AvailabilityRule, PracticeProfile, SessionType, SetupStatus } from '../../types/domain'
 
-export const STEPS = ['welcome', 'about', 'link', 'sessions', 'hours', 'review'] as const
+export const STEPS = ['welcome', 'profile', 'sessions', 'hours', 'agreement'] as const
 export type StepId = (typeof STEPS)[number]
 
 /** Labels for the progress indicator (Welcome isn't counted as a step). */
 export const STEP_LABELS: Record<Exclude<StepId, 'welcome'>, string> = {
-  about: 'About you', link: 'Your link', sessions: 'Sessions', hours: 'Hours', review: 'Review',
+  profile: 'Profile & link', sessions: 'Sessions', hours: 'Weekly hours', agreement: 'Agreement',
 }
 
 export const isStepId = (v: string | null): v is StepId => !!v && (STEPS as readonly string[]).includes(v)
@@ -21,18 +21,18 @@ export const isStepId = (v: string | null): v is StepId => !!v && (STEPS as read
  * at its first incomplete step; a finished one at Welcome so they can review.
  */
 export function resumeStep(s: SetupStatus): StepId {
-  const started = s.hasProfile || s.hasSlug || s.hasSessionTypes || s.hasAvailability
+  // A name alone (filled in from Google at sign-up) doesn't count as started.
+  const started = s.hasSlug || s.hasSessionTypes || s.hasAvailability
   if (!started || s.published) return 'welcome'
   return firstIncomplete(s)
 }
 
-/** The first step not yet saved (Review once everything else is). */
+/** The first step not yet saved (Agreement once everything else is). */
 export function firstIncomplete(s: SetupStatus): Exclude<StepId, 'welcome'> {
-  if (!s.hasProfile) return 'about'
-  if (!s.hasSlug) return 'link'
+  if (!s.hasProfile || !s.hasSlug) return 'profile'
   if (!s.hasSessionTypes) return 'sessions'
   if (!s.hasAvailability) return 'hours'
-  return 'review'
+  return 'agreement'
 }
 
 /**
@@ -61,11 +61,11 @@ export const BIO_EXAMPLE =
   'I work with young adults and professionals who feel stuck — with overwhelm, avoidance, or self-doubt. ' +
   'Sessions are calm, practical and paced to you. I see clients in Malayalam and English, online and in person.'
 
-export interface AboutDraft { displayName: string; title: string; city: string; languages: string[]; bio: string }
+export interface AboutDraft { displayName: string; title: string; city: string; languages: string[]; bio: string; photoPath: string | null }
 
 export const aboutFromProfile = (p: PracticeProfile): AboutDraft => ({
   displayName: p.displayName, title: p.title,
-  city: p.city, languages: [...p.languages], bio: p.bio,
+  city: p.city, languages: [...p.languages], bio: p.bio, photoPath: p.photoPath,
 })
 
 /**
@@ -75,7 +75,7 @@ export const aboutFromProfile = (p: PracticeProfile): AboutDraft => ({
 export function profileInput(a: AboutDraft, slug?: string): ProfileInput {
   return {
     display_name: a.displayName.trim(), title: a.title.trim() || 'Psychologist', bio: a.bio.trim(),
-    city: a.city.trim(), languages: a.languages, ...(slug ? { slug } : {}),
+    city: a.city.trim(), languages: a.languages, photo_path: a.photoPath, ...(slug ? { slug } : {}),
   }
 }
 
@@ -281,3 +281,16 @@ export function daysLabel(days: number[]): string {
   if (consecutive && order.length > 2) return `${DAY_SHORT[order[0]!]}–${DAY_SHORT[order.at(-1)!]}`
   return order.map((d) => DAY_SHORT[d]).join(', ')
 }
+
+// ---------- Agreement ----------
+
+/** Bump when the wording of the terms changes. */
+export const TERMS_VERSION = '2026-11'
+
+export const AGREEMENTS = [
+  { id: 'qualified', text: 'I’m a qualified mental health professional, and the details I’ve shared are accurate.' },
+  { id: 'confidential', text: 'I’ll keep my patients’ information confidential and use Lumid only for my own practice.' },
+  { id: 'terms', text: 'I agree to Lumid’s Terms of Service and Privacy Policy.' },
+] as const
+export type AgreementId = (typeof AGREEMENTS)[number]['id']
+export const allAgreed = (checked: ReadonlySet<string>) => AGREEMENTS.every((a) => checked.has(a.id))

@@ -44,6 +44,8 @@ export interface PracticeProfile {
   languages: string[]
   photoPath: string | null
   published: boolean
+  /** When they confirmed Lumid's terms; required before publishing. */
+  termsAcceptedAt: Date | null
   timezone: string
   cancellationCutoffHours: number
   minNoticeMinutes: number

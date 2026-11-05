@@ -10,10 +10,11 @@ const status = (o: Partial<Record<'hasProfile' | 'hasSlug' | 'hasSessionTypes' |
 
 describe('resumeStep', () => {
   it('starts new practices at welcome', () => expect(resumeStep(status())).toBe('welcome'))
+  it('treats a name from sign-up alone as not started', () => expect(resumeStep(status({ hasProfile: true }))).toBe('welcome'))
   it('resumes at the first incomplete step', () => {
-    expect(resumeStep(status({ hasProfile: true }))).toBe('link')
+    expect(resumeStep(status({ hasProfile: true, hasSlug: true }))).toBe('sessions')
     expect(resumeStep(status({ hasProfile: true, hasSlug: true, hasSessionTypes: true }))).toBe('hours')
-    expect(resumeStep(status({ hasProfile: true, hasSlug: true, hasSessionTypes: true, hasAvailability: true }))).toBe('review')
+    expect(resumeStep(status({ hasProfile: true, hasSlug: true, hasSessionTypes: true, hasAvailability: true }))).toBe('agreement')
   })
   it('lets published practices review from the start', () =>
     expect(resumeStep(status({ hasProfile: true, hasSlug: true, hasSessionTypes: true, hasAvailability: true, published: true }))).toBe('welcome'))
@@ -80,21 +81,21 @@ describe('weekly hours', () => {
 describe('step access', () => {
   const all = { hasProfile: true, hasSlug: true, hasSessionTypes: true, hasAvailability: true }
   it('finds the first unsaved step', () => {
-    expect(firstIncomplete(status())).toBe('about')
-    expect(firstIncomplete(status({ hasProfile: true, hasSessionTypes: true }))).toBe('link')
-    expect(firstIncomplete(status(all))).toBe('review')
+    expect(firstIncomplete(status())).toBe('profile')
+    expect(firstIncomplete(status({ hasProfile: true, hasSessionTypes: true }))).toBe('profile')
+    expect(firstIncomplete(status(all))).toBe('agreement')
   })
-  it('lets a brand-new practice deep-link to About, but no further', () => {
+  it('lets a brand-new practice deep-link to Profile, but no further', () => {
     const max = initialMaxReached(status())
-    expect(stepFor('about', max, 'welcome')).toBe('about')
+    expect(stepFor('profile', max, 'welcome')).toBe('profile')
     expect(stepFor('hours', max, 'welcome')).toBe('welcome')
   })
   it('opens any step up to the first unsaved one', () => {
-    const s = status({ hasProfile: true })
+    const s = status({ hasProfile: true, hasSlug: true })
     const max = initialMaxReached(s)
-    expect(stepFor('about', max, resumeStep(s))).toBe('about')
-    expect(stepFor('link', max, resumeStep(s))).toBe('link')
-    expect(stepFor('sessions', max, resumeStep(s))).toBe('link')
+    expect(stepFor('profile', max, resumeStep(s))).toBe('profile')
+    expect(stepFor('sessions', max, resumeStep(s))).toBe('sessions')
+    expect(stepFor('hours', max, resumeStep(s))).toBe('sessions')
   })
   it('opens every step once set up, published or not', () => {
     expect(initialMaxReached(status(all))).toBe(STEPS.length - 1)
@@ -102,7 +103,7 @@ describe('step access', () => {
   })
   it('ignores unknown or missing steps', () => {
     expect(stepFor('nope', 5, 'welcome')).toBe('welcome')
-    expect(stepFor(null, 5, 'about')).toBe('about')
+    expect(stepFor(null, 5, 'profile')).toBe('profile')
   })
 })
 
