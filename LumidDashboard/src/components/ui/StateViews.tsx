@@ -4,7 +4,7 @@ import { AlertTriangle } from '../../lib/icons'
 
 /** Placeholder block sized like the content it stands in for. */
 export function Skeleton({ className = '' }: { className?: string }) {
-  return <span aria-hidden="true" className={`block rounded-[8px] bg-[var(--color-hairline)] animate-pulse ${className}`} />
+  return <span aria-hidden="true" className={`block rounded-[8px] bg-[color-mix(in_oklch,var(--color-hairline)_70%,white)] animate-pulse ${className}`} />
 }
 
 /** N skeleton rows at a list's real row height, so nothing jumps when data arrives. */
@@ -34,10 +34,15 @@ export function EmptyState({ icon, title, description, action }: {
 }) {
   return (
     <div className="py-12 px-6 flex flex-col items-center text-center gap-2">
-      {icon && <div className="w-10 h-10 rounded-[10px] bg-[var(--color-primary-soft)] text-[var(--badge-green-fg)] flex items-center justify-center mb-1">{icon}</div>}
-      <p className="text-[16px] font-semibold text-[var(--ink)]">{title}</p>
-      <p className="text-[13px] text-[var(--stone)] max-w-[360px] leading-relaxed">{description}</p>
-      {action && <div className="mt-3">{action}</div>}
+      {icon && (
+        <div className="relative mb-2">
+          <span aria-hidden="true" className="absolute -inset-2 rounded-[16px] bg-[var(--color-primary-tint)]" />
+          <span className="icon-tile relative !w-11 !h-11 !rounded-[12px]">{icon}</span>
+        </div>
+      )}
+      <p className="text-[15px] font-semibold text-[var(--ink)]">{title}</p>
+      <p className="text-[13px] text-[var(--color-ink-muted-48)] max-w-[380px] leading-relaxed">{description}</p>
+      {action && <div className="mt-3 flex flex-wrap justify-center gap-2">{action}</div>}
     </div>
   )
 }
@@ -46,13 +51,13 @@ export function EmptyState({ icon, title, description, action }: {
 export function ErrorState({ error, onRetry, compact = false }: { error: unknown; onRetry?: () => void; compact?: boolean }) {
   const apiError = toApiError(error)
   return (
-    <div role="alert" className={`flex ${compact ? 'items-center' : 'flex-col items-center text-center py-10'} gap-3 px-6`}>
-      <span className="w-9 h-9 rounded-full bg-[var(--badge-rose-bg)] text-[var(--badge-rose-fg)] flex items-center justify-center shrink-0">
+    <div role="alert" className={`flex ${compact ? 'items-center py-3' : 'flex-col items-center text-center py-10'} gap-3 px-6`}>
+      <span className="w-10 h-10 rounded-[12px] bg-[var(--badge-rose-bg)] text-[var(--badge-rose-fg)] flex items-center justify-center shrink-0">
         <AlertTriangle size={16} />
       </span>
       <div className={compact ? 'flex-1' : ''}>
         <p className="text-[13px] font-semibold text-[var(--ink)]">Couldn’t load this</p>
-        <p className="text-[12px] text-[var(--stone)]">
+        <p className="text-[12px] text-[var(--color-ink-muted-48)] mt-0.5">
           {apiError.userMessage}
           {apiError.requestId && <span className="ml-1 opacity-70">Ref {apiError.requestId}</span>}
         </p>

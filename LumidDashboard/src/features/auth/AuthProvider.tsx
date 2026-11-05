@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { Session } from '@supabase/supabase-js'
-import { isDemoMode } from '../../lib/env'
+import { exitDemo, isDemoMode } from '../../lib/env'
 import { supabaseClient } from '../../lib/supabase'
 import { queryClient } from '../../lib/query'
 
@@ -19,7 +19,7 @@ const DEMO_STATE: AuthState = {
   userId: 'demo',
   email: 'demo@lumidai.in',
   isDemo: true,
-  signOut: async () => {},
+  signOut: async () => exitDemo(),
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {

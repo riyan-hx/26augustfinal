@@ -47,7 +47,8 @@ function Manage({ b, token }: { b: ManagedBooking; token: string }) {
   const now = useNow()
   const [mode, setMode] = useState<'view' | 'move' | 'cancel'>('view')
   const [done, setDone] = useState<'moved' | 'cancelled' | null>(null)
-  const refresh = () => qc.invalidateQueries({ queryKey: ['manage', b.bookingId] })
+  // The booking, its open slots and, in demo, the dashboard all changed.
+  const refresh = () => qc.invalidateQueries()
   const changeable = (b.status === 'confirmed' || b.status === 'pending_payment') && now < b.changesAllowedUntil.getTime()
   const active = b.status === 'confirmed' || b.status === 'pending_payment'
   const st = statusCopy[b.status] ?? statusCopy.confirmed!

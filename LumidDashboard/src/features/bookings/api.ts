@@ -47,31 +47,60 @@ export interface BookingRange {
   from?: Date
   to?: Date
   patientId?: string
+  /** Server-side status filter, e.g. 'pending_payment' for payments to collect. */
+  status?: BookingStatus
 }
 
+/** Most bookings returned by one list call. */
+export const BOOKING_LIST_LIMIT = 500
+
+/**
+ * Bookings in `range`, oldest first. When more than the limit match, the
+ * latest ones are kept (fetched newest first), so recent and upcoming
+ * sessions are never the ones cut off.
+ */
 export async function listBookings(range: BookingRange = {}): Promise<BookingSummary[]> {
   if (isDemoMode) {
     return demoDelay(
       demoBookings
         .filter((b) => (!range.from || b.startsAt >= range.from) && (!range.to || b.startsAt < range.to))
         .filter((b) => !range.patientId || b.patientId === range.patientId)
-        .sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime()),
+        .filter((b) => !range.status || b.status === range.status)
+        .sort((a, b) => b.startsAt.getTime() - a.startsAt.getTime())
+        .slice(0, BOOKING_LIST_LIMIT)
+        .reverse(),
     )
   }
   let query = db().from('booking_list').select(COLUMNS)
   if (range.from) query = query.gte('starts_at', range.from.toISOString())
   if (range.to) query = query.lt('starts_at', range.to.toISOString())
   if (range.patientId) query = query.eq('patient_id', range.patientId)
-  const rows = unwrap(await query.order('starts_at', { ascending: true }).limit(500)) as BookingListRow[]
-  return rows.map(toBooking)
+  if (range.status) query = query.eq('status', range.status)
+  const rows = unwrap(await query.order('starts_at', { ascending: false }).limit(BOOKING_LIST_LIMIT)) as BookingListRow[]
+  return rows.map(toBooking).reverse()
 }
+
+/** Demo stand-in for the database's no-overlap constraint on live bookings. */
+export function assertDemoSlotFree(start: Date, end: Date, ignoreId?: string) {
+  const clash = demoBookings.find((b) =>
+    b.id !== ignoreId && (b.status === 'confirmed' || b.status === 'pending_payment') &&
+    b.startsAt.getTime() < end.getTime() && start.getTime() < b.endsAt.getTime())
+  if (clash) throw new ApiError('SLOT_UNAVAILABLE', { detail: `You already have a session at that time (${clash.patientName}).` })
+}
+
+/** Demo: how and when payments marked by hand were collected (live: the payments table). */
+export const demoPaymentInfo = new Map<string, { method: PaymentMethod | 'offline'; capturedAt: Date }>(
+  // Sample payments were collected at the session; pin that date so a later reschedule doesn't move the money.
+  demoBookings.filter((b) => b.paymentStatus === 'captured' || b.paymentStatus === 'refunded').map((b) => [b.id, { method: 'upi', capturedAt: b.startsAt }]),
+)
 
 export async function cancelBooking(id: string, reason: string): Promise<void> {
   const parsed = cancelSchema.safeParse({ reason })
   if (!parsed.success) throw new ApiError('VALIDATION_FAILED', { detail: parsed.error.issues[0]?.message })
   if (isDemoMode) {
     const b = demoBookings.find((x) => x.id === id)
-    if (b) b.status = 'cancelled'
+    // Like the offline-refund trigger: a collected payment is recorded as refunded.
+    if (b) { b.status = 'cancelled'; b.holdExpiresAt = null; if (b.paymentStatus === 'captured') b.paymentStatus = 'refunded' }
     return demoDelay(undefined)
   }
   unwrap(await db().rpc('transition_booking', { p_booking_id: id, p_to: 'cancelled', p_reason: parsed.data.reason }))
@@ -92,7 +121,7 @@ export type PaymentMethod = 'upi' | 'cash' | 'bank_transfer' | 'card'
 export async function markPaid(id: string, method: PaymentMethod): Promise<void> {
   if (isDemoMode) {
     const b = demoBookings.find((x) => x.id === id)
-    if (b) { b.status = 'confirmed'; b.paymentStatus = 'captured'; b.holdExpiresAt = null }
+    if (b) { b.status = 'confirmed'; b.paymentStatus = 'captured'; b.holdExpiresAt = null; demoPaymentInfo.set(b.id, { method, capturedAt: new Date() }) }
     return demoDelay(undefined)
   }
   unwrap(await db().rpc('mark_booking_paid', { p_booking_id: id, p_method: method }))
@@ -122,20 +151,31 @@ export async function createBooking(input: NewBookingInput): Promise<string> {
 
   if (isDemoMode) {
     const st = demoSessionTypes.find((t) => t.id === input.sessionTypeId)!
-    let patientId: string, patientName: string
-    if ('id' in input.patient) {
-      patientId = input.patient.id; patientName = demoPatients.find((p) => p.id === patientId)?.name ?? 'Patient'
+    await demoDelay(undefined)
+    assertDemoSlotFree(input.startsAt, new Date(input.startsAt.getTime() + st.durationMinutes * 60_000))
+    let patientId: string, patientName: string, patientEmail: string
+    const email = 'id' in input.patient ? '' : input.patient.email.trim().toLowerCase()
+    // Like the live flow, a new patient with a known email reuses that record.
+    const known = 'id' in input.patient
+      ? demoPatients.find((p) => p.id === (input.patient as { id: string }).id)
+      : demoPatients.find((p) => p.email.toLowerCase() === email)
+    if (known) {
+      patientId = known.id; patientName = known.name; patientEmail = known.email
     } else {
-      patientId = crypto.randomUUID(); patientName = input.patient.fullName.trim()
-      demoPatients.push({ id: patientId, name: patientName, email: input.patient.email.trim(), phone: input.patient.phone || null, sessionsCompleted: 0, lastSessionAt: null, nextSessionAt: input.startsAt, focus: null, status: 'new' })
+      const person = input.patient as { fullName: string; phone: string }
+      patientId = crypto.randomUUID(); patientName = person.fullName.trim(); patientEmail = email
+      demoPatients.push({ id: patientId, name: patientName, email, phone: person.phone.trim() || null, sessionsCompleted: 0, lastSessionAt: null, nextSessionAt: null, focus: null, status: 'new' })
     }
     const id = crypto.randomUUID()
+    const endsAt = new Date(input.startsAt.getTime() + st.durationMinutes * 60_000)
     demoBookings.push({
       id, code: `B-${Math.random().toString(36).slice(2, 8).toUpperCase()}`, status: input.paid ? 'confirmed' : 'pending_payment',
-      startsAt: input.startsAt, endsAt: new Date(input.startsAt.getTime() + st.durationMinutes * 60_000), pricePaise: st.pricePaise,
-      patientId, patientName, sessionTypeName: st.name, meetUrl: null, holdExpiresAt: input.paid ? null : input.startsAt, paymentStatus: input.paid ? 'captured' : null,
+      startsAt: input.startsAt, endsAt, pricePaise: st.pricePaise,
+      patientId, patientName, patientEmail, sessionTypeName: st.name, meetUrl: null,
+      holdExpiresAt: input.paid ? null : new Date(endsAt.getTime() + 3 * 86_400_000), paymentStatus: input.paid ? 'captured' : null,
     })
-    return demoDelay(id)
+    if (input.paid) demoPaymentInfo.set(id, { method: 'offline', capturedAt: new Date() })
+    return id
   }
 
   let patientId: string
@@ -159,8 +199,13 @@ export async function rescheduleBooking(id: string, startsAt: Date): Promise<voi
   if (startsAt.getTime() < Date.now()) throw new ApiError('VALIDATION_FAILED', { detail: 'Pick a time in the future.' })
   if (isDemoMode) {
     const b = demoBookings.find((x) => x.id === id)
-    if (b) { const len = b.endsAt.getTime() - b.startsAt.getTime(); b.startsAt = startsAt; b.endsAt = new Date(startsAt.getTime() + len) }
-    return demoDelay(undefined)
+    await demoDelay(undefined)
+    if (b) {
+      const len = b.endsAt.getTime() - b.startsAt.getTime()
+      assertDemoSlotFree(startsAt, new Date(startsAt.getTime() + len), b.id)
+      b.startsAt = startsAt; b.endsAt = new Date(startsAt.getTime() + len)
+    }
+    return
   }
   unwrap(await db().rpc('reschedule_booking', { p_booking_id: id, p_new_start: startsAt.toISOString() }))
 }

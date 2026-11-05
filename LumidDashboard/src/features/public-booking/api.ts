@@ -6,7 +6,10 @@ import { localDateKey } from '../../lib/dates'
 import { unwrap } from '../../lib/query'
 import { db } from '../../lib/supabase'
 import type { BookingRequest } from '../../lib/schemas'
-import { demoAvailability, demoDelay, demoProfile, demoSessionTypes } from '../demo/fixtures'
+import { demoAvailability, demoBookings, demoDelay, demoPatients, demoProfile, demoSessionTypes } from '../demo/fixtures'
+import { assertDemoSlotFree } from '../bookings/api'
+
+const hhmmToMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5))
 
 export interface PublicSessionType { id: string; name: string; description: string; durationMinutes: number; pricePaise: number }
 export interface PublicProfile {
@@ -55,16 +58,30 @@ export async function getPublicProfile(slug: string): Promise<PublicProfile> {
 
 export async function getSlots(slug: string, sessionTypeId: string, from: Date, to: Date, timeZone: string): Promise<Date[]> {
   if (isDemoMode) {
+    // Mirrors public_available_slots: weekly hours, session length, notice,
+    // booking window, and no overlap with live bookings (plus buffer).
+    const st = demoSessionTypes.find((t) => t.id === sessionTypeId && t.isActive)
+    if (!st) throw new ApiError('NOT_FOUND', { detail: 'Session type not found.' })
+    const MIN = 60_000
+    const earliest = Date.now() + demoProfile.minNoticeMinutes * MIN
+    const latest = Date.now() + demoProfile.bookingWindowDays * 86_400_000
+    const lastDay = localDateKey(to, timeZone)
     const out: Date[] = []
-    const STEP = 1_800_000
-    for (let t = Math.ceil(from.getTime() / STEP) * STEP; t <= to.getTime() + 86_400_000; t += STEP) {
-      const d = new Date(t)
-      const hhmm = new Intl.DateTimeFormat('en-GB', { timeZone, hour: '2-digit', minute: '2-digit', hour12: false }).format(d)
-      const weekday = new Date(`${localDateKey(d, timeZone)}T12:00:00Z`).getUTCDay()
-      const rule = demoAvailability.find((r) => r.weekday === weekday)
-      if (rule && hhmm >= rule.startTime && hhmm < '19:00' && d.getTime() > Date.now() + 12 * 3_600_000) out.push(d)
+    for (let day = localDateKey(from, timeZone); day <= lastDay; day = localDateKey(new Date(Date.parse(`${day}T12:00:00Z`) + 86_400_000), 'UTC')) {
+      const weekday = new Date(`${day}T12:00:00Z`).getUTCDay()
+      const midnight = Date.parse(`${day}T00:00:00+05:30`) // demo practice is in IST
+      for (const r of demoAvailability.filter((x) => x.weekday === weekday)) {
+        for (let m = hhmmToMin(r.startTime); m <= hhmmToMin(r.endTime) - st.durationMinutes; m += 30) {
+          const s = midnight + m * MIN
+          if (s < earliest || s > latest) continue
+          const end = s + (st.durationMinutes + st.bufferMinutes) * MIN
+          const clash = demoBookings.some((b) => (b.status === 'confirmed' || b.status === 'pending_payment') &&
+            b.startsAt.getTime() < end && s < b.endsAt.getTime() + st.bufferMinutes * MIN)
+          if (!clash) out.push(new Date(s))
+        }
+      }
     }
-    return demoDelay(out.filter((d) => localDateKey(d, timeZone) <= localDateKey(to, timeZone)))
+    return demoDelay(out.sort((a, b) => a.getTime() - b.getTime()))
   }
   const rows = unwrap(
     await db().rpc('public_available_slots', { p_slug: slug, p_session_type_id: sessionTypeId, p_from: localDateKey(from, timeZone), p_to: localDateKey(to, timeZone) }),
@@ -115,9 +132,28 @@ export interface BookingRequestResult { bookingId: string; code: string; startsA
 /** Pay-at-session request: reserves the slot; the psychologist collects payment and marks it paid. */
 export async function requestBooking(input: BookingRequest): Promise<BookingRequestResult> {
   if (isDemoMode) {
+    // Like request_booking: upsert the patient by email and hold the slot as awaiting payment.
     await demoDelay(null, 500)
+    const st = demoSessionTypes.find((t) => t.id === input.session_type_id && t.isActive)
+    if (!st) throw new ApiError('NOT_FOUND', { detail: 'Session type not found.' })
     const start = new Date(input.starts_at)
-    return { bookingId: crypto.randomUUID(), code: `B-${Math.random().toString(36).slice(2, 8).toUpperCase()}`, startsAt: start, endsAt: new Date(start.getTime() + 50 * 60_000), pricePaise: 0, manageToken: 'demo' }
+    const end = new Date(start.getTime() + st.durationMinutes * 60_000)
+    if (start.getTime() < Date.now() + demoProfile.minNoticeMinutes * 60_000) throw new ApiError('SLOT_UNAVAILABLE', { detail: 'That time can’t be booked.' })
+    assertDemoSlotFree(start, end)
+    const email = input.email.trim().toLowerCase()
+    let patient = demoPatients.find((p) => p.email.toLowerCase() === email)
+    if (patient) { patient.name = input.full_name.trim(); patient.phone = input.phone?.trim() || patient.phone }
+    else {
+      patient = { id: crypto.randomUUID(), name: input.full_name.trim(), email, phone: input.phone?.trim() || null, sessionsCompleted: 0, lastSessionAt: null, nextSessionAt: null, focus: null, status: 'new' }
+      demoPatients.push(patient)
+    }
+    const booking = {
+      id: crypto.randomUUID(), code: `B-${Math.random().toString(36).slice(2, 8).toUpperCase()}`, status: 'pending_payment' as const,
+      startsAt: start, endsAt: end, pricePaise: st.pricePaise, patientId: patient.id, patientName: patient.name, patientEmail: patient.email,
+      sessionTypeName: st.name, meetUrl: null, holdExpiresAt: new Date(end.getTime() + 3 * 86_400_000), paymentStatus: null,
+    }
+    demoBookings.push(booking)
+    return { bookingId: booking.id, code: booking.code, startsAt: start, endsAt: end, pricePaise: st.pricePaise, manageToken: 'demo' }
   }
   const token = crypto.randomUUID() + crypto.randomUUID()
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(token))
@@ -155,7 +191,17 @@ const demoManaged = (): ManagedBooking => {
 }
 
 export async function getManagedBooking(bookingId: string, token: string): Promise<ManagedBooking> {
-  if (isDemoMode) return demoDelay(demoManaged())
+  if (isDemoMode) {
+    // A booking requested on the demo page in this visit; otherwise a sample one.
+    const b = demoBookings.find((x) => x.id === bookingId)
+    if (!b) return demoDelay(demoManaged())
+    const st = demoSessionTypes.find((t) => t.name === b.sessionTypeName) ?? demoSessionTypes[0]!
+    return demoDelay({
+      ...demoManaged(), bookingId: b.id, code: b.code, status: b.status, startsAt: b.startsAt, endsAt: b.endsAt, pricePaise: b.pricePaise,
+      meetUrl: b.meetUrl, sessionTypeId: st.id, sessionTypeName: b.sessionTypeName,
+      changesAllowedUntil: new Date(b.startsAt.getTime() - demoProfile.cancellationCutoffHours * 3_600_000),
+    })
+  }
   const j = unwrap(await db().rpc('public_manage_booking', { p_booking_id: bookingId, p_token: token })) as ManagedJson
   return {
     bookingId: j.booking_id, code: j.code, status: j.status, startsAt: new Date(j.starts_at), endsAt: new Date(j.ends_at), pricePaise: j.price_paise,
@@ -165,11 +211,23 @@ export async function getManagedBooking(bookingId: string, token: string): Promi
 }
 
 export async function patientCancel(bookingId: string, token: string, reason: string): Promise<void> {
-  if (isDemoMode) return demoDelay(undefined)
+  if (isDemoMode) {
+    const b = demoBookings.find((x) => x.id === bookingId)
+    if (b) { b.status = 'cancelled'; b.holdExpiresAt = null; if (b.paymentStatus === 'captured') b.paymentStatus = 'refunded' }
+    return demoDelay(undefined)
+  }
   unwrap(await db().rpc('public_cancel_booking', { p_booking_id: bookingId, p_token: token, p_reason: reason || null }))
 }
 
 export async function patientReschedule(bookingId: string, token: string, startsAt: Date): Promise<void> {
-  if (isDemoMode) return demoDelay(undefined)
+  if (isDemoMode) {
+    const b = demoBookings.find((x) => x.id === bookingId)
+    if (b) {
+      const len = b.endsAt.getTime() - b.startsAt.getTime()
+      assertDemoSlotFree(startsAt, new Date(startsAt.getTime() + len), b.id)
+      b.startsAt = startsAt; b.endsAt = new Date(startsAt.getTime() + len)
+    }
+    return demoDelay(undefined)
+  }
   unwrap(await db().rpc('public_reschedule_booking', { p_booking_id: bookingId, p_token: token, p_new_start: startsAt.toISOString() }))
 }

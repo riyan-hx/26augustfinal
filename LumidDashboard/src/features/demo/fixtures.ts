@@ -57,7 +57,7 @@ function booking(
   return {
     id: code, code, status, startsAt,
     endsAt: new Date(startsAt.getTime() + type.durationMinutes * 60_000),
-    pricePaise: type.pricePaise, patientId, patientName: patient.name, sessionTypeName: type.name,
+    pricePaise: type.pricePaise, patientId, patientName: patient.name, patientEmail: patient.email, sessionTypeName: type.name,
     meetUrl: status === 'confirmed' ? 'https://meet.google.com/' : null,
     holdExpiresAt: status === 'pending_payment' ? new Date(Date.now() + 8 * 60_000) : null,
     paymentStatus: status === 'pending_payment' ? 'created' : status === 'cancelled' ? 'refunded' : 'captured',
@@ -75,6 +75,22 @@ export const demoBookings: BookingSummary[] = [
   booking('B-8L2XQM', '5', -1, 11, 0, individual, 'completed'),
   booking('B-4P9GHT', '6', -2, 16, 0, individual, 'cancelled'),
   booking('B-6R3YSB', '7', -7, 12, 0, followUp, 'no_show'),
+  // Some history, so long-standing patients read as returning (not new) in the charts.
+  booking('B-H1DP02', '1', -2, 17, 0, followUp, 'completed'),
+  booking('B-H1DP30', '1', -30, 17, 0, individual, 'completed'),
+  booking('B-H1DP90', '1', -90, 17, 0, individual, 'completed'),
+  booking('B-H3AN06', '3', -6, 18, 0, individual, 'completed'),
+  booking('B-H3AN55', '3', -55, 18, 0, individual, 'completed'),
+  booking('B-H4SK25', '4', -25, 15, 0, individual, 'completed'),
+  booking('B-H4SK99', '4', -120, 15, 0, individual, 'completed'),
+  booking('B-H5LI08', '5', -8, 11, 0, followUp, 'completed'),
+  booking('B-H5LI40', '5', -40, 11, 0, followUp, 'completed'),
+  booking('B-H5LI99', '5', -140, 11, 0, individual, 'completed'),
+  booking('B-H6RB28', '6', -28, 16, 0, individual, 'completed'),
+  booking('B-H6RB99', '6', -100, 16, 0, individual, 'completed'),
+  booking('B-H7RS35', '7', -35, 12, 0, individual, 'completed'),
+  booking('B-H8MN03', '8', -3, 10, 0, followUp, 'completed'),
+  booking('B-H8MN45', '8', -45, 10, 0, individual, 'completed'),
 ]
 
 /** Simulated latency so demo screens exercise their loading states. */

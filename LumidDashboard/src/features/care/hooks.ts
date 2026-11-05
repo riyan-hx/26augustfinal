@@ -18,6 +18,7 @@ export function useSaveNote() {
     mutationFn: (input: NoteInput) => saveNote(input),
     onSettled: (_d, _e, v) => Promise.all([
       qc.invalidateQueries({ queryKey: careKeys.notes(v.patientId) }),
+      qc.invalidateQueries({ queryKey: ['patients'] }), // current focus comes from the latest note
       v.noteId ? qc.invalidateQueries({ queryKey: careKeys.note(v.noteId) }) : null,
     ]),
   })

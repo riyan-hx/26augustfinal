@@ -9,8 +9,10 @@ import { BookingActions } from '../bookings/BookingActions'
 import { useAvailability } from '../practice/hooks'
 import { CopyBookingLinkButton } from '../practice/CopyBookingLinkButton'
 import { NewBookingButton } from '../bookings/NewBookingDialog'
+import { PaymentBadge } from '../../components/ui/PaymentBadge'
 import { Avatar } from '../../components/ui/Avatar'
 import { ErrorState, Skeleton } from '../../components/ui/StateViews'
+import { PageHeader } from '../../components/ui/PageHeader'
 import type { BookingStatus, BookingSummary } from '../../types/domain'
 
 const DAY = 86_400_000
@@ -21,10 +23,10 @@ const HOURS = Array.from({ length: LAST_HOUR - FIRST_HOUR }, (_, i) => FIRST_HOU
 const SHOWN: BookingStatus[] = ['confirmed', 'pending_payment', 'completed', 'no_show']
 
 const tone: Record<BookingStatus, string> = {
-  confirmed: 'bg-[#EAF5E3] border-l-[#3F8F22] text-[var(--ink)]',
-  pending_payment: 'bg-[#FBF3E1] border-l-[#C98A12] text-[#5E4108]',
-  completed: 'bg-[var(--color-canvas-parchment)] border-l-[#9AA0A6] text-[var(--stone)]',
-  no_show: 'bg-zinc-100 border-l-zinc-400 text-zinc-500',
+  confirmed: 'bg-[var(--badge-green-bg)] border-l-[var(--color-primary)] text-[var(--color-forest)]',
+  pending_payment: 'bg-[var(--badge-amber-bg)] border-l-[var(--badge-amber-fg)] text-[#5E3A00]',
+  completed: 'bg-[var(--color-canvas-parchment)] border-l-[var(--color-hairline-strong)] text-[var(--stone)]',
+  no_show: 'bg-[var(--badge-neutral-bg)] border-l-[var(--badge-neutral-fg)] text-[var(--badge-neutral-fg)]',
   cancelled: '', expired: '',
 }
 
@@ -61,24 +63,25 @@ export default function LiveCalendar() {
   const paid = events.filter((b) => b.paymentStatus === 'captured' || b.paymentStatus === 'partially_refunded')
 
   return (
-    <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-3">
-        <div>
-          <h1 className="text-[26px] font-semibold tracking-tight">Calendar</h1>
-          <p className="text-[13px] text-[var(--stone)] mt-1">{range} · times in IST</p>
-        </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <button type="button" className="btn-secondary" onClick={() => setOffset(0)} disabled={offset === 0}>Today</button>
-          <div className="flex rounded-full border border-[var(--hairline)] bg-white">
-            <button type="button" aria-label="Previous week" className="w-9 h-9 flex items-center justify-center rounded-l-full hover:bg-[var(--color-canvas-parchment)]" onClick={() => setOffset((o) => o - 1)}><ChevronLeft size={16} /></button>
-            <button type="button" aria-label="Next week" className="w-9 h-9 flex items-center justify-center rounded-r-full hover:bg-[var(--color-canvas-parchment)] border-l border-[var(--hairline)]" onClick={() => setOffset((o) => o + 1)}><ChevronRight size={16} /></button>
-          </div>
-          <CopyBookingLinkButton className="btn-secondary" />
-          <NewBookingButton />
-        </div>
-      </div>
+    <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8">
+      <PageHeader
+        title="Calendar"
+        description="Your week at a glance. Green bands are the hours patients can book."
+        meta={<span className="font-semibold text-[var(--color-ink)]">{range} <span className="font-normal text-[var(--color-ink-muted-48)]">· times in IST</span></span>}
+        actions={
+          <>
+            <button type="button" className="btn-secondary" onClick={() => setOffset(0)} disabled={offset === 0}>Today</button>
+            <div className="flex rounded-full border border-[var(--color-hairline-strong)] bg-white">
+              <button type="button" aria-label="Previous week" className="w-9 h-9 flex items-center justify-center rounded-l-full hover:bg-[var(--color-primary-tint)]" onClick={() => setOffset((o) => o - 1)}><ChevronLeft size={16} /></button>
+              <button type="button" aria-label="Next week" className="w-9 h-9 flex items-center justify-center rounded-r-full hover:bg-[var(--color-primary-tint)] border-l border-[var(--hairline)]" onClick={() => setOffset((o) => o + 1)}><ChevronRight size={16} /></button>
+            </div>
+            <CopyBookingLinkButton className="btn-secondary" />
+            <NewBookingButton />
+          </>
+        }
+      />
 
-      <div className="mt-6 grid xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
+      <div className="grid xl:grid-cols-[minmax(0,1fr)_320px] gap-6 items-start">
         <section className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden" aria-label="Week view">
           <div className="overflow-x-auto">
             <div className="min-w-[720px]">
@@ -90,7 +93,7 @@ export default function LiveCalendar() {
                   return (
                     <div key={i} className="py-3 flex flex-col items-center gap-1">
                       <span className="text-[11px] font-medium uppercase tracking-wide text-[var(--stone)]">{wd}</span>
-                      <span className={`w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-semibold tabular-nums ${isToday ? 'bg-[var(--color-neutral-strong)] text-white' : ''}`}>{num}</span>
+                      <span className={`w-8 h-8 rounded-full flex items-center justify-center text-[14px] font-semibold tabular-nums ${isToday ? 'bg-[var(--color-primary)] text-white' : ''}`}>{num}</span>
                     </div>
                   )
                 })}
@@ -98,8 +101,9 @@ export default function LiveCalendar() {
 
               <div className="relative grid grid-cols-[56px_repeat(7,minmax(0,1fr))]" style={{ height: HOURS.length * HOUR_PX }}>
                 <div className="relative">
-                  {HOURS.map((h) => (
-                    <span key={h} className="absolute right-2 -translate-y-1/2 text-[10px] text-[var(--stone)] tabular-nums" style={{ top: top(h * 60) }}>{h === FIRST_HOUR ? '' : hourLabel(h)}</span>
+                  {/* Labels sit centred on their line; the first and last are kept inside the grid. */}
+                  {[...HOURS, LAST_HOUR].map((h) => (
+                    <span key={h} className={`absolute right-2 text-[10px] text-[var(--stone)] tabular-nums leading-none ${h === FIRST_HOUR ? 'translate-y-0.5' : h === LAST_HOUR ? '-translate-y-full -mt-0.5' : '-translate-y-1/2'}`} style={{ top: top(h * 60) }}>{hourLabel(h)}</span>
                   ))}
                 </div>
                 {days.map((_, i) => (
@@ -113,8 +117,8 @@ export default function LiveCalendar() {
                     ))}
                     {i === todayIndex && nowClock.minutes >= FIRST_HOUR * 60 && nowClock.minutes < LAST_HOUR * 60 && (
                       <div className="absolute inset-x-0 z-10 pointer-events-none" style={{ top: top(nowClock.minutes) }}>
-                        <span className="absolute -left-1 -top-[4px] w-2 h-2 rounded-full bg-red-500" />
-                        <div className="h-px bg-red-500" />
+                        <span className="absolute -left-1 -top-[4px] w-2 h-2 rounded-full bg-[var(--badge-rose-fg)]" />
+                        <div className="h-px bg-[var(--badge-rose-fg)]" />
                       </div>
                     )}
                   </div>
@@ -136,7 +140,7 @@ export default function LiveCalendar() {
         </section>
 
         <aside className="space-y-4">
-          {selected ? <BookingPanel booking={selected} onClose={() => setSelectedId(null)} /> : (
+          {selected ? <BookingPanel key={selected.id} booking={selected} onClose={() => setSelectedId(null)} /> : (
             <section className="bg-white border border-[var(--hairline)] rounded-[16px] p-5">
               <h2 className="text-[15px] font-semibold">This week</h2>
               <dl className="mt-4 grid grid-cols-3 gap-3">
@@ -171,9 +175,9 @@ function EventBlock({ booking: b, selected, onSelect }: { booking: BookingSummar
   const h = Math.max(24, top(Math.min(end, LAST_HOUR * 60)) - y - 2)
   return (
     <button type="button" onClick={onSelect} aria-pressed={selected}
-      className={`absolute left-1 right-1 z-[5] rounded-[6px] border-l-[3px] px-2 py-1 text-left overflow-hidden transition-shadow ${tone[b.status]} ${selected ? 'shadow-[0_4px_14px_rgba(0,0,0,0.12)] outline outline-1 outline-[var(--color-neutral-strong)]/40' : 'hover:shadow-sm'}`}
+      className={`absolute left-1 right-1 z-[5] rounded-[6px] border-l-[3px] px-2 py-1 text-left overflow-hidden transition-shadow ${tone[b.status]} ${selected ? 'shadow-[0_4px_14px_rgba(0,0,0,0.12)] outline outline-1 outline-[var(--color-primary)]/50' : 'hover:shadow-sm'}`}
       style={{ top: y + 1, height: h }}>
-      <p className="text-[12px] font-semibold truncate">{b.patientName}</p>
+      <p className="text-[12px] font-medium truncate">{b.patientName}</p>
       {h > 36 && <p className="text-[11px] opacity-80 truncate">{formatTime(b.startsAt)} · {b.sessionTypeName}</p>}
     </button>
   )
@@ -185,7 +189,7 @@ function BookingPanel({ booking: b, onClose }: { booking: BookingSummary; onClos
       <div className="flex items-start gap-3">
         <Avatar name={b.patientName} size={40} />
         <div className="flex-1 min-w-0">
-          <Link to={`/app/patients/${b.patientId}`} className="text-[15px] font-semibold hover:underline truncate block">{b.patientName}</Link>
+          <Link to={`/app/patients/${b.patientId}`} className="text-[15px] font-medium hover:underline truncate block">{b.patientName}</Link>
           <p className="text-[12px] text-[var(--stone)]">{b.sessionTypeName}</p>
         </div>
         <button type="button" aria-label="Close" onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[var(--color-canvas-parchment)]"><X size={14} /></button>
@@ -193,7 +197,7 @@ function BookingPanel({ booking: b, onClose }: { booking: BookingSummary; onClos
       <dl className="mt-4 space-y-2 text-[13px]">
         <div className="flex justify-between"><dt className="text-[var(--stone)] flex items-center gap-1.5"><CalendarDays size={13} />Date</dt><dd>{formatDay(b.startsAt)}</dd></div>
         <div className="flex justify-between"><dt className="text-[var(--stone)] flex items-center gap-1.5"><Clock size={13} />Time</dt><dd className="tabular-nums">{formatTime(b.startsAt)} – {formatTime(b.endsAt)}</dd></div>
-        <div className="flex justify-between"><dt className="text-[var(--stone)]">Fee</dt><dd className="tabular-nums">{formatINR(b.pricePaise)}{b.status === 'pending_payment' ? ' · awaiting' : ''}</dd></div>
+        <div className="flex justify-between"><dt className="text-[var(--stone)]">Fee</dt><dd className="flex items-center gap-2 tabular-nums">{formatINR(b.pricePaise)}<PaymentBadge booking={b} /></dd></div>
       </dl>
       {b.meetUrl
         ? <a href={b.meetUrl} target="_blank" rel="noreferrer" className="btn-primary w-full justify-center mt-4"><Video size={14} />Join Google Meet</a>
@@ -207,7 +211,7 @@ function Stat({ label, value }: { label: string; value: string }) {
   return (
     <div>
       <dt className="text-[11px] text-[var(--stone)]">{label}</dt>
-      <dd className="text-[18px] font-semibold tabular-nums mt-0.5">{value}</dd>
+      <dd className="text-[20px] font-semibold tabular-nums mt-0.5 text-[var(--color-forest)]">{value}</dd>
     </div>
   )
 }
