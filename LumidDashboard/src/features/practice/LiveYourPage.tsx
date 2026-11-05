@@ -4,6 +4,7 @@ import { bookingUrl } from '../../lib/links'
 import { formatINR } from '../../lib/money'
 import { Avatar } from '../../components/ui/Avatar'
 import { ErrorState, Skeleton } from '../../components/ui/StateViews'
+import { Badge, PageHeader } from '../../components/ui/PageHeader'
 import { CopyBookingLinkButton } from './CopyBookingLinkButton'
 import { useSessionTypes, useSetupStatus } from './hooks'
 
@@ -21,22 +22,25 @@ export default function LiveYourPage() {
   ] : []
 
   return (
-    <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-3">
-        <div>
-          <h1 className="text-[26px] font-semibold tracking-tight">Your page</h1>
-          <p className="text-[13px] text-[var(--stone)] mt-1">What patients see before they book. Share it on Instagram, WhatsApp or your email signature.</p>
-        </div>
-        <div className="flex gap-2">
-          {url && status?.published && <a href={url} target="_blank" rel="noreferrer" className="btn-secondary"><ExternalLink size={14} />Open page</a>}
-          <Link to="/app/settings" className="btn-primary">Edit page</Link>
-        </div>
-      </div>
+    <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8">
+      <PageHeader
+        title="Your page"
+        description="What patients see before they book. Share it on Instagram, WhatsApp or your email signature."
+        meta={status ? <Badge tone={status.published ? 'green' : 'amber'}>{status.published ? 'Live' : 'Not published'}</Badge> : undefined}
+        actions={
+          <>
+            {url && status?.published && <a href={url} target="_blank" rel="noreferrer" className="btn-secondary"><ExternalLink size={14} />Open page</a>}
+            {status && !status.published
+              ? <Link to="/app/setup" className="btn-primary">Finish setup</Link>
+              : <Link to="/app/settings#profile" className="btn-primary">Edit page</Link>}
+          </>
+        }
+      />
 
-      {setup.error && <div className="mt-6 bg-white border border-[var(--hairline)] rounded-[16px]"><ErrorState error={setup.error} /></div>}
+      {setup.error && <div className="mb-6 bg-white border border-[var(--hairline)] rounded-[16px]"><ErrorState error={setup.error} /></div>}
 
-      <div className="mt-6 grid lg:grid-cols-[minmax(0,1fr)_380px] gap-6 items-start">
-        <section className="bg-[var(--color-canvas-parchment)] border border-[var(--hairline)] rounded-[20px] p-4 sm:p-8" aria-label="Page preview">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_380px] gap-6 items-start">
+        <section className="bg-[linear-gradient(160deg,var(--color-primary-tint),var(--color-canvas-parchment)_60%)] border border-[var(--hairline)] rounded-[20px] p-4 sm:p-8" aria-label="Page preview">
           <div className="mx-auto max-w-[560px] bg-white rounded-[16px] border border-[var(--hairline)] shadow-sm overflow-hidden">
             <div className="h-9 border-b border-[var(--hairline)] flex items-center justify-center">
               <span className="text-[11px] text-[var(--stone)] bg-[var(--color-canvas-parchment)] rounded-full px-3 py-0.5 truncate max-w-[80%]">{url?.replace(/^https?:\/\//, '') ?? 'Choose your link in Settings'}</span>
@@ -71,24 +75,24 @@ export default function LiveYourPage() {
         <aside className="space-y-4">
           <section className="bg-white border border-[var(--hairline)] rounded-[16px] p-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-[15px] font-semibold flex items-center gap-2"><Globe size={15} />Booking link</h2>
-              {status && <span className={`text-[11px] font-medium px-2 py-0.5 rounded-full ${status.published ? 'bg-[var(--badge-green-bg)] text-[var(--badge-green-fg)]' : 'bg-amber-50 text-amber-800'}`}>{status.published ? 'Live' : 'Not published'}</span>}
+              <h2 className="text-[15px] font-semibold flex items-center gap-2"><span className="icon-tile !w-7 !h-7 !rounded-[8px]"><Globe size={14} /></span>Booking link</h2>
+              {status && <Badge tone={status.published ? 'green' : 'amber'}>{status.published ? 'Live' : 'Not published'}</Badge>}
             </div>
             <p className="text-[13px] mt-3 break-all tabular-nums">{url ?? 'Choose your link in Settings.'}</p>
             <div className="mt-4"><CopyBookingLinkButton className="btn-secondary w-full justify-center" /></div>
           </section>
-          <section className="bg-white border border-[var(--hairline)] rounded-[16px] p-5">
+          {status && !status.published && <section className="bg-white border border-[var(--hairline)] rounded-[16px] p-5">
             <h2 className="text-[15px] font-semibold">Ready to publish</h2>
             <ul className="mt-3 space-y-2">
               {checks.map((c) => (
                 <li key={c.label} className="flex items-center gap-2 text-[13px]">
-                  <CheckCircle2 size={15} className={c.done ? 'text-[var(--color-primary)]' : 'text-[var(--hairline)]'} />
+                  <CheckCircle2 size={15} className={c.done ? 'text-[var(--color-primary)]' : 'text-[var(--color-hairline-strong)]'} />
                   <span className={c.done ? '' : 'text-[var(--stone)]'}>{c.label}</span>
                 </li>
               ))}
             </ul>
-            {status && !status.published && <Link to="/app/settings" className="btn-primary w-full justify-center mt-4">Finish setup</Link>}
-          </section>
+            <Link to="/app/setup" className="btn-secondary w-full justify-center mt-4">Continue setup</Link>
+          </section>}
         </aside>
       </div>
     </div>

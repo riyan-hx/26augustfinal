@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { Check, Clock, Plus, Repeat2, X } from '../../lib/icons'
 import { formatDay, localDateKey } from '../../lib/dates'
 import { toApiError } from '../../lib/errors'
@@ -7,6 +7,7 @@ import { relativeDateTime } from '../../lib/format'
 import { useNow } from '../../lib/useNow'
 import { usePatients } from '../patients/hooks'
 import { EmptyState, ErrorState, SkeletonRows } from '../../components/ui/StateViews'
+import { PageHeader } from '../../components/ui/PageHeader'
 import { useCreateFollowUp, useFollowUps, useSetFollowUpStatus } from './hooks'
 import type { FollowUp } from './api'
 
@@ -14,7 +15,14 @@ import type { FollowUp } from './api'
 export default function LiveFollowUps() {
   const list = useFollowUps()
   const now = useNow()
-  const [adding, setAdding] = useState(false)
+  // `?new=1` opens the add form, so Overview / a patient can link straight to it.
+  const [params, setParams] = useSearchParams()
+  const adding = params.get('new') === '1'
+  const setAdding = (on: boolean) => setParams((prev) => {
+    const next = new URLSearchParams(prev)
+    if (on) next.set('new', '1'); else next.delete('new')
+    return next
+  }, { replace: true })
   const all = list.data ?? []
   const open = all.filter((f) => f.status === 'scheduled')
   const due = open.filter((f) => f.dueAt.getTime() <= now)
@@ -22,22 +30,20 @@ export default function LiveFollowUps() {
   const done = all.filter((f) => f.status === 'sent').reverse().slice(0, 10)
 
   return (
-    <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-3">
-        <div>
-          <h1 className="text-[26px] font-semibold tracking-tight">Follow-ups</h1>
-          <p className="text-[13px] text-[var(--stone)] mt-1">Reminders to reach a patient between sessions. Due ones also show on Overview.</p>
-        </div>
-        {!adding && <button className="btn-primary" onClick={() => setAdding(true)}><Plus size={14} />New follow-up</button>}
-      </div>
+    <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8">
+      <PageHeader
+        title="Follow-ups"
+        description="Reminders to reach a patient between sessions. Due ones also show on Overview."
+        actions={!adding ? <button className="btn-primary" onClick={() => setAdding(true)}><Plus size={14} />New follow-up</button> : undefined}
+      />
 
-      {adding && <div className="mt-6 bg-white border border-[var(--hairline)] rounded-[16px] p-5"><FollowUpForm onDone={() => setAdding(false)} /></div>}
+      {adding && <div className="mb-6 bg-white border border-[var(--hairline)] rounded-[16px] p-5"><h2 className="text-[15px] font-semibold mb-3">New follow-up</h2><FollowUpForm onDone={() => setAdding(false)} /></div>}
 
-      <div className="mt-6 grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 items-start">
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6 items-start">
         <section className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden" aria-labelledby="due-h">
-          <header className="px-5 py-4 border-b border-[var(--hairline)] flex items-center gap-2">
+          <header className={`px-5 py-4 border-b border-[var(--hairline)] flex items-center gap-2 ${due.length ? 'bg-[var(--badge-amber-bg)]/60' : ''}`}>
             <h2 id="due-h" className="text-[16px] font-semibold">Due now</h2>
-            {!list.isLoading && <span className="text-[11px] px-2 py-0.5 rounded-full bg-[var(--color-canvas-parchment)] border border-[var(--hairline)] tabular-nums">{due.length}</span>}
+            {!list.isLoading && <span className={`badge tabular-nums ${due.length ? 'badge--amber' : 'badge--neutral'}`}>{due.length}</span>}
           </header>
           {list.isLoading && <SkeletonRows rows={2} />}
           {list.error && <ErrorState error={list.error} onRetry={() => void list.refetch()} />}
@@ -48,7 +54,7 @@ export default function LiveFollowUps() {
         </section>
 
         <section className="bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden" aria-labelledby="upcoming-h">
-          <header className="px-5 py-4 border-b border-[var(--hairline)]"><h2 id="upcoming-h" className="text-[16px] font-semibold">Coming up</h2></header>
+          <header className="px-5 py-4 border-b border-[var(--hairline)] flex items-center gap-2"><h2 id="upcoming-h" className="text-[16px] font-semibold">Coming up</h2>{!list.isLoading && upcoming.length > 0 && <span className="badge badge--neutral tabular-nums">{upcoming.length}</span>}</header>
           {!list.isLoading && !list.error && upcoming.length === 0 && <p className="px-5 py-6 text-[12px] text-[var(--stone)]">No follow-ups scheduled ahead.</p>}
           <ul className="divide-y divide-[var(--hairline)]">{upcoming.map((f) => <FollowUpRow key={f.id} f={f} />)}</ul>
           {done.length > 0 && (
@@ -70,11 +76,11 @@ export function FollowUpRow({ f, overdue = false, compact = false }: { f: Follow
   const isDone = f.status === 'sent'
   return (
     <li className={`flex items-start gap-3 ${compact ? 'py-3' : 'px-5 py-3.5'}`}>
-      {!compact && <span className="w-9 h-9 rounded-full bg-[var(--color-canvas-parchment)] text-[var(--slate)] flex items-center justify-center shrink-0"><Clock size={15} /></span>}
+      {!compact && <span className={`w-9 h-9 rounded-full flex items-center justify-center shrink-0 ${overdue ? 'bg-[var(--badge-amber-bg)] text-[var(--badge-amber-fg)]' : isDone ? 'bg-[var(--badge-green-bg)] text-[var(--badge-green-fg)]' : 'bg-[var(--color-canvas-parchment)] text-[var(--slate)]'}`}>{isDone ? <Check size={15} /> : <Clock size={15} />}</span>}
       <div className="flex-1 min-w-0">
-        {!compact && <Link to={`/app/patients/${f.patientId}`} className="text-[13px] font-semibold hover:underline">{f.patientName}</Link>}
+        {!compact && <Link to={`/app/patients/${f.patientId}`} className="text-[13px] font-medium hover:underline">{f.patientName}</Link>}
         <p className={`text-[13px] ${compact ? '' : 'mt-0.5 text-[var(--slate)]'} ${isDone ? 'line-through text-[var(--stone)]' : ''}`}>{f.message}</p>
-        <p className={`text-[11px] mt-1 ${overdue ? 'text-amber-700 font-medium' : 'text-[var(--stone)]'}`}>{isDone ? `Done ${f.sentAt ? relativeDateTime(f.sentAt) : ''}` : `Due ${formatDay(f.dueAt)}`}</p>
+        <p className={`text-[11px] mt-1 ${overdue ? 'text-[var(--badge-amber-fg)] font-semibold' : 'text-[var(--stone)]'}`}>{isDone ? `Done ${f.sentAt ? relativeDateTime(f.sentAt) : ''}` : `Due ${formatDay(f.dueAt)}`}</p>
         {error && <p role="alert" className="text-[12px] text-[var(--badge-rose-fg)] mt-1">{error}</p>}
       </div>
       {isDone ? (
@@ -149,7 +155,7 @@ export function PatientFollowUps({ patientId }: { patientId: string }) {
     <div className="rounded-[12px] border border-[var(--hairline)] p-4">
       <div className="flex items-center justify-between">
         <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] flex items-center gap-1.5"><Repeat2 size={12} /> FOLLOW-UPS</p>
-        {!adding && <button className="text-[12px] font-medium text-[var(--ink)] hover:underline" onClick={() => setAdding(true)}>Add</button>}
+        {!adding && <button className="btn-link !min-h-0 !px-1" onClick={() => setAdding(true)}><Plus size={12} />Add</button>}
       </div>
       {adding && <div className="mt-3"><FollowUpForm patientId={patientId} onDone={() => setAdding(false)} /></div>}
       {list.error && <ErrorState compact error={list.error} onRetry={() => void list.refetch()} />}

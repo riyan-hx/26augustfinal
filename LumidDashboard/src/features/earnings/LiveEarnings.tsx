@@ -1,21 +1,24 @@
 import { useQuery } from '@tanstack/react-query'
-import { CreditCard } from '../../lib/icons'
+import { Link } from 'react-router-dom'
+import { ChevronRight, Clock3, CreditCard } from '../../lib/icons'
+import { Badge, PageHeader, type BadgeTone } from '../../components/ui/PageHeader'
 import { Avatar } from '../../components/ui/Avatar'
 import { EmptyState, ErrorState, Skeleton, SkeletonRows } from '../../components/ui/StateViews'
 import { formatDay, localDayBounds } from '../../lib/dates'
 import { formatINR } from '../../lib/money'
 import { useNow } from '../../lib/useNow'
 import { CopyBookingLinkButton } from '../practice/CopyBookingLinkButton'
-import { useBookings } from '../bookings/hooks'
+import { useAwaitingPayments } from '../bookings/hooks'
 import { sumPaise } from '../../lib/money'
+import { env } from '../../lib/env'
 import { getSummary, listPayments } from './api'
 
 const DAY = 86_400_000
-const statusStyle: Record<string, string> = {
-  captured: 'bg-emerald-50 border-emerald-200 text-emerald-700',
-  refunded: 'bg-zinc-100 border-zinc-300 text-zinc-600',
-  partially_refunded: 'bg-amber-50 border-amber-200 text-amber-700',
-  failed: 'bg-red-50 border-red-200 text-red-700',
+const statusTone: Record<string, BadgeTone> = {
+  captured: 'green',
+  refunded: 'neutral',
+  partially_refunded: 'amber',
+  failed: 'rose',
 }
 const statusLabel = (s: string) => (s === 'captured' ? 'Paid' : s === 'partially_refunded' ? 'Part refunded' : s[0]!.toUpperCase() + s.slice(1))
 
@@ -27,9 +30,9 @@ export default function LiveEarnings() {
   const week = useQuery({ queryKey: ['earnings', 'week', day], queryFn: () => getSummary(new Date(day - 6 * DAY), new Date(day + DAY)) })
   const month = useQuery({ queryKey: ['earnings', 'month', day], queryFn: () => getSummary(new Date(day - 29 * DAY), new Date(day + DAY)) })
   const payments = useQuery({ queryKey: ['earnings', 'payments'], queryFn: () => listPayments() })
-  // Unpaid sessions from two weeks back onwards, including upcoming ones.
-  const recent = useBookings({ from: new Date(day - 14 * DAY) })
-  const unpaid = (recent.data ?? []).filter((b) => b.status === 'pending_payment')
+  // Same source as the nav badge and the Bookings callout.
+  const recent = useAwaitingPayments()
+  const unpaid = recent.data ?? []
 
   const cards = [
     { label: 'Today', q: today, sub: (n: number) => `${n} paid session${n === 1 ? '' : 's'}` },
@@ -38,32 +41,37 @@ export default function LiveEarnings() {
   ]
 
   return (
-    <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
-      <h1 className="text-[26px] font-semibold tracking-tight">Earnings</h1>
-      <p className="text-[12px] text-[var(--stone)] mt-1">Money collected for sessions, after any Razorpay fees and refunds. Not accounting software.</p>
+    <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8">
+      <PageHeader
+        title="Earnings"
+        description={env.onlinePayments
+          ? 'Money collected for sessions, after Razorpay fees and refunds. Not accounting software.'
+          : 'Payments you’ve marked as collected for sessions, after refunds. Patients pay you directly. Not accounting software.'}
+        actions={unpaid.length > 0 ? <Link to="/app/bookings?status=awaiting" className="btn-primary">Collect {unpaid.length} payment{unpaid.length === 1 ? '' : 's'}</Link> : undefined}
+      />
 
-      <div className="mt-6 grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {cards.map(({ label, q, sub }) => (
-          <div key={label} className="bg-white border border-[var(--hairline)] rounded-[12px] p-5">
-            <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] uppercase">{label}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {cards.map(({ label, q, sub }, i) => (
+          <div key={label} className={`bg-white border border-[var(--hairline)] rounded-[16px] p-5 ${i === 2 ? 'ring-1 ring-[color-mix(in_oklch,var(--color-primary)_20%,transparent)]' : ''}`}>
+            <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--color-ink-muted-48)] uppercase">{label}</p>
             {q.isLoading ? <Skeleton className="h-7 w-24 mt-2" /> : q.error ? <p className="text-[12px] text-[var(--stone)] mt-2">Couldn’t load</p> : (
               <>
-                <p className="text-[22px] font-semibold mt-1 tabular-nums">{formatINR(q.data!.netPaise)}</p>
-                <p className="text-[11px] text-[var(--stone)]">{sub(q.data!.paidSessions)}{q.data!.refundedPaise > 0 ? ` · ${formatINR(q.data!.refundedPaise)} refunded` : ''}</p>
+                <p className="text-[24px] font-semibold mt-1.5 tabular-nums text-[var(--color-forest)]">{formatINR(q.data!.netPaise)}</p>
+                <p className="text-[11px] text-[var(--color-ink-muted-48)] mt-0.5">{sub(q.data!.paidSessions)}{q.data!.refundedPaise > 0 ? ` · ${formatINR(q.data!.refundedPaise)} refunded` : ''}</p>
               </>
             )}
           </div>
         ))}
-        <div className="bg-white border border-[var(--hairline)] rounded-[12px] p-5">
-          <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] uppercase">Awaiting payment</p>
-          {recent.isLoading ? <Skeleton className="h-7 w-24 mt-2" /> : <p className="text-[22px] font-semibold mt-1 tabular-nums">{formatINR(sumPaise(unpaid.map((b) => b.pricePaise)))}</p>}
-          <p className="text-[11px] text-[var(--stone)]">{unpaid.length} unpaid session{unpaid.length === 1 ? '' : 's'}</p>
-        </div>
+        <Link to="/app/bookings?status=awaiting" className={`group rounded-[16px] p-5 border transition-colors ${unpaid.length ? 'bg-[var(--badge-amber-bg)] border-[color-mix(in_oklch,var(--badge-amber-fg)_22%,var(--color-hairline))] hover:brightness-[0.98]' : 'bg-white border-[var(--hairline)] hover:bg-[var(--color-canvas-parchment)]'}`}>
+          <p className={`text-[11px] font-semibold tracking-[0.08em] uppercase flex items-center gap-1.5 ${unpaid.length ? 'text-[var(--badge-amber-fg)]' : 'text-[var(--color-ink-muted-48)]'}`}><Clock3 size={12} />Awaiting payment</p>
+          {recent.isLoading ? <Skeleton className="h-7 w-24 mt-2" /> : <p className="text-[24px] font-semibold mt-1.5 tabular-nums">{formatINR(sumPaise(unpaid.map((b) => b.pricePaise)))}</p>}
+          <p className="text-[11px] text-[var(--color-ink-muted-80)] mt-0.5 flex items-center gap-1">{unpaid.length} unpaid session{unpaid.length === 1 ? '' : 's'}<ChevronRight size={12} className="ml-auto group-hover:translate-x-0.5 transition" /></p>
+        </Link>
       </div>
 
       <div className="mt-6 bg-white border border-[var(--hairline)] rounded-[16px] overflow-hidden">
         <div className="px-6 py-4 flex items-center justify-between border-b border-[var(--hairline)]">
-          <h2 className="text-[13px] font-semibold">Transaction history</h2>
+          <h2 className="text-[15px] font-semibold">Transaction history</h2>
         </div>
         {payments.isLoading && <SkeletonRows rows={5} />}
         {payments.error && <ErrorState error={payments.error} onRetry={() => void payments.refetch()} />}
@@ -75,12 +83,12 @@ export default function LiveEarnings() {
             <li key={p.id} className="px-6 py-3.5 flex items-center gap-3 text-[12px]">
               <Avatar name={p.patientName} size={32} />
               <div className="min-w-0 flex-1">
-                <p className="font-semibold truncate">{p.patientName}</p>
+                <p className="font-medium truncate">{p.patientName}</p>
                 <p className="text-[var(--stone)] text-[11px]"><span className="font-mono">{p.code}</span>{p.capturedAt ? ` · ${formatDay(p.capturedAt)}` : ''} · {p.method}</p>
               </div>
-              <span className="hidden sm:block text-[var(--stone)] tabular-nums">{p.feesPaise ? `Fee ${formatINR(p.feesPaise)}` : '—'}</span>
+              {env.onlinePayments && <span className="hidden sm:block text-[var(--stone)] tabular-nums">{p.feesPaise ? `Razorpay fee ${formatINR(p.feesPaise)}` : 'No fee'}</span>}
               <span className="font-semibold tabular-nums w-[84px] text-right">{formatINR(p.amountPaise - p.refundedPaise)}</span>
-              <span className={`px-2 py-1 rounded-full border text-[11px] font-semibold ${statusStyle[p.status] ?? 'bg-zinc-100 border-zinc-300 text-zinc-600'}`}>{statusLabel(p.status)}</span>
+              <Badge tone={statusTone[p.status] ?? 'neutral'}>{statusLabel(p.status)}</Badge>
             </li>
           ))}
         </ul>

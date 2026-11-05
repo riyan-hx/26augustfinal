@@ -28,4 +28,9 @@ describe("errors", () => {
     expect(e.retryable).toBe(true);
     expect(new ApiError("SLOT_UNAVAILABLE").retryable).toBe(false);
   });
+  it("treats supabase-js network failures as NETWORK", () => {
+    expect(toApiError({ name: "AuthRetryableFetchError", status: 0, message: "Failed to fetch" }).code).toBe("NETWORK");
+    expect(toApiError({ message: "TypeError: Failed to fetch", code: "", details: "" }).code).toBe("NETWORK");
+    expect(toApiError({ code: "P0001", message: "SLOT_UNAVAILABLE" }).code).toBe("SLOT_UNAVAILABLE");
+  });
 });

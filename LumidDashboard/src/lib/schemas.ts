@@ -29,7 +29,7 @@ export const profileSchema = z.object({
   specialties: z.array(trimmed(60).min(1)).max(12).default([]),
   years_experience: z.number().int().min(0).max(70).nullable().default(null),
   rci_number: trimmed(40).nullable().default(null),
-  slug: slugSchema,
+  slug: slugSchema.optional(),
 });
 
 export const sessionTypeSchema = z.object({
@@ -68,7 +68,7 @@ export const followUpSchema = z.object({
   channel: z.enum(["email", "whatsapp"]).default("email"),
 });
 
-export type ProfileInput = z.infer<typeof profileSchema>;
+export type ProfileInput = z.input<typeof profileSchema>;
 export type SessionTypeInput = z.infer<typeof sessionTypeSchema>;
 export type AvailabilityRuleInput = z.infer<typeof availabilityRuleSchema>;
 export type BookingRequest = z.infer<typeof bookingRequestSchema>;

@@ -5,11 +5,18 @@ import { cancelBooking, createBooking, listBookings, markOutcome, markPaid, resc
 export const bookingKeys = {
   all: ['bookings'] as const,
   list: (range: BookingRange) =>
-    ['bookings', range.from?.toISOString() ?? '', range.to?.toISOString() ?? '', range.patientId ?? ''] as const,
+    ['bookings', range.from?.toISOString() ?? '', range.to?.toISOString() ?? '', range.patientId ?? '', range.status ?? ''] as const,
 }
 
 export const useBookings = (range: BookingRange = {}) =>
   useQuery({ queryKey: bookingKeys.list(range), queryFn: () => listBookings(range) })
+
+/**
+ * Bookings waiting to be marked paid — the one shared source for every
+ * "awaiting payment" count (nav badge, Bookings callout, Earnings).
+ * Lapsed holds come back from booking_list as 'expired', so they never count.
+ */
+export const useAwaitingPayments = () => useBookings({ status: 'pending_payment' })
 
 /** Today's bookings in IST. Range is computed once per render day. */
 export function useTodayBookings() {
@@ -19,7 +26,8 @@ export function useTodayBookings() {
 
 function useInvalidateCare() {
   const qc = useQueryClient()
-  return () => Promise.all([qc.invalidateQueries({ queryKey: bookingKeys.all }), qc.invalidateQueries({ queryKey: ['patients'] })])
+  // Any booking change can move money (cancel refunds) and the monthly session counts.
+  return () => Promise.all([bookingKeys.all, ['patients'], ['earnings'], ['overview']].map((queryKey) => qc.invalidateQueries({ queryKey })))
 }
 
 export function useCancelBooking() {
@@ -40,20 +48,12 @@ export function useMarkOutcome() {
 
 export function useMarkPaid() {
   const invalidate = useInvalidateCare()
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: ({ id, method }: { id: string; method: PaymentMethod }) => markPaid(id, method),
-    onSettled: () => Promise.all([invalidate(), qc.invalidateQueries({ queryKey: ['earnings'] })]),
-  })
+  return useMutation({ mutationFn: ({ id, method }: { id: string; method: PaymentMethod }) => markPaid(id, method), onSettled: invalidate })
 }
 
 export function useCreateBooking() {
   const invalidate = useInvalidateCare()
-  const qc = useQueryClient()
-  return useMutation({
-    mutationFn: (input: NewBookingInput) => createBooking(input),
-    onSettled: () => Promise.all([invalidate(), qc.invalidateQueries({ queryKey: ['earnings'] })]),
-  })
+  return useMutation({ mutationFn: (input: NewBookingInput) => createBooking(input), onSettled: invalidate })
 }
 
 export function useReschedule() {

@@ -52,9 +52,13 @@ export async function getProfile(): Promise<PracticeProfile> {
 
 export async function updateProfile(input: ProfileInput): Promise<void> {
   const data = validate(profileSchema, input)
-  if (isDemoMode) { Object.assign(demoProfile, { slug: data.slug, displayName: data.display_name, bio: data.bio, city: data.city, title: data.title, languages: data.languages }); return }
+  if (isDemoMode) { Object.assign(demoProfile, { slug: data.slug ?? demoProfile.slug, displayName: data.display_name, bio: data.bio, city: data.city, title: data.title, languages: data.languages }); return }
+  // Only write the optional profile extras when the caller sent them, so a
+  // partial form (setup wizard, settings) never wipes stored values.
+  const patch: Record<string, unknown> = { ...data }
+  for (const key of ['specialties', 'years_experience', 'rci_number', 'slug'] as const) if (!(key in input) || patch[key] === undefined) delete patch[key]
   const { data: auth } = await db().auth.getUser()
-  const result = await db().from('psychologists').update(data).eq('id', auth.user?.id ?? '')
+  const result = await db().from('psychologists').update(patch).eq('id', auth.user?.id ?? '')
   if (result.error?.code === '23505') {
     throw new ApiError('VALIDATION_FAILED', { fields: { slug: 'This link is taken. Try another.' } })
   }
@@ -70,21 +74,24 @@ export async function listSessionTypes(): Promise<SessionType[]> {
   return rows.map(toSessionType)
 }
 
-export async function saveSessionType(input: SessionTypeInput & { id?: string }): Promise<void> {
+/** Creates or updates a session type and returns its id. */
+export async function saveSessionType(input: SessionTypeInput & { id?: string }): Promise<string> {
   const data = validate(sessionTypeSchema, input)
   if (isDemoMode) {
     const existing = demoSessionTypes.find((s) => s.id === input.id)
     const mapped = { name: data.name, description: data.description, durationMinutes: data.duration_minutes, pricePaise: data.price_paise, bufferMinutes: data.buffer_minutes, isActive: data.is_active }
-    if (existing) Object.assign(existing, mapped)
-    else demoSessionTypes.push({ id: crypto.randomUUID(), ...mapped })
-    return
+    if (existing) { Object.assign(existing, mapped); return existing.id }
+    const id = crypto.randomUUID()
+    demoSessionTypes.push({ id, ...mapped })
+    return id
   }
   if (input.id) {
     unwrap(await db().from('session_types').update(data).eq('id', input.id))
-  } else {
-    const { data: auth } = await db().auth.getUser()
-    unwrap(await db().from('session_types').insert({ ...data, psychologist_id: auth.user?.id }))
+    return input.id
   }
+  const { data: auth } = await db().auth.getUser()
+  const row = unwrap(await db().from('session_types').insert({ ...data, psychologist_id: auth.user?.id }).select('id').single()) as { id: string }
+  return row.id
 }
 
 export async function archiveSessionType(id: string): Promise<void> {
@@ -104,19 +111,14 @@ export async function listAvailability(): Promise<AvailabilityRule[]> {
   return rows.map(toRule)
 }
 
-/** Replaces the weekly hours in one go (delete + insert). */
+/** Replaces the weekly hours atomically (one transaction on the server). */
 export async function saveWeeklyHours(rules: AvailabilityRuleInput[]): Promise<void> {
   const valid = rules.map((r) => validate(availabilityRuleSchema, r))
   if (isDemoMode) {
     demoAvailability.splice(0, demoAvailability.length, ...valid.map((r, i) => ({ id: `av-${i}`, weekday: r.weekday, startTime: r.start_time, endTime: r.end_time })))
     return
   }
-  const { data: auth } = await db().auth.getUser()
-  const me = auth.user?.id ?? ''
-  unwrap(await db().from('availability_rules').delete().eq('psychologist_id', me))
-  if (valid.length) {
-    unwrap(await db().from('availability_rules').insert(valid.map((r) => ({ ...r, psychologist_id: me }))))
-  }
+  unwrap(await db().rpc('replace_availability', { p_rules: valid }))
 }
 
 export async function setPublished(publish: boolean): Promise<void> {

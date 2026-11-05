@@ -1,4 +1,5 @@
-import { useParams, Link } from 'react-router-dom'
+import { useEffect } from 'react'
+import { useParams, Link, useLocation } from 'react-router-dom'
 import { ArrowLeft, Video, FileText, ShieldCheck, Sparkles, Clock, CheckCircle2, Eye, ArrowUpRight, Users } from '../lib/icons'
 import { formatDay } from '../lib/dates'
 import { formatINR } from '../lib/money'
@@ -10,6 +11,7 @@ import { usePatient } from '../features/patients/hooks'
 import { NotesPanel } from '../features/care/NotesPanel'
 import { PatientFollowUps } from '../features/care/FollowUps'
 import { useBookings } from '../features/bookings/hooks'
+import { PaymentBadge } from '../components/ui/PaymentBadge'
 import { Avatar } from '../components/ui/Avatar'
 import { EmptyState, ErrorState, Skeleton } from '../components/ui/StateViews'
 import type { BookingStatus, BookingSummary } from '../types/domain'
@@ -28,6 +30,19 @@ export default function PatientProfile() {
   const patient = usePatient(id)
   const history = useBookings({ patientId: id })
   const now = useNow()
+  const { hash } = useLocation()
+  const loaded = !!patient.data
+
+  // `#notes-h` (linked from Overview) scrolls to the notes once the profile has rendered.
+  // The section's scroll-margin keeps it clear of the sticky header.
+  useEffect(() => {
+    if (!loaded || !hash) return
+    const id = requestAnimationFrame(() => {
+      const target = document.getElementById(decodeURIComponent(hash.slice(1)))
+      ;(target?.closest('section') ?? target)?.scrollIntoView({ block: 'start' })
+    })
+    return () => cancelAnimationFrame(id)
+  }, [loaded, hash])
 
   if (patient.isLoading) return <ProfileSkeleton />
 
@@ -50,32 +65,37 @@ export default function PatientProfile() {
 
   const p = patient.data!
   const bookings = history.data ?? []
+  // One source for "Next" (header and side card): the soonest future, live booking.
   const next = bookings.find((b) => b.startsAt.getTime() > now && (b.status === 'confirmed' || b.status === 'pending_payment'))
+  const nextLabel = next ? relativeDateTime(next.startsAt) : history.isLoading ? '…' : 'Not scheduled'
   const upcoming = bookings.filter((b) => b.startsAt.getTime() > now && b.status !== 'cancelled' && b.status !== 'expired')
   const past = [...bookings].filter((b) => !upcoming.includes(b)).reverse()
 
   return (
-    <div className="px-4 lg:px-6 py-6 pb-20 lg:pb-6">
+    <div className="px-4 lg:px-6 py-6 pb-24 lg:pb-8">
       <BackLink />
 
-      <div className="mt-4 bg-white border border-[var(--hairline)] rounded-[16px] p-5 lg:p-6">
+      <div className="mt-3 bg-white border border-[var(--hairline)] rounded-[16px] p-5 lg:p-6">
         <div className="flex flex-col lg:flex-row lg:items-center gap-4">
           <div className="flex gap-4">
             <Avatar name={p.name} size={56} />
             <div>
-              <h1 className="text-[20px] font-semibold tracking-tight leading-none">{p.name}</h1>
-              <p className="text-[12px] text-[var(--stone)] mt-1">
-                {p.sessionsCompleted} {p.sessionsCompleted === 1 ? 'session' : 'sessions'} • Last session: {p.lastSessionAt ? relativeDaysAgo(p.lastSessionAt) : '—'} • Next: {p.nextSessionAt ? relativeDateTime(p.nextSessionAt) : 'Not scheduled'}
+              <div className="flex flex-wrap items-center gap-2">
+                <h1 className="text-[24px] font-semibold tracking-tight leading-none">{p.name}</h1>
+                <span className={`badge capitalize ${p.status === 'active' ? 'badge--green' : p.status === 'lapsed' ? 'badge--amber' : p.status === 'new' ? 'badge--sky' : 'badge--neutral'}`}>{p.status}</span>
+              </div>
+              <p className="text-[12px] text-[var(--stone)] mt-2">
+                {p.sessionsCompleted} {p.sessionsCompleted === 1 ? 'session' : 'sessions'} • Last session: {p.lastSessionAt ? relativeDaysAgo(p.lastSessionAt) : '—'} • Next: {nextLabel}
               </p>
               <p className="text-[12px] text-[var(--stone)] mt-1">{p.email}{p.phone ? ` • ${p.phone}` : ''}</p>
-              {p.focus && <p className="text-[12px] mt-1"><span className="px-2 py-0.5 rounded-full bg-[var(--sage-50)] border border-[var(--hairline)]">{p.focus}</span></p>}
+              {p.focus && <p className="text-[12px] mt-2"><span className="px-2.5 py-1 rounded-full bg-[var(--color-primary-tint)] border border-[var(--hairline)] text-[var(--color-forest)] font-medium">{p.focus}</span></p>}
             </div>
           </div>
           <div className="lg:ml-auto flex flex-wrap gap-2">
             {next?.meetUrl && (
-              <a href={next.meetUrl} target="_blank" rel="noreferrer" className="px-4 py-2 rounded-full bg-[var(--green-700)] text-white text-[12px] font-medium inline-flex items-center gap-1.5"><Video size={14} /> Join next session</a>
+              <a href={next.meetUrl} target="_blank" rel="noreferrer" className="btn-primary order-last"><Video size={14} /> Join next session</a>
             )}
-            <a href="#notes-h" className="px-4 py-2 rounded-full bg-white border border-[var(--hairline)] text-[12px] font-medium inline-flex items-center gap-1.5"><FileText size={14} /> Notes</a>
+            <a href="#notes-h" className="btn-secondary"><FileText size={14} /> Notes</a>
           </div>
         </div>
 
@@ -106,19 +126,19 @@ export default function PatientProfile() {
             <NotesPanel patientId={p.id} />
 
             <Link to="/app/insights" className="flex items-center gap-3 bg-[var(--surface-warm)] border border-dashed border-[var(--hairline-strong)] rounded-[16px] px-4 py-3.5 hover:bg-[var(--surface-soft)] transition">
-              <Sparkles size={15} className="text-[var(--green-700)] shrink-0" />
+              <Sparkles size={15} className="text-[var(--color-primary)] shrink-0" />
               <p className="text-[12px] text-[var(--slate)]"><span className="font-medium text-[var(--ink)]">Coming next:</span> patterns across this patient's sessions, shown with evidence and confidence — only with their consent.</p>
               <ArrowUpRight size={13} className="ml-auto text-[var(--stone)] shrink-0" />
             </Link>
           </div>
 
           <div className="space-y-4">
-            <div className="rounded-[12px] border border-[var(--hairline)] p-4">
-              <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] flex items-center gap-1.5"><Clock size={12} /> NEXT SESSION</p>
+            <div className={`rounded-[12px] border p-4 ${next ? 'bg-[var(--color-primary-tint)] border-[color-mix(in_oklch,var(--color-primary)_22%,var(--color-hairline))]' : 'border-[var(--hairline)]'}`}>
+              <p className={`text-[11px] font-semibold tracking-[0.08em] flex items-center gap-1.5 ${next ? 'text-[var(--badge-green-fg)]' : 'text-[var(--stone)]'}`}><Clock size={12} /> NEXT SESSION</p>
               {next ? (
                 <>
-                  <p className="text-[14px] font-semibold mt-1">{relativeDateTime(next.startsAt)}</p>
-                  <p className="text-[12px] text-[var(--stone)]">{next.sessionTypeName} • {formatINR(next.pricePaise)} • {next.status === 'pending_payment' ? 'Awaiting payment' : next.paymentStatus === 'captured' ? 'Paid' : 'Confirmed'}</p>
+                  <p className="text-[17px] font-semibold mt-1.5 text-[var(--color-forest)]">{relativeDateTime(next.startsAt)}</p>
+                  <p className="text-[12px] text-[var(--stone)] flex flex-wrap items-center gap-1.5">{next.sessionTypeName} • {formatINR(next.pricePaise)} <PaymentBadge booking={next} /></p>
                 </>
               ) : (
                 <p className="text-[13px] text-[var(--stone)] mt-1">Not scheduled</p>
@@ -130,7 +150,7 @@ export default function PatientProfile() {
             <div className="rounded-[12px] border border-[var(--hairline)] p-4">
               <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)] flex items-center gap-1.5"><ShieldCheck size={12} /> CONSENT & PRIVACY</p>
               <div className="mt-3 space-y-2 text-[12px]">
-                <div className="flex justify-between"><span>Booking terms</span><span className="font-semibold text-emerald-700">Accepted</span></div>
+                <div className="flex justify-between"><span>Booking terms</span><span className="font-semibold text-[var(--badge-green-fg)]">Accepted</span></div>
                 <div className="flex justify-between"><span>Private Lumid conversations</span><span className="font-semibold text-[var(--stone)]">Not shared</span></div>
                 <div className="flex justify-between"><span>Check-ins & summaries</span><span className="font-semibold text-[var(--stone)]">Not shared</span></div>
               </div>
@@ -147,10 +167,13 @@ export default function PatientProfile() {
   )
 }
 
+/** "← Patients", returning to the list with the filter/search the user came from. */
 function BackLink() {
+  const state = useLocation().state as { from?: unknown } | null
+  const to = typeof state?.from === 'string' && state.from.startsWith('/app/patients') ? state.from : '/app/patients'
   return (
-    <Link to="/app/patients" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-[var(--stone)] hover:text-[var(--ink)]">
-      <ArrowLeft size={14} /> Back to patients
+    <Link to={to} className="inline-flex items-center gap-1.5 -ml-1 px-1 py-0.5 rounded-md text-[12px] font-semibold text-[var(--color-ink-muted-48)] hover:text-[var(--color-primary)] transition-colors">
+      <ArrowLeft size={14} /> Patients
     </Link>
   )
 }
@@ -159,7 +182,7 @@ function TimelineItem({ booking, active }: { booking: BookingSummary; active: bo
   return (
     <div className="flex gap-3">
       <div className="flex flex-col items-center">
-        <div className={`w-2.5 h-2.5 rounded-full border-2 ${active ? 'bg-[var(--green-700)] border-[var(--green-700)]' : 'border-[var(--stone)] bg-white'} mt-1`} />
+        <div className={`w-2.5 h-2.5 rounded-full border-2 ${active ? 'bg-[var(--color-primary)] border-[var(--color-primary)]' : 'border-[var(--color-hairline-strong)] bg-white'} mt-1`} />
         <div className="w-px flex-1 bg-[var(--hairline)] mt-1" />
       </div>
       <div>
@@ -177,12 +200,12 @@ function DemoBetweenSessions() {
     <div className="rounded-[12px] border border-[var(--hairline)] p-4">
       <p className="text-[11px] font-semibold tracking-[0.08em] text-[var(--stone)]">BETWEEN SESSIONS <span className="ml-1 font-normal normal-case tracking-normal">· demo</span></p>
       <div className="flex items-center gap-2 mt-2">
-        <span className="px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-[11px] font-semibold flex items-center gap-1"><CheckCircle2 size={12} /> 2 of 3 actions completed</span>
+        <span className="badge badge--green"><CheckCircle2 size={12} /> 2 of 3 actions completed</span>
         <span className="text-[11px] text-[var(--stone)]">Last check-in 1 day ago</span>
       </div>
       <div className="mt-3 space-y-2">
-        <div className="flex gap-2 text-[12px]"><span className="w-1.5 h-1.5 rounded-full bg-[var(--green-700)] mt-2 shrink-0" /> Completed 25-min focused work block — “Felt less overwhelmed after starting”</div>
-        <div className="flex gap-2 text-[12px]"><span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-2 shrink-0" /> Skipped presentation prep — noted fear of evaluation</div>
+        <div className="flex gap-2 text-[12px]"><span className="w-1.5 h-1.5 rounded-full bg-[var(--color-primary)] mt-2 shrink-0" /> Completed 25-min focused work block — “Felt less overwhelmed after starting”</div>
+        <div className="flex gap-2 text-[12px]"><span className="w-1.5 h-1.5 rounded-full bg-[var(--badge-amber-fg)] mt-2 shrink-0" /> Skipped presentation prep — noted fear of evaluation</div>
       </div>
     </div>
   )
@@ -192,7 +215,7 @@ function ProfileSkeleton() {
   return (
     <div className="px-4 lg:px-6 py-6" role="status" aria-label="Loading patient">
       <BackLink />
-      <div className="mt-4 bg-white border border-[var(--hairline)] rounded-[16px] p-6 space-y-6">
+      <div className="mt-3 bg-white border border-[var(--hairline)] rounded-[16px] p-6 space-y-6">
         <div className="flex gap-4 items-center">
           <Skeleton className="w-14 h-14 rounded-full" />
           <div className="space-y-2 flex-1"><Skeleton className="h-5 w-48" /><Skeleton className="h-3 w-72" /></div>

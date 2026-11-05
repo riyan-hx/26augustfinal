@@ -27,11 +27,12 @@ export function BookingActions({ booking: b, inline = false }: { booking: Bookin
   const move = useReschedule()
 
   const started = b.startsAt.getTime() <= now
-  const canCancel = b.status === 'confirmed' || b.status === 'pending_payment'
+  // A confirmed session that has started is marked completed or no-show, not cancelled.
+  const canCancel = (b.status === 'confirmed' && !started) || b.status === 'pending_payment'
   const canMark = b.status === 'confirmed' && started
   const canPay = b.status === 'pending_payment'
   const canMove = b.status === 'confirmed' && !started
-  if (!canCancel && !canMark) return null
+  if (!canCancel && !canMark && !canPay) return null
 
   const busy = cancel.isPending || outcome.isPending || paid.isPending || move.isPending
   const fail = (e: unknown) => setError(toApiError(e).userMessage)

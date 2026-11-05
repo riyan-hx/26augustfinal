@@ -41,6 +41,12 @@ const toNote = (r: NoteRow): NoteMeta => ({
 
 const demoNotes: (NoteMeta & { body: string })[] = []
 
+/** Demo: the focus of a patient's latest note, like patient_overview.current_focus. */
+export function demoLatestFocus(patientId: string): string | null {
+  const latest = demoNotes.filter((n) => n.patientId === patientId && n.focus.trim()).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())[0]
+  return latest?.focus ?? null
+}
+
 export async function listNotes(patientId: string): Promise<NoteMeta[]> {
   if (isDemoMode) return demoDelay(demoNotes.filter((n) => n.patientId === patientId).sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()))
   const rows = unwrap(await db().from('session_notes')

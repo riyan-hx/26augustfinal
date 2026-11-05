@@ -1,10 +1,12 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { createPortal } from 'react-dom'
 import { CalendarPlus, X } from '../../lib/icons'
 import { localDateKey } from '../../lib/dates'
 import { toApiError } from '../../lib/errors'
 import { formatINR } from '../../lib/money'
 import { usePatients } from '../patients/hooks'
 import { useSessionTypes } from '../practice/hooks'
+import { useDialogFocus } from '../../components/ui/useDialogFocus'
 import { useCreateBooking } from './hooks'
 
 /** "New booking" button plus the dialog it opens. For patients who call or message directly. */
@@ -18,7 +20,11 @@ export function NewBookingButton({ className = 'btn-primary' }: { className?: st
   )
 }
 
-export function NewBookingDialog({ onClose }: { onClose: () => void }) {
+/**
+ * Modal booking form. Focus stays inside while open and returns to the opener
+ * (or `returnFocusTo`, when the opener itself disappears) on close.
+ */
+export function NewBookingDialog({ onClose, returnFocusTo }: { onClose: () => void; returnFocusTo?: HTMLElement | null }) {
   const patients = usePatients()
   const types = useSessionTypes()
   const create = useCreateBooking()
@@ -36,16 +42,15 @@ export function NewBookingDialog({ onClose }: { onClose: () => void }) {
   const [notice, setNotice] = useState<string | null>(null)
   const [done, setDone] = useState(false)
   const first = useRef<HTMLInputElement>(null)
+  const panel = useRef<HTMLDivElement>(null)
+  const doneButton = useRef<HTMLButtonElement>(null)
+  useDialogFocus(panel, onClose, { initial: first, returnTo: returnFocusTo })
 
   const sessionTypeId = typeId || active[0]?.id || ''
   const chosenType = active.find((t) => t.id === sessionTypeId)
 
-  useEffect(() => {
-    first.current?.focus()
-    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
-    window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
-  }, [onClose])
+  // The submit button disappears on success; keep focus inside the dialog.
+  useEffect(() => { if (done) doneButton.current?.focus() }, [done])
 
   function submit(e: FormEvent) {
     e.preventDefault()
@@ -66,9 +71,11 @@ export function NewBookingDialog({ onClose }: { onClose: () => void }) {
     })
   }
 
-  return (
+  // Portalled to <body>: openers like the sticky sidebar create their own stacking
+  // context, which would otherwise leave the dialog under positioned page content.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/30 p-0 sm:p-4" onMouseDown={(e) => { if (e.target === e.currentTarget) onClose() }}>
-      <div role="dialog" aria-modal="true" aria-labelledby="nb-title" className="w-full sm:max-w-[520px] bg-white rounded-t-[20px] sm:rounded-[20px] shadow-xl max-h-[92vh] overflow-y-auto">
+      <div ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby="nb-title" className="outline-none w-full sm:max-w-[520px] bg-white rounded-t-[20px] sm:rounded-[20px] shadow-xl max-h-[92vh] overflow-y-auto">
         <header className="flex items-center justify-between px-6 pt-5 pb-3">
           <h2 id="nb-title" className="text-[18px] font-semibold">{done ? 'Session booked' : 'New booking'}</h2>
           <button type="button" aria-label="Close" onClick={onClose} className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-[var(--color-canvas-parchment)]"><X size={14} /></button>
@@ -81,8 +88,8 @@ export function NewBookingDialog({ onClose }: { onClose: () => void }) {
               {paid ? 'Marked as paid and added to your earnings.' : 'It shows as awaiting payment until you mark it paid.'}
             </p>
             <div className="mt-5 flex gap-2">
-              <button className="btn-primary" onClick={onClose}>Done</button>
-              <button className="btn-secondary" onClick={() => { setDone(false); setPerson({ fullName: '', email: '', phone: '' }); setPatientId('') }}>Book another</button>
+              <button ref={doneButton} className="btn-primary" onClick={onClose}>Done</button>
+              <button className="btn-secondary" onClick={() => { setDone(false); setPerson({ fullName: '', email: '', phone: '' }); setPatientId(''); setTimeout(() => first.current?.focus(), 0) }}>Book another</button>
             </div>
           </div>
         ) : (
@@ -172,6 +179,7 @@ export function NewBookingDialog({ onClose }: { onClose: () => void }) {
           </form>
         )}
       </div>
-    </div>
+    </div>,
+    document.body,
   )
 }
