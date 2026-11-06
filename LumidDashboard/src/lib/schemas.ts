@@ -9,7 +9,7 @@ export const slugSchema = z
   .toLowerCase()
   .regex(/^[a-z0-9](?:[a-z0-9-]{1,38}[a-z0-9])$/, "Use 3–40 lowercase letters, numbers or hyphens.")
   .refine(
-    (s) => !["www", "app", "api", "admin", "book", "mail", "help", "support", "status", "lumid"].includes(s),
+    (s) => !["www", "app", "api", "admin", "book", "mail", "help", "support", "status", "lumid", "login"].includes(s),
     "This name is reserved.",
   );
 

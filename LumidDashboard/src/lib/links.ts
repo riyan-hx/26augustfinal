@@ -26,12 +26,19 @@ export function canUseSubdomains(domain = publicSiteDomain): boolean {
 }
 
 /**
- * Public booking page for a practice slug. Uses subdomains (anitha.lumidai.in)
- * only when VITE_PUBLIC_SITE_DOMAIN is a custom domain with wildcard DNS;
- * otherwise a path on this app, e.g. https://app.example.com/p/anitha.
+ * Where booking links live: the public site domain when it is a custom domain
+ * (https://lumidai.in), otherwise this app (shared hosts like *.vercel.app).
+ */
+function bookingOrigin(): string {
+  return canUseSubdomains() ? `https://${publicSiteDomain}` : appOrigin()
+}
+
+/**
+ * Public booking page for a practice slug: a path on the booking origin,
+ * e.g. https://lumidai.in/anitha. No per-practice DNS needed.
  */
 export function bookingUrl(slug: string): string {
-  return canUseSubdomains() ? `https://${slug}.${publicSiteDomain}` : `${appOrigin()}/p/${slug}`
+  return `${bookingOrigin()}/${slug}`
 }
 
 /** The link without its scheme, for display. */
@@ -39,9 +46,7 @@ export const bookingUrlLabel = (slug: string) => bookingUrl(slug).replace(/^http
 
 /** What goes before and after the slug in the link field. */
 export function bookingUrlParts(): { prefix: string; suffix: string } {
-  return canUseSubdomains()
-    ? { prefix: 'https://', suffix: `.${publicSiteDomain}` }
-    : { prefix: `${appOrigin().replace(/^https?:\/\//, '')}/p/`, suffix: '' }
+  return { prefix: `${bookingOrigin().replace(/^https?:\/\//, '')}/`, suffix: '' }
 }
 
 /** Slug from the current host when it is `<slug>.<publicSiteDomain>`. */
