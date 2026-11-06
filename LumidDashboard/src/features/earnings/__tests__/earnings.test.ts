@@ -15,7 +15,7 @@ describe("demo earnings", () => {
   });
 
   it("lists paid and refunded bookings as payments, newest first", async () => {
-    const rows = await listPayments();
+    const rows = await listPayments(10_000);
     expect(rows.length).toBe(demoBookings.filter((b) => ["captured", "refunded", "partially_refunded"].includes(b.paymentStatus ?? "")).length);
     const times = rows.map((r) => r.capturedAt!.getTime());
     expect(times).toEqual([...times].sort((a, b) => b - a));
