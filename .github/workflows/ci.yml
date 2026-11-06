@@ -43,7 +43,8 @@ jobs:
 
   database:
     name: Migrations + RLS/pgTAP tests
-    runs-on: ubuntu-latest
+    # Pinned: postgresql-16 / pgtap packages are not published for newer ubuntu-latest images.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - name: Install Postgres 16 + pgTAP
