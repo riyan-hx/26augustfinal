@@ -98,3 +98,106 @@ export const demoBookings: BookingSummary[] = [
 export function demoDelay<T>(value: T, ms = 250): Promise<T> {
   return new Promise((resolve) => setTimeout(() => resolve(structuredClone(value)), ms))
 }
+
+// ---- Generated history: a practice that has been running for months ----
+// Deterministic (seeded) so the demo looks the same on every load.
+function rng(seed: number): () => number {
+  let s = seed >>> 0
+  return () => {
+    s = (s + 0x6d2b79f5) >>> 0
+    let t = s
+    t = Math.imul(t ^ (t >>> 15), t | 1)
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61)
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296
+  }
+}
+
+const FIRST = ['Aarav', 'Aditi', 'Akhil', 'Ananya', 'Anjali', 'Anoop', 'Arya', 'Ashwin', 'Bhavya', 'Chitra', 'Deepak', 'Devika', 'Farhan', 'Gayathri', 'Hari', 'Ishaan', 'Jishnu', 'Kavya', 'Keerthi', 'Kiran', 'Manu', 'Maya', 'Nandini', 'Neha', 'Nikhil', 'Pooja', 'Priya', 'Rohan', 'Sana', 'Sanjay', 'Shreya', 'Sidharth', 'Tara', 'Varun', 'Zoya', 'Abhay', 'Anagha', 'Fathima', 'Irfan', 'Jyothi']
+const LAST = ['Menon', 'Pillai', 'Varma', 'Nambiar', 'George', 'Thomas', 'Joseph', 'Krishnan', 'Das', 'Reddy', 'Gupta', 'Mehta', 'Khan', 'Joshi', 'Rao', 'Mathew', 'Warrier', 'Kurup', 'Sebastian', 'Bose']
+const FOCUS = ['Work-related overwhelm', 'Academic avoidance', 'Performance anxiety', 'Self-compassion', 'Relationship patterns', 'Procrastination', 'Burnout recovery', 'Sleep and stress', 'Social anxiety', 'Fear of failure', 'Low motivation']
+const PREP = [
+  'Tried the two-minute start rule; got going on 3 of 5 tasks.',
+  'Avoided the difficult email again — wants to explore what is underneath.',
+  'Sleep improved; still ruminating before deadlines.',
+  'Felt less guilt this week after the self-compassion exercise.',
+  'Missed two micro-commitments; mood low after a family call.',
+  'Wants to review the grounding exercise before an interview.',
+]
+
+const GENERATED_PATIENTS = 72
+const rand = rng(20261106)
+const pick = <T,>(xs: readonly T[]): T => xs[Math.floor(rand() * xs.length)]!
+
+/** Weekday (0=Sun) of "today + days" in IST. */
+const weekdayAt = (days: number) => at(days, 12).getUTCDay()
+const taken = new Set<string>()
+for (const b of demoBookings) {
+  const d = Math.round((b.startsAt.getTime() - at(0, 0).getTime()) / DAY)
+  const h = Math.floor(((b.startsAt.getUTCHours() * 60 + b.startsAt.getUTCMinutes() + 330) % 1440) / 60)
+  taken.add(`${d}-${h}`); taken.add(`${d}-${h + 1}`)
+}
+function freeSlot(day: number, hour: number): { day: number; hour: number } {
+  let d = day, h = hour
+  for (let i = 0; i < 400; i++) {
+    const wd = weekdayAt(d)
+    if (wd !== 0 && wd !== 6 && !taken.has(`${d}-${h}`)) { taken.add(`${d}-${h}`); return { day: d, hour: h } }
+    h += 1
+    if (h > 19) { h = 10; d += 1 }
+  }
+  return { day, hour }
+}
+
+const usedNames = new Set(demoPatients.map((p) => p.name))
+for (let i = 0; i < GENERATED_PATIENTS; i++) {
+  let name = ''
+  do { name = `${pick(FIRST)} ${pick(LAST)}` } while (usedNames.has(name))
+  usedNames.add(name)
+  const id = String(demoPatients.length + 1)
+  const cadence = pick([7, 7, 14, 14, 21])
+  const kind = rand()
+  // 12% brand-new (upcoming first session), 18% lapsed, rest active.
+  const startDay = kind < 0.12 ? 1 + Math.floor(rand() * 10) : -Math.floor(20 + rand() * 180)
+  const lapsed = kind >= 0.12 && kind < 0.3
+  const lastDay = lapsed ? -(30 + Math.floor(rand() * 60)) : -Math.floor(rand() * cadence)
+  const hour = 10 + Math.floor(rand() * 9)
+  const email = `${name.toLowerCase().replace(/[^a-z]+/g, '.')}@email.com`
+  const patient: PatientSummary = {
+    id, name, email, phone: `+91 9${String(Math.floor(100000000 + rand() * 899999999))}`,
+    sessionsCompleted: 0, lastSessionAt: null, nextSessionAt: null,
+    focus: kind < 0.12 ? 'Initial consultation' : pick(FOCUS),
+    status: kind < 0.12 ? 'new' : lapsed ? 'lapsed' : 'active',
+    prepNote: !lapsed && kind >= 0.12 && rand() < 0.5 ? pick(PREP) : null,
+  }
+  demoPatients.push(patient)
+  const bookingsForPatient: BookingSummary[] = []
+  let day = startDay, k = 0
+  const ref = `${id}`.padStart(3, '0')
+  if (kind < 0.12) {
+    const s = freeSlot(day, hour)
+    bookingsForPatient.push(booking(`B-G${ref}00`, id, s.day, s.hour, 0, individual, 'confirmed'))
+  } else {
+    while (day <= Math.min(lastDay, -1) && k < 30) {
+      const s = freeSlot(day, hour)
+      const r = rand()
+      const status: BookingSummary['status'] = r < 0.06 ? 'cancelled' : r < 0.1 ? 'no_show' : 'completed'
+      bookingsForPatient.push(booking(`B-G${ref}${String(k).padStart(2, '0')}`, id, s.day, s.hour, 0, k === 0 ? individual : rand() < 0.7 ? followUp : individual, status))
+      day += cadence + Math.floor(rand() * 3) - 1
+      k++
+    }
+    if (!lapsed) {
+      for (let f = 0; f < 2; f++) {
+        const s = freeSlot(Math.max(0, lastDay + cadence * (f + 1) + cadence) , hour)
+        if (s.day > 21) break
+        const status: BookingSummary['status'] = f === 0 && rand() < 0.15 ? 'pending_payment' : 'confirmed'
+        bookingsForPatient.push(booking(`B-G${ref}F${f}`, id, s.day, s.hour, 0, followUp, status))
+      }
+    }
+  }
+  const done = bookingsForPatient.filter((b) => b.status === 'completed')
+  const last = done[done.length - 1]
+  const next = bookingsForPatient.filter((b) => b.startsAt.getTime() > Date.now() && b.status !== 'cancelled').sort((a, b) => a.startsAt.getTime() - b.startsAt.getTime())[0]
+  patient.sessionsCompleted = done.length
+  patient.lastSessionAt = last?.startsAt ?? null
+  patient.nextSessionAt = next?.startsAt ?? null
+  demoBookings.push(...bookingsForPatient)
+}
