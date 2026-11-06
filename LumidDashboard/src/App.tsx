@@ -76,6 +76,7 @@ export default function App() {
               <Route path="/login" element={<LoginPage />} />
               <Route path="/book" element={<PublicBooking />} />
               <Route path="/p/:slug" element={<PublicBooking />} />
+              <Route path="/:slug" element={<PublicBooking />} />
               <Route path="/m/:bookingId" element={<ManageBooking />} />
               <Route path="/app" element={<App_><LiveOverview /></App_>} />
               <Route path="/app/setup" element={<RequireAuth><Suspense fallback={<PageFallback />}><SetupWizard /></Suspense></RequireAuth>} />
