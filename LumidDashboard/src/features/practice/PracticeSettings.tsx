@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Calendar, Check, Globe, Shield, Trash2, Plus, Clock } from '../../lib/icons'
+import { Calendar, Check, Globe, Shield, Trash2, Plus, Clock, Sparkles } from '../../lib/icons'
 import { formatINR, parseRupeesToPaise } from '../../lib/money'
 import { toApiError } from '../../lib/errors'
 import { env, isDemoMode } from '../../lib/env'
@@ -12,10 +12,12 @@ import {
   useArchiveSessionType, useAvailability, useProfile, usePublish, useSaveSessionType,
   useSaveWeeklyHours, useSessionTypes, useSetupStatus, useUpdateProfile,
 } from './hooks'
+import { ProfileDetailsSection } from './ProfileDetailsSection'
 import type { AvailabilityRule, PracticeProfile, SessionType } from '../../types/domain'
 
 const sections = [
   { id: 'profile', label: 'Profile & link', icon: Globe },
+  { id: 'details', label: 'Profile details', icon: Sparkles },
   { id: 'sessions', label: 'Session types', icon: Clock },
   { id: 'hours', label: 'Weekly hours', icon: Calendar },
   { id: 'privacy', label: 'Privacy & account', icon: Shield },
@@ -53,6 +55,7 @@ export default function PracticeSettings() {
         <div className="space-y-4 min-w-0">
           <PublishCard />
           <ProfileSection />
+          <ProfileDetailsSection />
           <SessionTypesSection />
           <WeeklyHoursSection />
           <PrivacySection />

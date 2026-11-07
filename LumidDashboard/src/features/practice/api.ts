@@ -8,6 +8,7 @@ import {
 } from '../../lib/schemas'
 import type { AvailabilityRule, PracticeProfile, SessionType, SetupStatus } from '../../types/domain'
 import { demoAvailability, demoDelay, demoProfile, demoSessionTypes } from '../demo/fixtures'
+import { demoProfileDetails, profileDetailsSchema, type ProfileDetails, type ProfileDetailsInput } from './details'
 
 interface ProfileRow {
   id: string; slug: string | null; display_name: string; title: string; bio: string; city: string
@@ -64,6 +65,36 @@ export async function updateProfile(input: ProfileInput): Promise<void> {
     throw new ApiError('VALIDATION_FAILED', { fields: { slug: 'This link is taken. Try another.' } })
   }
   unwrap(result)
+}
+
+interface DetailsRow {
+  specialties: string[]; years_experience: number | null; approach: string; modalities: string[]; audiences: string[]
+  qualifications: { title: string; place?: string; year?: string | null }[]; rci_number: string | null; show_rci: boolean
+}
+
+export async function getProfileDetails(): Promise<ProfileDetails> {
+  if (isDemoMode) return demoDelay(structuredClone(demoProfileDetails))
+  const r = unwrap(
+    await db().from('psychologists').select('specialties, years_experience, approach, modalities, audiences, qualifications, rci_number, show_rci').single(),
+  ) as DetailsRow
+  return {
+    specialties: r.specialties ?? [], yearsExperience: r.years_experience, approach: r.approach ?? '', modalities: r.modalities ?? [],
+    audiences: r.audiences ?? [], qualifications: (r.qualifications ?? []).map((q) => ({ title: q.title, place: q.place ?? '', year: q.year ?? null })),
+    rciNumber: r.rci_number ?? '', showRci: r.show_rci ?? false,
+  }
+}
+
+export async function updateProfileDetails(input: ProfileDetailsInput): Promise<void> {
+  const data = validate(profileDetailsSchema, input)
+  if (isDemoMode) {
+    Object.assign(demoProfileDetails, {
+      specialties: data.specialties, yearsExperience: data.years_experience, approach: data.approach, modalities: data.modalities,
+      audiences: data.audiences, qualifications: data.qualifications, rciNumber: data.rci_number ?? '', showRci: data.show_rci,
+    })
+    return demoDelay(undefined)
+  }
+  const { data: auth } = await db().auth.getUser()
+  unwrap(await db().from('psychologists').update({ ...data, rci_number: data.rci_number || null }).eq('id', auth.user?.id ?? ''))
 }
 
 export async function listSessionTypes(): Promise<SessionType[]> {
