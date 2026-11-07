@@ -1,17 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
   acceptTerms, archiveSessionType, computeSetup, getProfile, listAvailability, listSessionTypes,
-  saveSessionType, saveWeeklyHours, setPublished, updateProfile,
+  saveSessionType, saveWeeklyHours, setPublished, updateProfile, getProfileDetails, updateProfileDetails,
 } from './api'
 
 export const practiceKeys = {
   profile: ['practice', 'profile'] as const,
   sessionTypes: ['practice', 'session-types'] as const,
   availability: ['practice', 'availability'] as const,
+  details: ['practice', 'details'] as const,
 }
 
 export const useProfile = () => useQuery({ queryKey: practiceKeys.profile, queryFn: getProfile })
 export const useSessionTypes = () => useQuery({ queryKey: practiceKeys.sessionTypes, queryFn: listSessionTypes })
+export const useProfileDetails = () => useQuery({ queryKey: practiceKeys.details, queryFn: getProfileDetails })
 export const useAvailability = () => useQuery({ queryKey: practiceKeys.availability, queryFn: listAvailability })
 
 /** Onboarding status, derived from the three setup queries. */
@@ -37,3 +39,4 @@ export const useArchiveSessionType = () => useSaver(archiveSessionType, practice
 export const useSaveWeeklyHours = () => useSaver(saveWeeklyHours, practiceKeys.availability)
 export const usePublish = () => useSaver(setPublished, practiceKeys.profile)
 export const useAcceptTerms = () => useSaver(acceptTerms, practiceKeys.profile)
+export const useSaveProfileDetails = () => useSaver(updateProfileDetails, practiceKeys.details)

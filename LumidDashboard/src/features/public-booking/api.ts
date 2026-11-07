@@ -8,6 +8,7 @@ import { db } from '../../lib/supabase'
 import type { BookingRequest } from '../../lib/schemas'
 import { demoAvailability, demoBookings, demoDelay, demoPatients, demoProfile, demoSessionTypes } from '../demo/fixtures'
 import { assertDemoSlotFree } from '../bookings/api'
+import { demoProfileDetails } from '../practice/details'
 
 const hhmmToMin = (t: string) => Number(t.slice(0, 2)) * 60 + Number(t.slice(3, 5))
 
@@ -16,7 +17,11 @@ export interface PublicProfile {
   slug: string; displayName: string; title: string; bio: string; city: string; languages: string[]
   specialties: string[]; yearsExperience: number | null; timezone: string; photoPath: string | null
   cancellationCutoffHours: number; bookingWindowDays: number; minNoticeMinutes: number; sessionTypes: PublicSessionType[]
+  /** Optional profile detail. Sections stay hidden until the psychologist fills them in. */
+  approach: string; modalities: string[]; audiences: string[]; qualifications: PublicQualification[]
+  sessionModes: ('online' | 'in_person')[]; registration: string | null
 }
+export interface PublicQualification { title: string; place: string; year: string | null }
 export interface Hold {
   bookingId: string; code: string; startsAt: Date; endsAt: Date; holdExpiresAt: Date; manageToken: string
   payment: { keyId: string; orderId: string; amount: number; currency: string }
@@ -27,6 +32,9 @@ export interface PaymentProof { orderId: string; paymentId: string; signature: s
 interface ProfileJson {
   slug: string; display_name: string; title: string; bio: string; city: string; languages: string[]
   specialties?: string[]; years_experience?: number | null; timezone: string; photo_path?: string | null
+  approach?: string | null; modalities?: string[] | null; audiences?: string[] | null
+  qualifications?: { title: string; place?: string; year?: string | null }[] | null
+  session_modes?: ('online' | 'in_person')[] | null; registration?: string | null
   cancellation_cutoff_hours: number; booking_window_days: number; min_notice_minutes?: number
   session_types: { id: string; name: string; description: string; duration_minutes: number; price_paise: number }[]
 }
@@ -36,6 +44,9 @@ const toProfile = (j: ProfileJson): PublicProfile => ({
   specialties: j.specialties ?? [], yearsExperience: j.years_experience ?? null, timezone: j.timezone, photoPath: j.photo_path ?? null,
   cancellationCutoffHours: j.cancellation_cutoff_hours, bookingWindowDays: j.booking_window_days, minNoticeMinutes: j.min_notice_minutes ?? 0,
   sessionTypes: j.session_types.map((s) => ({ id: s.id, name: s.name, description: s.description, durationMinutes: s.duration_minutes, pricePaise: s.price_paise })),
+  approach: j.approach ?? '', modalities: j.modalities ?? [], audiences: j.audiences ?? [],
+  qualifications: (j.qualifications ?? []).filter((q) => q?.title).map((q) => ({ title: q.title, place: q.place ?? '', year: q.year ?? null })),
+  sessionModes: j.session_modes?.length ? j.session_modes : ['online'], registration: j.registration ?? null,
 })
 
 const DEMO_SLUGS = new Set([demoProfile.slug, 'demo'])
@@ -45,8 +56,12 @@ export async function getPublicProfile(slug: string): Promise<PublicProfile> {
     if (!DEMO_SLUGS.has(slug)) throw new ApiError('NOT_FOUND')
     return demoDelay({
       slug: demoProfile.slug ?? 'demo', displayName: demoProfile.displayName, photoPath: demoProfile.photoPath, title: demoProfile.title, bio: demoProfile.bio,
-      city: demoProfile.city, languages: demoProfile.languages, specialties: ['Anxiety & overwhelm', 'Avoidance & procrastination'],
-      yearsExperience: 8, timezone: demoProfile.timezone, cancellationCutoffHours: demoProfile.cancellationCutoffHours,
+      city: demoProfile.city, languages: demoProfile.languages,
+      specialties: demoProfileDetails.specialties, yearsExperience: demoProfileDetails.yearsExperience,
+      approach: demoProfileDetails.approach, modalities: demoProfileDetails.modalities, audiences: demoProfileDetails.audiences,
+      qualifications: demoProfileDetails.qualifications, sessionModes: ['online'],
+      registration: demoProfileDetails.showRci && demoProfileDetails.rciNumber ? `RCI reg. ${demoProfileDetails.rciNumber}` : null,
+      timezone: demoProfile.timezone, cancellationCutoffHours: demoProfile.cancellationCutoffHours,
       bookingWindowDays: demoProfile.bookingWindowDays, minNoticeMinutes: demoProfile.minNoticeMinutes,
       sessionTypes: demoSessionTypes.map((s) => ({ id: s.id, name: s.name, description: s.description, durationMinutes: s.durationMinutes, pricePaise: s.pricePaise })),
     })
