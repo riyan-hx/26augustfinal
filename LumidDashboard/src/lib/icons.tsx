@@ -24,6 +24,9 @@ import {
   Shield01Icon, ShieldCheckIcon, PreferenceHorizontalIcon, SparklesIcon,
   StethoscopeIcon, TrendingUpIcon, Delete02Icon, UserAdd01Icon,
   UserMultipleIcon, Video01Icon, Wallet01Icon, Cancel01Icon, CancelCircleIcon, LockIcon,
+  Mortarboard01Icon, BrainIcon, Moon02Icon, Sun03Icon, SunriseIcon, SunsetIcon, FavouriteIcon,
+  Briefcase01Icon, Target02Icon, SmileIcon, Leaf01Icon, Share08Icon, CheckmarkBadge01Icon,
+  Mail01Icon, BubbleChatIcon, PuzzleIcon, Idea01Icon, UserIcon, Home01Icon, CloudAngledRainIcon,
 } from '@hugeicons/core-free-icons'
 
 type IconProps = Omit<ComponentProps<typeof HugeiconsIcon>, 'icon'>
@@ -84,3 +87,23 @@ export const Video = make(Video01Icon)
 export const Wallet = make(Wallet01Icon)
 export const X = make(Cancel01Icon)
 export const XCircle = make(CancelCircleIcon)
+export const GraduationCap = make(Mortarboard01Icon)
+export const Brain = make(BrainIcon)
+export const Moon = make(Moon02Icon)
+export const Sun = make(Sun03Icon)
+export const Sunrise = make(SunriseIcon)
+export const Sunset = make(SunsetIcon)
+export const Heart = make(FavouriteIcon)
+export const Briefcase = make(Briefcase01Icon)
+export const Target = make(Target02Icon)
+export const Smile = make(SmileIcon)
+export const Leaf = make(Leaf01Icon)
+export const Share = make(Share08Icon)
+export const BadgeCheck = make(CheckmarkBadge01Icon)
+export const Mail = make(Mail01Icon)
+export const MessageCircle = make(BubbleChatIcon)
+export const Puzzle = make(PuzzleIcon)
+export const Lightbulb = make(Idea01Icon)
+export const UserRound = make(UserIcon)
+export const Home = make(Home01Icon)
+export const CloudRain = make(CloudAngledRainIcon)
